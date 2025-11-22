@@ -1,0 +1,392 @@
+{
+  "categorias": [
+    {
+      "id": 1,
+      "nome": "Alimentício",
+      "descricao": "Serviços de alimentação e culinária, incluindo buffets e entregas."
+    },
+    {
+      "id": 2,
+      "nome": "Assistência Técnica",
+      "icone": "Wrench",
+      "descricao": "Reparo e manutenção de eletrodomésticos, eletrônicos e outros equipamentos."
+    },
+    {
+      "id": 3,
+      "nome": "Reparos e Reformas",
+      "icone": "Hammer",
+      "descricao": "Serviços para construção, renovação e pequenos consertos em residências e comércios."
+    },
+    {
+      "id": 4,
+      "nome": "Saúde",
+      "icone": "HeartPulse",
+      "descricao": "Profissionais e serviços dedicados ao bem-estar físico e mental."
+    },
+    {
+      "id": 5,
+      "nome": "Veículos",
+      "icone": "Car",
+      "descricao": "Manutenção, reparos, limpeza e outros serviços para carros, motos e caminhões."
+    },
+    {
+      "id": 6,
+      "nome": "Educação",
+      "icone": "Book",
+      "descricao": "Aulas particulares, reforço escolar, idiomas e consultoria educacional."
+    },
+    {
+      "id": 7,
+      "nome": "Serviços Domésticos",
+      "icone": "Home",
+      "descricao": "Limpeza, organização, jardinagem e cuidados gerais para o seu lar."
+    },
+    {
+      "id": 8,
+      "nome": "Eventos",
+      "icone": "Calendar",
+      "descricao": "Planejamento, organização e execução de festas, reuniões e celebrações."
+    },
+    {
+      "id": 9,
+      "nome": "Moda e Beleza",
+      "icone": "Shirt",
+      "descricao": "Cuidados pessoais, estética, vestuário e consultoria de imagem."
+    },
+    {
+      "id": 10,
+      "nome": "Consultoria",
+      "icone": "Briefcase",
+      "descricao": "Aconselhamento e expertise profissional em diversas áreas de negócio e pessoal."
+    },
+    {
+      "id": 11,
+      "nome": "Design",
+      "icone": "Palette",
+      "descricao": "Criação de projetos visuais, gráficos, de interiores e identidade de marca."
+    },
+    {
+      "id": 12,
+      "nome": "Tecnologia",
+      "icone": "Monitor",
+      "descricao": "Suporte técnico, desenvolvimento de software, redes e infraestrutura de TI."
+    },
+    {
+      "id": 13,
+      "nome": "Segurança",
+      "icone": "Shield",
+      "descricao": "Instalação e manutenção de sistemas de alarme, monitoramento e vigilância."
+    }
+  ],
+  "sub_categorias": [
+    {
+      "id": 1,
+      "nome": "Cabeleireiro",
+      "categoria_id": 1
+    },
+    {
+      "id": 2,
+      "nome": "Manicure e Pedicure",
+      "categoria_id": 1
+    },
+    {
+      "id": 3,
+      "nome": "Fisioterapia",
+      "categoria_id": 2
+    }
+  ],
+  "usuarios": [
+    {
+      "nome": "Rafael",
+      "email": "rfl@gmail.com",
+      "cpf": "45678912322",
+      "cep": "02563987",
+      "telefone": "11956874123",
+      "tipo_usuario": "pf",
+      "senha_hash": "chapeco",
+      "ativo": true,
+      "id": 1
+    },
+    {
+      "nome": "Jeff Bezos",
+      "email": "amazon@gmail.com",
+      "cpf": "72653891702",
+      "cep": "21394023",
+      "telefone": "11968497512",
+      "tipo_usuario": "pj",
+      "senha_hash": "amazonia",
+      "ativo": true,
+      "id": 2
+    },
+    {
+      "nome": "Kratos",
+      "email": "k@gmail.com",
+      "cpf": "12345678945",
+      "cep": "12345678",
+      "telefone": "21965789456",
+      "tipo_usuario": "pj",
+      "senha_hash": "pipipipopopo",
+      "ativo": true,
+      "id": 3
+    }
+  ],
+  "enderecos": [
+    {
+      "rua": "Av. America",
+      "numero": "666",
+      "bairro": "Paranapiacaba",
+      "cidade": "Tocantins",
+      "estado": "PA",
+      "cep": "12345684",
+      "complemento": "",
+      "latitude": null,
+      "longitude": null,
+      "ativo": 1,
+      "id": 1
+    },
+    {
+      "rua": "Abluble",
+      "numero": "456",
+      "bairro": "asdmkepp",
+      "cidade": "wqeqw",
+      "estado": "SA",
+      "cep": "16165165",
+      "complemento": "",
+      "latitude": null,
+      "longitude": null,
+      "ativo": 1,
+      "id": 2
+    }
+  ],
+  "estabelecimentos": [
+    {
+      "nome": "Amazon",
+      "cnpj": "92839912000039",
+      "profissional_id": 2,
+      "endereco_id": 1,
+      "id": 1
+    },
+    {
+      "nome": "Olimpo",
+      "cnpj": "00623904000173",
+      "profissional_id": 3,
+      "endereco_id": 2,
+      "id": 2
+    }
+  ],
+  "profissionais": [],
+  "horario_funcionamento": [
+    {
+      "id": 1,
+      "estabelecimento_id": 1,
+      "dia_semana": 2,
+      "hora_abertura": "09:00:00",
+      "hora_fechamento": "18:00:00"
+    },
+    {
+      "id": 2,
+      "estabelecimento_id": 1,
+      "dia_semana": 3,
+      "hora_abertura": "09:00:00",
+      "hora_fechamento": "18:00:00"
+    }
+  ],
+  "servicos": [
+    {
+      "nome": "Limpeza de Sanitário",
+      "preco": 89.99,
+      "descricao": "",
+      "estabelecimento_id": 1,
+      "id": 1
+    },
+    {
+      "nome": "Troca de Chuveiro",
+      "preco": 210,
+      "descricao": "",
+      "estabelecimento_id": 1,
+      "id": 2
+    },
+    {
+      "nome": "Reparo de Placa-Mãe",
+      "preco": 540,
+      "descricao": "",
+      "estabelecimento_id": 1,
+      "id": 3
+    },
+    {
+      "nome": "Marido de Aluguel",
+      "preco": 666,
+      "descricao": "Pode",
+      "estabelecimento_id": 2,
+      "id": 4
+    },
+    {
+      "nome": "asoikdemqwio",
+      "preco": 15616,
+      "descricao": "",
+      "estabelecimento_id": 2,
+      "id": 5
+    }
+  ],
+  "servicos_mais_procurados": [
+    {
+      "nome": "Engenheiro",
+      "icone": "Construction",
+      "descricao": "Projetos, cálculos e acompanhamento de obras residenciais, comerciais e industriais."
+    },
+    {
+      "nome": "Cozinheira",
+      "icone": "ChefHat",
+      "descricao": "Preparação de refeições, cardápios personalizados e serviços para eventos ou famílias."
+    },
+    {
+      "nome": "Manicure e Pedicure",
+      "icone": "SprayCan",
+      "descricao": "Cuidados com unhas, esmaltação, design e tratamentos para mãos e pés."
+    },
+    {
+      "nome": "Personal Trainer",
+      "icone": "Dumbbell",
+      "descricao": "Treinos personalizados, acompanhamento físico e orientação para saúde e bem-estar."
+    },
+    {
+      "nome": "Cabeleireiros",
+      "icone": "Scissors",
+      "descricao": "Cortes, coloração, hidratação, penteados e tratamentos capilares."
+    },
+    {
+      "nome": "Nutricionista",
+      "icone": "Salad",
+      "descricao": "Consultoria alimentar, planos nutricionais e acompanhamento de dietas."
+    },
+    {
+      "nome": "Dedetizador",
+      "icone": "Bug",
+      "descricao": "Controle de pragas, desinsetização e serviços para residências e empresas."
+    },
+    {
+      "nome": "Motorista com Veículo Próprio",
+      "icone": "CarFront",
+      "descricao": "Transporte executivo, viagens, entregas e serviços personalizados."
+    },
+    {
+      "nome": "Assistência para Notebooks",
+      "icone": "Laptop",
+      "descricao": "Manutenção, reparos, upgrades e suporte técnico para notebooks."
+    },
+    {
+      "nome": "Bartenders",
+      "icone": "Beer",
+      "descricao": "Preparação de drinks, coquetéis e atendimento em festas e eventos."
+    },
+    {
+      "nome": "Arquitetos",
+      "icone": "Building",
+      "descricao": "Projetos arquitetônicos, decoração, reformas e consultoria de ambientes."
+    },
+    {
+      "nome": "Criação de Logos",
+      "icone": "PencilRuler",
+      "descricao": "Design de logotipos, identidade visual e branding para empresas e profissionais."
+    },
+    {
+      "nome": "Encanador",
+      "icone": "Droplets",
+      "descricao": "Instalação e reparo de sistemas hidráulicos, vazamentos e desentupimentos."
+    },
+    {
+      "nome": "Marceneiro",
+      "icone": "TreeDeciduous",
+      "descricao": "Fabricação e reparo de móveis sob medida, portas e estruturas de madeira."
+    },
+    {
+      "nome": "Mecânico",
+      "icone": "UserRoundCog",
+      "descricao": "Manutenção e reparo de veículos automotores, desde motores a freios."
+    },
+    {
+      "nome": "Desentupidor",
+      "icone": "Hammer",
+      "descricao": "Serviços especializados em desobstrução de tubulações e encanamentos."
+    },
+    {
+      "nome": "Diarista",
+      "icone": "Home",
+      "descricao": "Limpeza geral e organização de ambientes residenciais e comerciais por dia."
+    },
+    {
+      "nome": "Babá",
+      "icone": "Baby",
+      "descricao": "Cuidados infantis, acompanhamento e atividades para crianças de todas as idades."
+    },
+    {
+      "nome": "Psicólogo",
+      "icone": "Brain",
+      "descricao": "Aconselhamento e terapia para saúde mental, bem-estar emocional e desenvolvimento pessoal."
+    },
+    {
+      "nome": "Desenvolvedor",
+      "icone": "Code",
+      "descricao": "Criação de softwares, websites, aplicativos e soluções tecnológicas personalizadas."
+    },
+    {
+      "nome": "Cabeleireiro (especializado)",
+      "icone": "Scissors",
+      "descricao": "Serviços avançados de cortes, tratamentos e coloração capilar."
+    },
+    {
+      "nome": "Contador",
+      "icone": "Calculator",
+      "descricao": "Serviços de contabilidade, declaração de impostos e consultoria financeira para pessoas e empresas."
+    },
+    {
+      "nome": "Jardinagem",
+      "icone": "Flower",
+      "descricao": "Criação e manutenção de jardins, poda, paisagismo e cuidados com plantas."
+    },
+    {
+      "nome": "Alfaiate",
+      "icone": "Shirt",
+      "descricao": "Confecção e ajuste de roupas sob medida, reparos e reformas de vestuário."
+    }
+  ],
+  "clientes": [],
+  "pedidos": [],
+  "pedido_historico": [
+    {
+      "id": 1,
+      "pedido_id": 1
+    }
+  ],
+  "avaliacoes": [
+    {
+      "id": 1,
+      "pedido_id": 1,
+      "cliente_id": 1,
+      "nota": 5
+    }
+  ],
+  "contratos": [
+    {
+      "usuario_id": 1,
+      "servico_id": 1,
+      "status": "ativo",
+      "data_contrato": "2025-11-07T01:29:44.498Z",
+      "id": 1
+    },
+    {
+      "usuario_id": 1,
+      "servico_id": 2,
+      "status": "ativo",
+      "data_contrato": "2025-11-07T01:30:19.514Z",
+      "id": 2
+    },
+    {
+      "usuario_id": 3,
+      "servico_id": 5,
+      "status": "ativo",
+      "data_contrato": "2025-11-07T01:31:31.843Z",
+      "id": 3
+    }
+  ]
+}
