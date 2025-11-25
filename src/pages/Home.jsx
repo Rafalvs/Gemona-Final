@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { Card, CardHeader, CardBody, Divider, Chip, Button, Image } from '@heroui/react'
+import Logo from "../components/ui/Logo"
 import Layout from "../components/layout/Layout"
 
 // Componente para seção de serviços mais procurados
@@ -164,14 +166,26 @@ export default function Home(){
         <Layout>
             <main id="home">
                 <div className="home-container">
-                    <div className="home-intro">
-                        <h3 className="home-intro-title">
-                            Está buscando um serviço? Entenda como nossa plataforma funciona:
-                        </h3>
-                        <p className="home-intro-text">
-                            Faça uma busca ou clique em uma das categorias abaixo, selecione o serviço desejado e entre em contato diretamente com o prestador.
-                        </p>
-                    </div>
+                    <div className="flex justify-center">
+        <Card className="sophisticated-card shadow-2xl rounded-lg">
+          <CardBody className="p-8 text-center">
+            {/* Logo Section */}
+            <div className="flex justify-center mb-6">
+              <Logo size="sm" showText={false} border={true} rounded={true} />
+            </div>
+            <h1 className="text-4xl font-bold mb-4 text-[#ffecd1]">
+              Bem-vindo ao Gêmona
+            </h1>
+            <p className="text-xl opacity-90 text-[#ffecd1]">
+              Está buscando um serviço? Entenda como nossa plataforma funciona:
+            </p>
+            <p className="text-lg mt-4 opacity-80 text-[#ffecd1]">
+              Faça uma busca ou clique em uma das categorias abaixo, <br></br>
+              selecione o serviço desejado e entre em contato diretamente com o prestador.
+            </p>
+          </CardBody>
+        </Card>
+        </div>
 
                     <div className="home-section">
                         <h3 className="home-section-title">

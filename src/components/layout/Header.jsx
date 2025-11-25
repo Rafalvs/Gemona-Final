@@ -30,20 +30,24 @@ export default function Header() {
 
   return (
     <>
-      <header>
+      <header className="bg-gradient-to-r from-black via-[#05315e] to-black text-[#ffecd1] shadow-2xl border-b border-[#ffecd1]/20 header-compact">
         <div className="header-left">
           <Link to="/">
             <img id="logo" src={logo} alt="Logo" />
           </Link>
         </div>
-        <div className="header-center">
-          <input 
-            type="text" 
-            placeholder="Busca" 
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            onKeyDown={handleSearch} 
-          />
+        <div className="header-center header-search-container">
+          <div className="search-input-centered">
+            <div className="search-input-custom">
+              <input 
+                type="text" 
+                placeholder="Buscar serviços..." 
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                onKeyDown={handleSearch} 
+              />
+            </div>
+          </div>
         </div>
         <div className="header-right">
           {!isLoginPage && !isRegisterPage && ( // esconde os botoes se ja estiver na pagina de login ou cadastro
@@ -62,9 +66,9 @@ export default function Header() {
             ) : (
               // Usuário não logado
               <>
-                <Link to="/login"><button>Entrar</button></Link>
-                <Link to="/register"><button>Cadastro</button></Link>
-                <Link to="/admin"><button className="header-btn-admin">Admin</button></Link>
+                <Link to="/login"><button className="header-btn-auth">Entrar</button></Link>
+                <Link to="/register"><button className="header-btn-auth">Cadastro</button></Link>
+                <Link to="/admin"><button className="header-btn-auth">Admin</button></Link>
               </>
             )
           )}
