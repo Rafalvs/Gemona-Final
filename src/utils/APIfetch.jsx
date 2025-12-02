@@ -11,16 +11,13 @@
       useEffect(() => {
         const fetchData = async () => {
           try {
-            console.log('Fazendo requisição para:', endpoint);
             const response = await fetch(endpoint);
             if (!response.ok) {
               throw new Error(`HTTP error! status: ${response.status}`);
             }
             const result = await response.json();
-            console.log('Dados recebidos de', endpoint, ':', result);
             setData(result);
           } catch (error) {
-            console.error('Erro ao buscar dados de', endpoint, ':', error);
             setError(error);
           } finally {
             setLoading(false);

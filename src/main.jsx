@@ -1,11 +1,14 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
+import { HeroUIProvider } from '@heroui/react'
 
 import App from './App.jsx'
 import './styles/global.css';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <App />
+    <HeroUIProvider>
+      <App />
+    </HeroUIProvider>
   </StrictMode>,
 )

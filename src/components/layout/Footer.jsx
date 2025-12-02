@@ -5,7 +5,7 @@ import Logo from '../ui/Logo'
 
 export default function Footer() {
   return (
-    <footer className="bg-gradient-to-r from-black via-[#05315e] to-black text-[#ffecd1] shadow-2xl border-b border-[#ffecd1]/20 header-compact">
+    <footer className="bg-gradient-to-r from-black via-[#05315e] to-black text-[#ffecd1] py-12 mt-auto shadow-2xl border-t border-[#ffecd1]/20">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col items-center justify-center space-y-8">
           

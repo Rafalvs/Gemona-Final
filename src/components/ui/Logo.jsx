@@ -25,29 +25,20 @@ export default function Logo({
     '2xl': 'text-2xl'
   }
 
-  const sizeStyles = {
-    'sm': { width: '32px', height: '32px' },
-    'md': { width: '48px', height: '48px' },
-    'lg': { width: '64px', height: '64px' },
-    'xl': { width: '80px', height: '80px' }
-  }
-
   return (
     <div className={`flex items-center space-x-3 ${className}`}>
       <div 
-        style={{
-          ...sizeStyles[size],
-          borderRadius: rounded ? '50%' : '8px',
-          border: border ? '2px solid rgba(255, 236, 209, 0.3)' : 'none',
-          overflow: 'hidden',
-          boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
-          backgroundColor: 'white'
-        }}
+        className={`
+          ${sizeClasses[size]} 
+          ${rounded ? 'rounded-full' : 'rounded-lg'} 
+          ${border ? 'border-2 border-[#ffecd1]/30' : ''} 
+          overflow-hidden shadow-xl bg-white
+        `}
       >
         <Image
           src={logoImage}
           alt="Gêmona Logo"
-          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+          className="w-full h-full object-cover"
         />
       </div>
       {showText && (

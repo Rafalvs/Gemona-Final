@@ -1,0 +1,152 @@
+/* RatingForm Component Styles */
+
+.rating-form-header {
+  margin-bottom: 12px;
+}
+
+.rating-form-title {
+  margin: 0;
+  color: #fff;
+}
+
+.rating-form-summary {
+  color: #ddd;
+  font-size: 13px;
+}
+
+.rating-form-no-ratings {
+  color: #aaa;
+}
+
+.ratings-list {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.rating-item {
+  background: rgba(255,255,255,0.03);
+  padding: 10px;
+  border-radius: 6px;
+}
+
+.rating-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.rating-item-stars {
+  color: #e6e6e6;
+  font-weight: 600;
+}
+
+.rating-item-author {
+  color: #aaa;
+  font-size: 12px;
+}
+
+.rating-item-comment {
+  color: #ccc;
+  font-size: 13px;
+  margin-top: 5px;
+}
+
+.rating-form-divider {
+  border: none;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  margin: 12px 0;
+}
+
+.rating-form-input-container {
+  opacity: 0.6;
+}
+
+.rating-form-input-container.enabled {
+  opacity: 1;
+}
+
+.rating-form-label {
+  color: #fff;
+  display: block;
+  margin-bottom: 6px;
+}
+
+.rating-form-field {
+  margin-bottom: 10px;
+}
+
+.rating-form-field-label {
+  color: #ddd;
+  font-size: 14px;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.rating-form-select {
+  padding: 8px;
+  border-radius: 6px;
+  width: 100%;
+}
+
+.rating-form-textarea {
+  padding: 8px;
+  border-radius: 6px;
+  width: 100%;
+  resize: vertical;
+  border: 1px solid #ccc;
+}
+
+.rating-form-char-warning {
+  color: #ffc107;
+  font-size: 11px;
+  display: block;
+  margin-top: 3px;
+}
+
+.rating-form-char-success {
+  color: #28a745;
+  font-size: 11px;
+  display: block;
+  margin-top: 3px;
+}
+
+.rating-form-message {
+  font-size: 13px;
+}
+
+.rating-form-error {
+  color: #ffcccb;
+}
+
+.rating-form-success {
+  color: #98fb98;
+}
+
+.rating-form-submit-error {
+  color: #ffb3b3;
+  margin-top: 8px;
+}
+
+.rating-form-button-container {
+  margin-top: 10px;
+}
+
+.rating-form-submit {
+  padding: 10px 16px;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.rating-form-submit.enabled {
+  background: #28a745;
+}
+
+.rating-form-submit.disabled {
+  background: #6c757d;
+  cursor: not-allowed;
+}

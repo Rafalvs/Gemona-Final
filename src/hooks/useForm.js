@@ -2,6 +2,8 @@ import { useState } from 'react';
 
 /**
  * Hook personalizado para gerenciar formulários com validação
+ * 
+ * 
  * @param {object} initialState - Estado inicial do formulário
  * @param {function} validationFunction - Função de validação a ser usada
  * @returns {object} - Objeto com estado e funções do formulário

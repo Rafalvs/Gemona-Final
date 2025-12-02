@@ -1,13 +1,11 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Card, CardHeader, CardBody, Divider, Chip, Button, Image } from '@heroui/react'
-import Logo from "../components/ui/Logo"
 import Layout from "../components/layout/Layout"
+import { categoriasAPI, subcategoriasAPI } from '../services/apiService'
+import Logo from '../assets/logo.jpg'
 
-// Componente para seção de serviços mais procurados
-function ServicesSection() {
-    const [servicos, setServicos] = useState([]);
-    const [loadingServicos, setLoadingServicos] = useState(true);
+// Componente para seção de subcategorias (substituindo serviços mais procurados)
+function ServicesSection({ subcategorias, loadingSubcategorias }) {
     const navigate = useNavigate();
     
     // Estados para controlar o comportamento de clique vs scroll
@@ -31,13 +29,13 @@ function ServicesSection() {
         }
     };
 
-    const handleServiceClick = (e) => {
+    const handleSubcategoriaClick = (e, subcategoriaId) => {
         // Previne navegação se foi detectado movimento de mouse (drag/scroll)
         if (isDragging) {
             e.preventDefault();
             return;
         }
-        navigate('/services');
+        navigate(`/services?subcategoriaId=${subcategoriaId}`);
     };
 
     const handleMouseUp = () => {
@@ -45,52 +43,33 @@ function ServicesSection() {
         setIsDragging(false);
     };
 
-    useEffect(() => {
-        const fetchServicos = async () => {
-            try {
-                const response = await fetch("http://localhost:3001/servicos_mais_procurados");
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                const result = await response.json();
-                setServicos(result);
-            } catch (error) {
-                console.error('Erro ao buscar serviços:', error);
-            } finally {
-                setLoadingServicos(false);
-            }
-        };
-
-        fetchServicos();
-    }, []);
-
     return (
         <div>
             <h3 className="home-section-title">
-                🔥 Serviços Mais Procurados
+                🔥 Em destaque!
             </h3>
             
-            {loadingServicos ? (
+            {loadingSubcategorias ? (
                 <div className="loading-container">
-                    <p>⏳ Carregando serviços...</p>
+                    <p>⏳ Carregando subcategorias...</p>
                 </div>
             ) : (
                 <div className="services-cards-grid">
-                    {servicos.map((servico, index) => (
+                    {subcategorias.map((subcategoria) => (
                         <div 
-                            key={servico.id || index} 
+                            key={subcategoria.subCategoriaId} 
                             className="service-card"
                             onMouseDown={handleMouseDown}
                             onMouseMove={handleMouseMove}
                             onMouseUp={handleMouseUp}
-                            onClick={handleServiceClick}
+                            onClick={(e) => handleSubcategoriaClick(e, subcategoria.subCategoriaId)}
                         >
                             <div className="service-card-content">
                                 <h4 className="service-card-title">
-                                    🛎️ {servico.nome}
+                                    🛎️ {subcategoria.nome}
                                 </h4>
                                 <p className="service-card-description">
-                                    {servico.descricao}
+                                    {subcategoria.categoriaNome}
                                 </p>
                             </div>
                         </div>
@@ -103,14 +82,16 @@ function ServicesSection() {
 
 export default function Home(){
     const [categorias, setCategorias] = useState([]);
+    const [subcategorias, setSubcategorias] = useState([]);
     const [loadingCategorias, setLoadingCategorias] = useState(true);
+    const [loadingSubcategorias, setLoadingSubcategorias] = useState(true);
+    const [isInitialLoading, setIsInitialLoading] = useState(true);
+    const [isFadingOut, setIsFadingOut] = useState(false);
     const navigate = useNavigate();
     
     // Estados para controlar o comportamento de clique vs scroll
     const [mouseDownPos, setMouseDownPos] = useState({ x: 0, y: 0 });
     const [isDragging, setIsDragging] = useState(false);
-
-    const epServicos = "http://localhost:3001/servicos_mais_procurados"; // endpoint serviços mais procurados
 
     const handleMouseDown = (e) => {
         setMouseDownPos({ x: e.clientX, y: e.clientY });
@@ -129,13 +110,13 @@ export default function Home(){
         }
     };
 
-    const handleCategoryClick = (e) => {
+    const handleCategoryClick = (e, categoriaId) => {
         // Previne navegação se foi detectado movimento de mouse (drag/scroll)
         if (isDragging) {
             e.preventDefault();
             return;
         }
-        navigate('/services');
+        navigate(`/services?categoriaId=${categoriaId}`);
     };
 
     const handleMouseUp = () => {
@@ -144,48 +125,73 @@ export default function Home(){
     };
 
     useEffect(() => {
-        const fetchCategorias = async () => {
+        const fetchData = async () => {
             try {
-                const response = await fetch("http://localhost:3001/categorias");
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
+                // Buscar categorias e subcategorias em paralelo
+                const [categoriasResult, subcategoriasResult] = await Promise.all([
+                    categoriasAPI.getAll(),
+                    subcategoriasAPI.getAll()
+                ]);
+
+                if (categoriasResult.success) {
+                    setCategorias(categoriasResult.data);
                 }
-                const result = await response.json();
-                setCategorias(result);
-            } catch (error) {
-                console.error('Erro ao buscar categorias:', error);
-            } finally {
+                
+                if (subcategoriasResult.success) {
+                    setSubcategorias(subcategoriasResult.data);
+                }
+                
                 setLoadingCategorias(false);
+                setLoadingSubcategorias(false);
+            } catch (error) {
+                setLoadingCategorias(false);
+                setLoadingSubcategorias(false);
+            } finally {
+                // Aguardar no mínimo 1 segundo para mostrar a animação
+                setTimeout(() => {
+                    // Iniciar fade out
+                    setIsFadingOut(true);
+                    // Remover loading após a animação de fade out (600ms)
+                    setTimeout(() => {
+                        setIsInitialLoading(false);
+                    }, 100);
+                }, 1000);
             }
         };
 
-        fetchCategorias();
+        fetchData();
     }, []);
+
+    // Renderizar apenas o loading enquanto carrega os dados iniciais
+    if (isInitialLoading) {
+        return (
+            <Layout>
+                <main id="home">
+                    <div className={`loading-overlay ${isFadingOut ? 'fade-out' : ''}`}>
+                        <div className="loading-logo-container">
+                            <h1>Gêmona</h1>
+                            <img src={Logo} alt="Logo" className="loading-logo" />
+                            <div className="loading-spinner"></div>                          
+                            <p className="loading-text">Carregando...</p>
+                        </div>
+                    </div>
+                </main>
+            </Layout>
+        );
+    }
 
     return(
         <Layout>
             <main id="home">
                 <div className="home-container">
-                    <div className="flex justify-center">
-        <Card className="sophisticated-card shadow-2xl rounded-lg">
-          <CardBody className="p-8 text-center">
-            {/* Logo Section */}
-            <div className="flex justify-center mb-6">
-              <Logo size="sm" showText={false} border={true} rounded={true} />
-            </div>
-            <h1 className="text-4xl font-bold mb-4 text-[#ffecd1]">
-              Bem-vindo ao Gêmona
-            </h1>
-            <p className="text-xl opacity-90 text-[#ffecd1]">
-              Está buscando um serviço? Entenda como nossa plataforma funciona:
-            </p>
-            <p className="text-lg mt-4 opacity-80 text-[#ffecd1]">
-              Faça uma busca ou clique em uma das categorias abaixo, <br></br>
-              selecione o serviço desejado e entre em contato diretamente com o prestador.
-            </p>
-          </CardBody>
-        </Card>
-        </div>
+                    <div className="home-intro">
+                        <h3 className="home-intro-title">
+                            Está buscando um serviço? Entenda como nossa plataforma funciona:
+                        </h3>
+                        <p className="home-intro-text">
+                            Faça uma busca ou clique em uma das categorias abaixo, selecione o serviço desejado e entre em contato diretamente com o prestador.
+                        </p>
+                    </div>
 
                     <div className="home-section">
                         <h3 className="home-section-title">
@@ -198,14 +204,41 @@ export default function Home(){
                             </div>
                         ) : (
                             <div className="cards-grid">
+                                {/* Card para ver todos os serviços */}
+                                <div 
+                                    className="category-card"
+                                    style={{ 
+                                        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                                        cursor: 'pointer'
+                                    }}
+                                    onMouseDown={handleMouseDown}
+                                    onMouseMove={handleMouseMove}
+                                    onMouseUp={handleMouseUp}
+                                    onClick={(e) => {
+                                        if (!isDragging) {
+                                            e.preventDefault();
+                                            navigate('/services');
+                                        }
+                                    }}
+                                >
+                                    <div className="category-card-content">
+                                        <h4 className="category-card-title">
+                                            🔍 Todos os Serviços
+                                        </h4>
+                                        <p className="category-card-description">
+                                            Visualize todos os serviços disponíveis na plataforma
+                                        </p>
+                                    </div>
+                                </div>
+
                                 {categorias.map((categoria) => (
                                     <div 
-                                        key={categoria.id} 
+                                        key={categoria.categoriaId || categoria.id} 
                                         className="category-card"
                                         onMouseDown={handleMouseDown}
                                         onMouseMove={handleMouseMove}
                                         onMouseUp={handleMouseUp}
-                                        onClick={handleCategoryClick}
+                                        onClick={(e) => handleCategoryClick(e, categoria.categoriaId || categoria.id)}
                                     >
                                         <div className="category-card-content">
                                             <h4 className="category-card-title">
@@ -221,7 +254,10 @@ export default function Home(){
                         )}
                     </div>
 
-                    <ServicesSection />
+                    <ServicesSection 
+                        subcategorias={subcategorias} 
+                        loadingSubcategorias={loadingSubcategorias} 
+                    />
                 </div>
             </main>
         </Layout>

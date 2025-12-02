@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
 import Layout from "../../components/layout/Layout";
 import { Link, useNavigate } from "react-router-dom";
-import { estabelecimentosAPI, enderecosAPI } from '../../services/apiService';
+import { estabelecimentosAPI, enderecosAPI, imagensAPI } from '../../services/apiService';
 import { useAuth } from '../../contexts/AuthContext';
-import { validarFormularioEstabelecimento, apenasNumeros } from '../../utils/validators';
 import { useForm } from '../../hooks/useForm';
+import '../../styles/EditCompany.css';
 
 export default function EditCompany() {
     const navigate = useNavigate();
@@ -13,17 +13,27 @@ export default function EditCompany() {
     const [enderecoId, setEnderecoId] = useState(null);
     const [loadingData, setLoadingData] = useState(true);
 
+    // Estados adicionais
+    const [imagemPreview, setImagemPreview] = useState(null);
+    const [imagemBase64, setImagemBase64] = useState(null);
+    const [imagemAtual, setImagemAtual] = useState(null);
+
     // Estado inicial do formulário
     const initialState = {
         nome: '',
         cnpj: '',
+        telefone: '',
+        email: '',
+        descricao: '',
         rua: '',
         numero: '',
         bairro: '',
         cidade: '',
         estado: '',
         cep: '',
-        complemento: ''
+        complemento: '',
+        latitude: 0,
+        longitude: 0
     };
 
     // Usar o hook personalizado
@@ -37,7 +47,7 @@ export default function EditCompany() {
         setFormMessage,
         setFormLoading,
         setFormData
-    } = useForm(initialState, validarFormularioEstabelecimento);
+    } = useForm(initialState);
 
     // Carregar dados existentes
     useEffect(() => {
@@ -55,38 +65,112 @@ export default function EditCompany() {
             
             if (resultadoEstabelecimentos.success && resultadoEstabelecimentos.data.length > 0) {
                 const estabelecimento = resultadoEstabelecimentos.data[0];
-                setEstabelecimentoId(estabelecimento.id);
-                setEnderecoId(estabelecimento.endereco_id);
+                setEstabelecimentoId(estabelecimento.estabelecimentoId);
                 
-                // Buscar dados do endereço
-                let enderecoData = {};
-                if (estabelecimento.endereco_id) {
-                    const resultadoEndereco = await enderecosAPI.getById(estabelecimento.endereco_id);
-                    if (resultadoEndereco.success) {
-                        enderecoData = resultadoEndereco.data;
-                    }
+                // Carregar imagem atual
+                if (estabelecimento.imagemEstabelecimentoUrl) {
+                    const urlImagem = imagensAPI.getImageUrl(estabelecimento.imagemEstabelecimentoUrl);
+                    setImagemAtual(urlImagem);
                 }
                 
-                // Preencher formulário com dados existentes
+                // Preencher formulário com dados existentes (endereço já vem junto)
                 setFormData({
                     nome: estabelecimento.nome || '',
                     cnpj: estabelecimento.cnpj || '',
-                    rua: enderecoData.rua || '',
-                    numero: enderecoData.numero || '',
-                    bairro: enderecoData.bairro || '',
-                    cidade: enderecoData.cidade || '',
-                    estado: enderecoData.estado || '',
-                    cep: enderecoData.cep || '',
-                    complemento: enderecoData.complemento || ''
+                    telefone: estabelecimento.telefone || '',
+                    email: estabelecimento.email || '',
+                    descricao: estabelecimento.descricao || '',
+                    rua: estabelecimento.endereco?.rua || '',
+                    numero: estabelecimento.endereco?.numero || '',
+                    bairro: estabelecimento.endereco?.bairro || '',
+                    cidade: estabelecimento.endereco?.cidade || '',
+                    estado: estabelecimento.endereco?.estado || '',
+                    cep: estabelecimento.endereco?.cep || '',
+                    complemento: estabelecimento.endereco?.complemento || '',
+                    latitude: estabelecimento.endereco?.latitude || 0,
+                    longitude: estabelecimento.endereco?.longitude || 0
                 });
             } else {
                 setFormMessage('❌ Nenhum estabelecimento encontrado para editar');
-                setTimeout(() => navigate('/createBusiness'), 2000);
+                setTimeout(() => navigate('/newCompany'), 2000);
             }
         } catch (error) {
             setFormMessage(`❌ Erro ao carregar dados: ${error.message}`);
         } finally {
             setLoadingData(false);
+        }
+    };
+
+    const handleImageChange = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        // Validar tipo de arquivo
+        if (!file.type.startsWith('image/')) {
+            setFormMessage('❌ Por favor, selecione apenas arquivos de imagem');
+            setTimeout(() => setFormMessage(''), 3000);
+            return;
+        }
+
+        // Validar tamanho (máx 5MB)
+        if (file.size > 5 * 1024 * 1024) {
+            setFormMessage('❌ A imagem deve ter no máximo 5MB');
+            setTimeout(() => setFormMessage(''), 3000);
+            return;
+        }
+
+        // Criar preview
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            setImagemPreview(reader.result);
+            // Extrair apenas a parte Base64 (remover o prefixo data:image/...)
+            const base64String = reader.result.split(',')[1];
+            setImagemBase64({
+                fileName: file.name,
+                contentType: file.type,
+                base64Data: base64String
+            });
+        };
+        reader.readAsDataURL(file);
+    };
+
+    const handleRemoveImage = () => {
+        setImagemPreview(null);
+        setImagemBase64(null);
+        const inputFile = document.getElementById('imagemInput');
+        if (inputFile) inputFile.value = '';
+    };
+
+    const handleCepBlur = async () => {
+        const cepLimpo = formData.cep.replace(/\D/g, '');
+        
+        if (cepLimpo.length !== 8) {
+            return;
+        }
+
+        try {
+            setFormMessage('🔍 Buscando endereço...');
+            const resultado = await enderecosAPI.getByCep(cepLimpo);
+            
+            if (resultado.success && resultado.data) {
+                setFormData(prev => ({
+                    ...prev,
+                    rua: resultado.data.rua || '',
+                    bairro: resultado.data.bairro || '',
+                    cidade: resultado.data.cidade || '',
+                    estado: resultado.data.estado || '',
+                    latitude: resultado.data.latitude || 0,
+                    longitude: resultado.data.longitude || 0
+                }));
+                setFormMessage('✅ Endereço encontrado!');
+                setTimeout(() => setFormMessage(''), 2000);
+            } else {
+                setFormMessage('❌ CEP não encontrado');
+                setTimeout(() => setFormMessage(''), 3000);
+            }
+        } catch (error) {
+            setFormMessage('❌ Erro ao buscar CEP');
+            setTimeout(() => setFormMessage(''), 3000);
         }
     };
 
@@ -98,7 +182,7 @@ export default function EditCompany() {
             return;
         }
 
-        if (!estabelecimentoId || !enderecoId) {
+        if (!estabelecimentoId) {
             setFormMessage('❌ Erro: dados do estabelecimento não encontrados');
             return;
         }
@@ -107,45 +191,36 @@ export default function EditCompany() {
         setFormMessage('');
 
         try {
-            // 1. Atualizar endereço
-            const dadosEndereco = {
+            // Atualizar estabelecimento (endereço junto)
+            const dadosAtualizacao = {
+                nome: formData.nome.trim(),
+                cnpj: formData.cnpj.replace(/\D/g, ''),
+                telefone: formData.telefone.trim(),
+                email: formData.email.trim(),
+                descricao: formData.descricao.trim(),
                 rua: formData.rua.trim(),
                 numero: formData.numero.trim(),
                 bairro: formData.bairro.trim(),
                 cidade: formData.cidade.trim(),
                 estado: formData.estado.trim().toUpperCase(),
-                cep: apenasNumeros(formData.cep),
+                cep: formData.cep.replace(/\D/g, ''),
                 complemento: formData.complemento.trim(),
-                ativo: 1
+                latitude: formData.latitude,
+                longitude: formData.longitude,
+                imagemEstabelecimento: imagemBase64 || null
             };
 
-            const resultadoEndereco = await enderecosAPI.update(enderecoId, dadosEndereco);
+            const resultado = await estabelecimentosAPI.update(estabelecimentoId, dadosAtualizacao);
 
-            if (!resultadoEndereco.success) {
-                setFormMessage(`❌ Erro ao atualizar endereço: ${resultadoEndereco.error}`);
-                setFormLoading(false);
-                return;
-            }
-
-            // 2. Atualizar estabelecimento
-            const dadosEstabelecimento = {
-                nome: formData.nome.trim(),
-                cnpj: apenasNumeros(formData.cnpj),
-                profissional_id: user.id,
-                endereco_id: enderecoId
-            };
-
-            const resultadoEstabelecimento = await estabelecimentosAPI.update(estabelecimentoId, dadosEstabelecimento);
-
-            if (resultadoEstabelecimento.success) {
+            if (resultado.success) {
                 setFormMessage('✅ Dados da empresa atualizados com sucesso!');
                 
                 // Redirecionar para o perfil da empresa após 2 segundos
                 setTimeout(() => {
-                    navigate('/businessProfile');
+                    navigate('/companyProfile');
                 }, 2000);
             } else {
-                setFormMessage(`❌ Erro ao atualizar estabelecimento: ${resultadoEstabelecimento.error}`);
+                setFormMessage(`❌ Erro ao atualizar estabelecimento: ${resultado.error || resultado.message}`);
             }
         } catch (error) {
             setFormMessage(`❌ Erro: ${error.message}`);
@@ -168,12 +243,12 @@ export default function EditCompany() {
         );
     }
 
-    if (user?.tipo_usuario !== 'pj') {
+    if (user?.tipo_usuario !== 'profissional') {
         return (
             <Layout>
                 <main>
-                    <h1>Acesso restrito a Pessoas Jurídicas</h1>
-                    <p>Esta página é exclusiva para usuários empresariais.</p>
+                    <h1>Acesso restrito a Profissionais</h1>
+                    <p>Esta página é exclusiva para usuários profissionais.</p>
                     <Link to="/profile">
                         <button>👤 Ir para Perfil Pessoal</button>
                     </Link>
@@ -186,7 +261,7 @@ export default function EditCompany() {
         return (
             <Layout>
                 <main>
-                    <div style={{ textAlign: 'center', padding: '40px', color: '#fff' }}>
+                    <div className="edit-company-container">
                         <p>⏳ Carregando dados para edição...</p>
                     </div>
                 </main>
@@ -198,27 +273,19 @@ export default function EditCompany() {
         <Layout>
             <main>
                 <form className="form-center" onSubmit={handleSubmit}>
-                    <h2 style={{ textAlign: 'center', marginBottom: '20px', color: '#fff' }}>
+                    <h2 className="edit-company-title">
                         ✏️ Editar Dados da Empresa
                     </h2>
 
                     {/* Mensagem de feedback */}
                     {message && (
-                        <div style={{
-                            padding: '10px',
-                            marginBottom: '20px',
-                            borderRadius: '4px',
-                            textAlign: 'center',
-                            backgroundColor: message.includes('✅') ? '#d4edda' : '#f8d7da',
-                            color: message.includes('✅') ? '#155724' : '#721c24',
-                            border: `1px solid ${message.includes('✅') ? '#c3e6cb' : '#f5c6cb'}`
-                        }}>
+                        <div className={`feedback-message ${message.includes('✅') ? 'success' : 'error'}`}>
                             {message}
                         </div>
                     )}
 
                     {/* Seção: Dados do Estabelecimento */}
-                    <h3 style={{ color: '#fff', marginBottom: '15px' }}>📋 Dados do Estabelecimento</h3>
+                    <h3 className="section-title">📋 Dados do Estabelecimento</h3>
                     
                     <div className="form-group">
                         <label htmlFor="nomeInput">Nome do Estabelecimento *</label>
@@ -228,14 +295,12 @@ export default function EditCompany() {
                             type="text" 
                             value={formData.nome}
                             onChange={(e) => handleInputChange('nome', e.target.value)}
-                            style={{
-                                borderColor: errors.nome ? '#dc3545' : '#ddd'
-                            }}
+                            className={errors.nome ? 'input-error' : ''}
                             disabled={loading}
                             placeholder="Ex: Salão Beleza Pura"
                         />
                         {errors.nome && (
-                            <span style={{ color: '#dc3545', fontSize: '14px' }}>
+                            <span className="error-text">
                                 {errors.nome}
                             </span>
                         )}
@@ -249,22 +314,175 @@ export default function EditCompany() {
                             type="text" 
                             value={formData.cnpj}
                             onChange={(e) => handleInputChange('cnpj', e.target.value)}
-                            style={{
-                                borderColor: errors.cnpj ? '#dc3545' : '#ddd'
-                            }}
-                            disabled={loading}
+                            className={errors.cnpj ? 'input-error' : ''}
+                            disabled={true}
                             placeholder="00.000.000/0000-00"
                         />
                         {errors.cnpj && (
-                            <span style={{ color: '#dc3545', fontSize: '14px' }}>
+                            <span className="error-text">
                                 {errors.cnpj}
                             </span>
                         )}
+                        <small style={{ color: '#999', fontSize: '12px' }}>O CNPJ não pode ser alterado</small>
+                    </div>
+
+                    <div className="form-group">
+                        <label htmlFor="telefoneInput">Telefone</label>
+                        <input 
+                            name="telefoneInput" 
+                            id="telefoneInput" 
+                            type="text" 
+                            value={formData.telefone}
+                            onChange={(e) => handleInputChange('telefone', e.target.value)}
+                            disabled={loading}
+                            placeholder="(11) 98765-4321"
+                        />
+                    </div>
+
+                    <div className="form-group">
+                        <label htmlFor="emailInput">Email</label>
+                        <input 
+                            name="emailInput" 
+                            id="emailInput" 
+                            type="email" 
+                            value={formData.email}
+                            onChange={(e) => handleInputChange('email', e.target.value)}
+                            disabled={loading}
+                            placeholder="contato@empresa.com"
+                        />
+                    </div>
+
+                    <div className="form-group">
+                        <label htmlFor="descricaoInput">Descrição</label>
+                        <textarea 
+                            name="descricaoInput" 
+                            id="descricaoInput" 
+                            value={formData.descricao}
+                            onChange={(e) => handleInputChange('descricao', e.target.value)}
+                            disabled={loading}
+                            placeholder="Descreva sua empresa..."
+                            rows="4"
+                        />
+                    </div>
+
+                    {/* Seção: Imagem */}
+                    <h3 className="section-title">🖼️ Imagem da Empresa</h3>
+                    
+                    <div className="form-group">
+                        <label htmlFor="imagemInput">Imagem do Estabelecimento</label>
+                        
+                        {/* Imagem Atual */}
+                        {imagemAtual && !imagemPreview && (
+                            <div style={{ marginBottom: '15px' }}>
+                                <p style={{ color: '#666', fontSize: '14px', marginBottom: '8px' }}>Imagem atual:</p>
+                                <img 
+                                    src={imagemAtual} 
+                                    alt="Imagem atual"
+                                    style={{
+                                        maxWidth: '300px',
+                                        width: '100%',
+                                        height: 'auto',
+                                        borderRadius: '8px',
+                                        border: '2px solid #f48f42'
+                                    }}
+                                />
+                            </div>
+                        )}
+
+                        {/* Preview da Nova Imagem */}
+                        {imagemPreview && (
+                            <div style={{ marginBottom: '15px' }}>
+                                <p style={{ color: '#666', fontSize: '14px', marginBottom: '8px' }}>Nova imagem:</p>
+                                <img 
+                                    src={imagemPreview} 
+                                    alt="Preview"
+                                    style={{
+                                        maxWidth: '300px',
+                                        width: '100%',
+                                        height: 'auto',
+                                        borderRadius: '8px',
+                                        border: '2px solid #28a745'
+                                    }}
+                                />
+                                <button
+                                    type="button"
+                                    onClick={handleRemoveImage}
+                                    disabled={loading}
+                                    style={{
+                                        marginTop: '10px',
+                                        padding: '8px 16px',
+                                        backgroundColor: '#dc3545',
+                                        color: 'white',
+                                        border: 'none',
+                                        borderRadius: '6px',
+                                        cursor: 'pointer',
+                                        fontSize: '14px'
+                                    }}
+                                >
+                                    🗑️ Remover Nova Imagem
+                                </button>
+                            </div>
+                        )}
+
+                        <input 
+                            type="file"
+                            name="imagemInput"
+                            id="imagemInput"
+                            accept="image/*"
+                            onChange={handleImageChange}
+                            disabled={loading}
+                            style={{ marginBottom: '5px' }}
+                        />
+                        <small style={{ color: '#999', fontSize: '12px', display: 'block' }}>
+                            Formatos aceitos: JPG, PNG, GIF. Tamanho máximo: 5MB
+                        </small>
                     </div>
 
                     {/* Seção: Endereço */}
-                    <h3 style={{ color: '#fff', marginBottom: '15px', marginTop: '30px' }}>📍 Endereço</h3>
+                    <h3 className="section-title address">📍 Endereço</h3>
                     
+                    <div className="form-group">
+                        <label htmlFor="cepInput">CEP *</label>
+                        <div style={{ display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
+                            <input 
+                                name="cepInput" 
+                                id="cepInput" 
+                                type="text" 
+                                value={formData.cep}
+                                onChange={(e) => handleInputChange('cep', e.target.value)}
+                                className={errors.cep ? 'input-error' : ''}
+                                disabled={loading}
+                                placeholder="01310-100"
+                                style={{ flex: 1 }}
+                            />
+                            <button
+                                type="button"
+                                onClick={handleCepBlur}
+                                disabled={loading || formData.cep.replace(/\D/g, '').length !== 8}
+                                style={{
+                                    padding: '10px 20px',
+                                    backgroundColor: '#f48f42',
+                                    color: 'white',
+                                    border: 'none',
+                                    borderRadius: '8px',
+                                    cursor: 'pointer',
+                                    fontSize: '18px',
+                                    minWidth: '50px',
+                                    opacity: (loading || formData.cep.replace(/\D/g, '').length !== 8) ? 0.5 : 1
+                                }}
+                                title="Buscar endereço pelo CEP"
+                            >
+                                🔍
+                            </button>
+                        </div>
+                        {errors.cep && (
+                            <span className="error-text">
+                                {errors.cep}
+                            </span>
+                        )}
+                        <small style={{ color: '#999', fontSize: '12px' }}>Digite o CEP e clique no botão de busca 🔍</small>
+                    </div>
+
                     <div className="form-group">
                         <label htmlFor="ruaInput">Rua *</label>
                         <input 
@@ -273,21 +491,21 @@ export default function EditCompany() {
                             type="text" 
                             value={formData.rua}
                             onChange={(e) => handleInputChange('rua', e.target.value)}
-                            style={{
-                                borderColor: errors.rua ? '#dc3545' : '#ddd'
-                            }}
-                            disabled={loading}
-                            placeholder="Ex: Av. Paulista"
+                            className={errors.rua ? 'input-error' : ''}
+                            disabled={true}
+                            placeholder="Aguardando CEP..."
+                            style={{ backgroundColor: '#f5f5f5', cursor: 'not-allowed' }}
                         />
                         {errors.rua && (
-                            <span style={{ color: '#dc3545', fontSize: '14px' }}>
+                            <span className="error-text">
                                 {errors.rua}
                             </span>
                         )}
+                        <small style={{ color: '#999', fontSize: '12px' }}>A rua é preenchida automaticamente pelo CEP</small>
                     </div>
 
-                    <div style={{ display: 'flex', gap: '15px' }}>
-                        <div className="form-group" style={{ flex: '2' }}>
+                    <div className="form-row">
+                        <div className="form-group form-field">
                             <label htmlFor="numeroInput">Número *</label>
                             <input 
                                 name="numeroInput" 
@@ -295,20 +513,18 @@ export default function EditCompany() {
                                 type="text" 
                                 value={formData.numero}
                                 onChange={(e) => handleInputChange('numero', e.target.value)}
-                                style={{
-                                    borderColor: errors.numero ? '#dc3545' : '#ddd'
-                                }}
+                                className={errors.numero ? 'input-error' : ''}
                                 disabled={loading}
                                 placeholder="1000"
                             />
                             {errors.numero && (
-                                <span style={{ color: '#dc3545', fontSize: '14px' }}>
+                                <span className="error-text">
                                     {errors.numero}
                                 </span>
                             )}
                         </div>
 
-                        <div className="form-group" style={{ flex: '3' }}>
+                        <div className="form-group form-field complement">
                             <label htmlFor="complementoInput">Complemento</label>
                             <input 
                                 name="complementoInput" 
@@ -330,21 +546,21 @@ export default function EditCompany() {
                             type="text" 
                             value={formData.bairro}
                             onChange={(e) => handleInputChange('bairro', e.target.value)}
-                            style={{
-                                borderColor: errors.bairro ? '#dc3545' : '#ddd'
-                            }}
-                            disabled={loading}
-                            placeholder="Ex: Bela Vista"
+                            className={errors.bairro ? 'input-error' : ''}
+                            disabled={true}
+                            placeholder="Aguardando CEP..."
+                            style={{ backgroundColor: '#f5f5f5', cursor: 'not-allowed' }}
                         />
                         {errors.bairro && (
-                            <span style={{ color: '#dc3545', fontSize: '14px' }}>
+                            <span className="error-text">
                                 {errors.bairro}
                             </span>
                         )}
+                        <small style={{ color: '#999', fontSize: '12px' }}>O bairro é preenchido automaticamente pelo CEP</small>
                     </div>
 
-                    <div style={{ display: 'flex', gap: '15px' }}>
-                        <div className="form-group" style={{ flex: '3' }}>
+                    <div className="form-row">
+                        <div className="form-group form-field city">
                             <label htmlFor="cidadeInput">Cidade *</label>
                             <input 
                                 name="cidadeInput" 
@@ -352,20 +568,20 @@ export default function EditCompany() {
                                 type="text" 
                                 value={formData.cidade}
                                 onChange={(e) => handleInputChange('cidade', e.target.value)}
-                                style={{
-                                    borderColor: errors.cidade ? '#dc3545' : '#ddd'
-                                }}
-                                disabled={loading}
-                                placeholder="São Paulo"
+                                className={errors.cidade ? 'input-error' : ''}
+                                disabled={true}
+                                placeholder="Aguardando CEP..."
+                                style={{ backgroundColor: '#f5f5f5', cursor: 'not-allowed' }}
                             />
                             {errors.cidade && (
-                                <span style={{ color: '#dc3545', fontSize: '14px' }}>
+                                <span className="error-text">
                                     {errors.cidade}
                                 </span>
                             )}
+                            <small style={{ color: '#999', fontSize: '12px' }}>Preenchido automaticamente</small>
                         </div>
 
-                        <div className="form-group" style={{ flex: '1' }}>
+                        <div className="form-group form-field state">
                             <label htmlFor="estadoInput">Estado *</label>
                             <input 
                                 name="estadoInput" 
@@ -373,62 +589,34 @@ export default function EditCompany() {
                                 type="text" 
                                 value={formData.estado}
                                 onChange={(e) => handleInputChange('estado', e.target.value)}
-                                style={{
-                                    borderColor: errors.estado ? '#dc3545' : '#ddd'
-                                }}
-                                disabled={loading}
-                                placeholder="SP"
+                                className={errors.estado ? 'input-error' : ''}
+                                disabled={true}
+                                placeholder="UF"
                                 maxLength="2"
+                                style={{ backgroundColor: '#f5f5f5', cursor: 'not-allowed' }}
                             />
                             {errors.estado && (
-                                <span style={{ color: '#dc3545', fontSize: '14px' }}>
+                                <span className="error-text">
                                     {errors.estado}
                                 </span>
                             )}
+                            <small style={{ color: '#999', fontSize: '12px' }}>Preenchido automaticamente</small>
                         </div>
-                    </div>
-
-                    <div className="form-group">
-                        <label htmlFor="cepInput">CEP *</label>
-                        <input 
-                            name="cepInput" 
-                            id="cepInput" 
-                            type="text" 
-                            value={formData.cep}
-                            onChange={(e) => handleInputChange('cep', e.target.value)}
-                            style={{
-                                borderColor: errors.cep ? '#dc3545' : '#ddd'
-                            }}
-                            disabled={loading}
-                            placeholder="01310-100"
-                        />
-                        {errors.cep && (
-                            <span style={{ color: '#dc3545', fontSize: '14px' }}>
-                                {errors.cep}
-                            </span>
-                        )}
                     </div>
 
                     <button 
                         type="submit" 
                         disabled={loading}
-                        style={{
-                            backgroundColor: loading ? '#ccc' : '#17a2b8',
-                            cursor: loading ? 'not-allowed' : 'pointer',
-                            opacity: loading ? 0.6 : 1,
-                            marginTop: '20px'
-                        }}
+                        className={`btn-submit ${loading ? 'loading' : 'normal'}`}
                     >
                         {loading ? '⏳ Salvando...' : '✏️ Salvar Alterações'}
                     </button>
                     
-                    <Link to="/businessProfile">
+                    <Link to="/companyProfile">
                         <button 
                             type="button" 
                             disabled={loading}
-                            style={{
-                                backgroundColor: '#6c757d'
-                            }}
+                            className="btn-cancel"
                         >
                             ⬅️ Cancelar
                         </button>

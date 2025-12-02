@@ -1,0 +1,612 @@
+/* Estilos para Profile */
+
+.profile-page-container {
+    padding: 20px;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.profile-page-title {
+    color: #f48f42;
+    text-align: center;
+}
+
+.loading-message {
+    text-align: center;
+    padding: 50px;
+}
+
+.loading-text {
+    color: #fff;
+    font-size: 18px;
+}
+
+/* Seção de Informações Pessoais */
+.personal-info-section {
+    background-color: rgba(255, 255, 255, 0.1);
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 30px;
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.section-title {
+    color: #f48f42;
+    margin: 0;
+}
+
+.btn-edit-profile {
+    padding: 8px 20px;
+    background-color: #f48f42;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.btn-edit-profile:hover {
+    background-color: #e67e32;
+}
+
+.profile-container {
+    text-align: center;
+}
+
+/* Foto de Perfil */
+.profile-picture {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #f48f42;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    margin-bottom: 20px;
+}
+
+.default-profile-pic {
+    font-size: 60px;
+    margin-bottom: 15px;
+}
+
+/* Formulário de Edição */
+.edit-form-container {
+    max-width: 400px;
+    margin: 20px auto;
+    text-align: left;
+}
+
+.form-field {
+    margin-bottom: 15px;
+}
+
+.form-field label {
+    display: block;
+    color: #fff;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.form-field input {
+    width: 100%;
+    padding: 10px;
+    border-radius: 5px;
+    border: 2px solid #f48f42;
+    font-size: 16px;
+    box-sizing: border-box;
+}
+
+.edit-buttons {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.btn-save {
+    padding: 10px 30px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.btn-save:hover {
+    background-color: #218838;
+}
+
+.btn-save:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.btn-cancel-edit {
+    padding: 10px 30px;
+    background-color: #6c757d;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.btn-cancel-edit:hover {
+    background-color: #5a6268;
+}
+
+.btn-cancel-edit:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+/* Informações de Perfil */
+.profile-name {
+    font-size: 24px;
+    font-weight: bold;
+    color: #fff;
+}
+
+.profile-email {
+    font-size: 16px;
+    color: #ccc;
+}
+
+.profile-phone {
+    font-size: 16px;
+    color: #ccc;
+}
+
+.profile-cpf {
+    font-size: 14px;
+    color: #aaa;
+}
+
+.profile-birth-date {
+    font-size: 14px;
+    color: #aaa;
+}
+
+.profile-user-type {
+    font-size: 14px;
+    color: #aaa;
+}
+
+.profile-cep {
+    font-size: 14px;
+    color: #aaa;
+}
+
+.profile-address {
+    font-size: 14px;
+    color: #aaa;
+}
+
+.profile-city {
+    font-size: 14px;
+    color: #aaa;
+}
+
+.address-section {
+    margin-top: 15px;
+    text-align: center;
+    padding: 15px;
+    border-radius: 8px;
+    background-color: rgba(5, 49, 95, 0.1);
+    border: 1px solid rgba(5, 49, 95, 0.3);
+}
+
+.address-section h3 {
+    font-size: 16px;
+    margin-bottom: 12px;
+    color: #f48f42;
+    text-align: center;
+}
+
+.address-section p {
+    margin: 8px 0;
+    font-size: 14px;
+    color: #ddd;
+    text-align: center;
+}
+
+.address-section strong {
+    font-weight: bold;
+}
+
+.image-preview-container {
+    margin-bottom: 10px;
+}
+
+.image-preview {
+    max-width: 150px;
+    width: 100%;
+    height: auto;
+    border-radius: 50%;
+    border: 3px solid #f48f42;
+    object-fit: cover;
+}
+
+.btn-remove-image {
+    display: block;
+    margin-top: 5px;
+    padding: 4px 8px;
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+.btn-remove-image:hover {
+    background-color: #c82333;
+}
+
+.image-upload-help {
+    color: #999;
+    font-size: 11px;
+    display: block;
+}
+
+.address-form-title {
+    margin-top: 20px;
+    margin-bottom: 10px;
+    color: #05315f;
+}
+
+.cep-input-container {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+}
+
+.cep-input-container input {
+    flex: 1;
+}
+
+.btn-search-cep {
+    padding: 10px 15px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.btn-search-cep:hover {
+    background-color: #0056b3;
+}
+
+.btn-search-cep:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.input-readonly {
+    background-color: #f5f5f5;
+    cursor: not-allowed;
+}
+
+/* Botões de Estabelecimento */
+.establishment-buttons {
+    margin-top: 20px;
+}
+
+.btn-checking {
+    padding: 10px 20px;
+    background-color: #6c757d;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: not-allowed;
+    font-size: 16px;
+    font-weight: bold;
+    opacity: 0.6;
+}
+
+.btn-view-company {
+    padding: 10px 20px;
+    background-color: #17a2b8;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.btn-view-company:hover {
+    background-color: #138496;
+}
+
+.btn-create-company {
+    padding: 10px 20px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.btn-create-company:hover {
+    background-color: #218838;
+}
+
+/* Seção de Agenda */
+.agenda-section {
+    background-color: rgba(255, 255, 255, 0.1);
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.agenda-title {
+    color: #f48f42;
+    margin-top: 0;
+}
+
+.agenda-loading {
+    color: #fff;
+    text-align: center;
+}
+
+.agenda-empty {
+    text-align: center;
+    padding: 40px;
+}
+
+.agenda-empty-title {
+    color: #ccc;
+    font-size: 18px;
+}
+
+.agenda-empty-subtitle {
+    color: #aaa;
+    font-size: 14px;
+}
+
+/* Cards de Agenda */
+.agenda-grid {
+    display: grid;
+    gap: 15px;
+}
+
+.agenda-card {
+    background: linear-gradient(135deg, rgba(40, 167, 69, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+    border: 2px solid rgba(40, 167, 69, 0.3);
+    border-radius: 10px;
+    padding: 20px;
+}
+
+.agenda-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 15px;
+}
+
+.service-title {
+    color: #28a745;
+    margin: 0 0 10px 0;
+    font-size: 20px;
+}
+
+.service-price {
+    color: #fff;
+    margin: 5px 0;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.service-establishment {
+    color: #ccc;
+    margin: 5px 0;
+}
+
+.service-provider {
+    color: #ccc;
+    margin: 5px 0;
+}
+
+.service-contract-date {
+    color: #aaa;
+    margin: 5px 0;
+    font-size: 12px;
+}
+
+.btn-cancel-service {
+    padding: 8px 15px;
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.btn-cancel-service:hover {
+    background-color: #c82333;
+}
+
+.service-description {
+    color: #ddd;
+    font-size: 14px;
+    font-style: italic;
+    margin: 0;
+}
+
+.service-notes {
+    color: #ccc;
+    margin: 5px 0;
+    font-size: 14px;
+}
+
+.btn-view-details {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.btn-view-details:hover {
+    background-color: #0056b3;
+}
+
+/* Modal Styles */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background-color: white;
+    border-radius: 8px;
+    max-width: 800px;
+    width: 90%;
+    max-height: 90vh;
+    overflow: auto;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.modal-header {
+    padding: 20px;
+    border-bottom: 1px solid #ddd;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-header h2 {
+    margin: 0;
+    color: #333;
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #666;
+}
+
+.modal-close:hover {
+    color: #333;
+}
+
+.modal-body {
+    padding: 20px;
+    color: #333;
+}
+
+.modal-footer {
+    padding: 20px;
+    border-top: 1px solid #ddd;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.service-detail-section {
+    margin-bottom: 20px;
+}
+
+.service-detail-section h3 {
+    color: #f48f42;
+    margin-bottom: 10px;
+}
+
+.service-detail-section p {
+    margin: 8px 0;
+    color: #333;
+}
+
+.service-detail-section strong {
+    color: #555;
+}
+
+.service-detail-section img {
+    max-width: 100%;
+    max-height: 300px;
+    border-radius: 8px;
+    object-fit: cover;
+    display: block;
+    margin: 0 auto;
+}
+
+.location-info p,
+.horarios-info p {
+    margin: 5px 0;
+}
+
+.btn-secondary {
+    padding: 10px 20px;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+    background-color: #f8f9fa;
+    cursor: pointer;
+    font-size: 14px;
+    color: #333;
+}
+
+.btn-secondary:hover {
+    background-color: #e2e6ea;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .profile-page-container {
+        padding: 10px;
+    }
+    
+    .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    
+    .edit-form-container {
+        max-width: 100%;
+    }
+    
+    .edit-buttons {
+        flex-direction: column;
+    }
+    
+    .agenda-card-header {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .modal-content {
+        width: 95%;
+        max-height: 95vh;
+    }
+    
+    .modal-body {
+        padding: 15px;
+    }
+}

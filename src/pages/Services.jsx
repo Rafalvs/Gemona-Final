@@ -1,8 +1,8 @@
 import Layout from "../components/layout/Layout";
 import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
-import { servicosAPI, estabelecimentosAPI, enderecosAPI, usuariosAPI, contratosAPI } from '../services/apiService';
-import { formatarTelefone } from '../utils/validators';
+import { servicosAPI, avaliacoesAPI, imagensAPI, estabelecimentosAPI, subcategoriasAPI, categoriasAPI, pedidosAPI } from '../services/apiService';
+import RatingForm from '../components/RatingForm';
 import { useAuth } from '../contexts/AuthContext';
 
 export default function Services(){
@@ -13,6 +13,13 @@ export default function Services(){
     const [showModal, setShowModal] = useState(false);
     const [contractedServices, setContractedServices] = useState([]); // Serviços já contratados
     const [isContracting, setIsContracting] = useState(false);
+    const [sortOrder, setSortOrder] = useState(''); // 'asc' ou 'desc' para preço
+    const [showOnlyAvailable, setShowOnlyAvailable] = useState(false); // Filtro de disponível agora
+    const [distanceRange, setDistanceRange] = useState(20); // Distância em km (0-20)
+    const [userLocation, setUserLocation] = useState(null); // {latitude, longitude}
+    const [enableDistanceFilter, setEnableDistanceFilter] = useState(false); // Habilitar filtro de distância
+    const [distanceFilterApplied, setDistanceFilterApplied] = useState(false); // Controla se a busca foi aplicada
+    const [distanceFilterTrigger, setDistanceFilterTrigger] = useState(0); // Trigger para forçar nova busca
     
     const { user, isAuthenticated } = useAuth();
 
@@ -22,71 +29,421 @@ export default function Services(){
     };
 
     // Carregar contratos do usuário logado
-    useEffect(() => {
-        const loadUserContracts = async () => {
-            if (isAuthenticated && user) {
-                const result = await contratosAPI.getByUsuario(user.id);
-                if (result.success) {
-                    setContractedServices(result.data.map(c => c.servico_id));
+    const loadUserContracts = async () => {
+        if (isAuthenticated && user && user.tipo_usuario === 'cliente') {
+            try {
+                const resultado = await pedidosAPI.getByCliente(user.id);
+                if (resultado.success && resultado.data) {
+                    // Filtrar apenas pedidos ativos (não deletados)
+                    const pedidosAtivos = resultado.data.filter(pedido => pedido.ativo !== false);
+                    // Extrair IDs dos serviços já contratados
+                    const servicosContratados = pedidosAtivos.map(pedido => pedido.servicoId);
+                    setContractedServices(servicosContratados);
+                } else {
+                    setContractedServices([]);
                 }
+            } catch (error) {
+                setContractedServices([]);
+            }
+        }
+    };
+
+    useEffect(() => {
+        loadUserContracts();
+        
+        // Carregar localização do cliente se estiver logado
+        const loadUserLocation = async () => {
+            if (isAuthenticated && user && user.tipo_usuario === 'cliente') {
+                console.log('👤 Dados do usuário:', user);
+                
+                // Se já tem latitude/longitude no user (veio do login)
+                if (user.latitude && user.longitude) {
+                    const location = {
+                        latitude: parseFloat(user.latitude),
+                        longitude: parseFloat(user.longitude)
+                    };
+                    setUserLocation(location);
+                    console.log('🗺️ Localização do usuário carregada do contexto:', location);
+                    console.log('🗺️ Tipo de dados:', typeof location.latitude, typeof location.longitude);
+                } else {
+                    // Buscar latitude/longitude da API (caso o usuário já estava logado antes da atualização)
+                    try {
+                        const { clientesAPI } = await import('../services/apiService');
+                        const clienteResult = await clientesAPI.getById(user.id);
+                        
+                        if (clienteResult.success && clienteResult.data && clienteResult.data.endereco) {
+                            const latitude = clienteResult.data.endereco.latitude || clienteResult.data.endereco.Latitude;
+                            const longitude = clienteResult.data.endereco.longitude || clienteResult.data.endereco.Longitude;
+                            
+                            if (latitude && longitude) {
+                                const location = { 
+                                    latitude: parseFloat(latitude), 
+                                    longitude: parseFloat(longitude) 
+                                };
+                                setUserLocation(location);
+                                console.log('🗺️ Localização carregada da API:', location);
+                                console.log('🗺️ Tipo de dados:', typeof location.latitude, typeof location.longitude);
+                            } else {
+                                console.warn('⚠️ Endereço sem latitude/longitude');
+                                setUserLocation(null);
+                            }
+                        } else {
+                            console.warn('⚠️ Cliente sem endereço cadastrado');
+                            setUserLocation(null);
+                        }
+                    } catch (error) {
+                        console.error('⚠️ Erro ao carregar localização:', error);
+                        setUserLocation(null);
+                    }
+                }
+            } else {
+                setUserLocation(null);
             }
         };
-
-        loadUserContracts();
+        
+        loadUserLocation();
     }, [isAuthenticated, user]);
 
-    // Carregar serviços via API e checar se usuário PJ possui estabelecimento
+    // Carregar serviços via API
     useEffect(() => {
         const busca = searchParams.get('busca') || '';
+        const categoriaId = searchParams.get('categoriaId');
+        const subcategoriaId = searchParams.get('subcategoriaId');
         setSearchTerm(busca);
 
         const loadData = async () => {
-            // buscar serviços
-            const servicosRes = await servicosAPI.getAll();
-            if (!servicosRes.success) {
-                setFilteredServices([]);
-                return;
-            }
+            try {
+                // Buscar serviços da API
+                const servicosRes = await servicosAPI.getAll();
+                
+                if (!servicosRes.success || !servicosRes.data) {
+                    setFilteredServices([]);
+                    return;
+                }
 
-            // buscar dados auxiliares
-            const estabelecimentosRes = await estabelecimentosAPI.getAll();
-            const enderecosRes = await enderecosAPI.getAll();
-            const usuariosRes = await usuariosAPI.getAll();
+                // Mapear serviços com endereço (avaliações serão implementadas futuramente)
+                const servicosPromises = servicosRes.data.map(async (service) => {
+                    // A API já retorna os dados com nomes corretos (ServicoResponse)
+                    const servicoId = service.servicoId || service.id;
 
-            const servicos = servicosRes.data.map(s => ({ ...s }));
+                    // Buscar dados do estabelecimento (nome e endereço)
+                    let estabelecimentoNome = 'Estabelecimento não informado';
+                    let endereco = null;
+                    if (service.estabelecimentoId) {
+                        try {
+                            const estabRes = await estabelecimentosAPI.getById(service.estabelecimentoId);
+                            if (estabRes.success && estabRes.data) {
+                                estabelecimentoNome = estabRes.data.nome || estabelecimentoNome;
+                                endereco = estabRes.data.endereco || null;
+                            }
+                        } catch (error) {
+                        }
+                    }
 
-            // enriquece cada serviço com estabelecimento, endereco e usuario
-            const enriched = servicos.map(service => {
-                const est = estabelecimentosRes.success ? estabelecimentosRes.data.find(e => e.id === service.estabelecimento_id) : null;
-                const end = enderecosRes.success && est ? enderecosRes.data.find(en => en.id === est.endereco_id) : null;
-                const usuario = usuariosRes.success && est ? usuariosRes.data.find(u => u.id === est.profissional_id) : null;
-                return { ...service, estabelecimento: est, endereco: end, usuario: usuario };
-            });
+                    // Buscar dados da subcategoria e categoria
+                    let subCategoriaNome = 'Subcategoria não informada';
+                    let categoriaNome = 'Categoria não informada';
+                    if (service.subCategoriaId) {
+                        try {
+                            const subCatRes = await subcategoriasAPI.getById(service.subCategoriaId);
+                            if (subCatRes.success && subCatRes.data) {
+                                subCategoriaNome = subCatRes.data.nome || subCategoriaNome;
+                                
+                                // Buscar categoria da subcategoria
+                                if (subCatRes.data.categoriaId) {
+                                    const catRes = await categoriasAPI.getById(subCatRes.data.categoriaId);
+                                    if (catRes.success && catRes.data) {
+                                        categoriaNome = catRes.data.nome || categoriaNome;
+                                    }
+                                }
+                            }
+                        } catch (error) {
+                            // Ignorar erro ao carregar subcategoria
+                        }
+                    }
 
-            if (busca.trim()) {
-                const normalizedSearchTerm = removeAccents(busca.toLowerCase());
-                const filtered = enriched.filter(service => {
-                    const normalizedServiceName = removeAccents((service.nome || '').toLowerCase());
-                    const matchesServiceName = normalizedServiceName.includes(normalizedSearchTerm);
-                    const subCatName = '';
-                    const matchesCategory = false;
-                    return matchesServiceName || matchesCategory || subCatName.includes(normalizedSearchTerm);
+                    return {
+                        id: servicoId,
+                        nome: service.nome,
+                        descricao: service.descricao,
+                        preco: service.preco,
+                        imagemServicoUrl: service.imagemServicoUrl,
+                        estabelecimento: {
+                            id: service.estabelecimentoId,
+                            nome: estabelecimentoNome,
+                            endereco: endereco
+                        },
+                        categoria: {
+                            nome: categoriaNome
+                        },
+                        subCategoria: {
+                            nome: subCategoriaNome
+                        },
+                        mediaAvaliacao: 0, // Placeholder - será implementado futuramente
+                        totalAvaliacoes: 0 // Placeholder - será implementado futuramente
+                    };
                 });
+
+                const servicos = await Promise.all(servicosPromises);
+
+                let filtered = servicos;
+
+                // Filtrar por categoria se houver
+                if (categoriaId) {
+                    const catIdNum = Number(categoriaId);
+                    filtered = filtered.filter(service => {
+                        // Precisamos buscar a categoria da subcategoria para comparar
+                        return servicosRes.data.find(s => 
+                            (s.servicoId || s.id) === service.id && 
+                            s.subCategoriaId
+                        );
+                    });
+                    
+                    // Filtrar pela categoria através da subcategoria
+                    const servicosComCategoria = [];
+                    for (const service of filtered) {
+                        const serviceOriginal = servicosRes.data.find(s => (s.servicoId || s.id) === service.id);
+                        if (serviceOriginal && serviceOriginal.subCategoriaId) {
+                            try {
+                                const subCatRes = await subcategoriasAPI.getById(serviceOriginal.subCategoriaId);
+                                if (subCatRes.success && subCatRes.data && subCatRes.data.categoriaId === catIdNum) {
+                                    servicosComCategoria.push(service);
+                                }
+                            } catch (error) {
+                                // Ignorar erro ao filtrar
+                            }
+                        }
+                    }
+                    filtered = servicosComCategoria;
+                }
+
+                // Filtrar por subcategoria se houver
+                if (subcategoriaId) {
+                    const subCatIdNum = Number(subcategoriaId);
+                    filtered = filtered.filter(service => {
+                        const serviceOriginal = servicosRes.data.find(s => (s.servicoId || s.id) === service.id);
+                        return serviceOriginal && serviceOriginal.subCategoriaId === subCatIdNum;
+                    });
+                }
+
+                // Filtrar por busca se houver
+                if (busca.trim()) {
+                    const normalizedSearchTerm = removeAccents(busca.toLowerCase());
+                    filtered = filtered.filter(service => {
+                        const normalizedServiceName = removeAccents((service.nome || '').toLowerCase());
+                        const normalizedCategoryName = removeAccents((service.categoria?.nome || '').toLowerCase());
+                        const normalizedSubCategoryName = removeAccents((service.subCategoria?.nome || '').toLowerCase());
+                        
+                        return normalizedServiceName.includes(normalizedSearchTerm) ||
+                               normalizedCategoryName.includes(normalizedSearchTerm) ||
+                               normalizedSubCategoryName.includes(normalizedSearchTerm);
+                    });
+                }
+
+                // Aplicar filtro de distância se usuário estiver logado, tiver localização e filtro estiver habilitado
+                if (userLocation && enableDistanceFilter && distanceFilterApplied) {
+                    console.log('🔍 Aplicando filtro de distância:', {
+                        latitude: userLocation.latitude,
+                        longitude: userLocation.longitude,
+                        distancia: distanceRange,
+                        servicosAntesFiltro: filtered.length
+                    });
+                    
+                    console.log('📡 URL da requisição:', `/Estabelecimento/proximos?latitude=${userLocation.latitude}&longitude=${userLocation.longitude}&raioKm=${distanceRange}`);
+                    
+                    try {
+                        const estabelecimentosProximosRes = await estabelecimentosAPI.getEstabelecimentosProximos(
+                            userLocation.latitude,
+                            userLocation.longitude,
+                            distanceRange
+                        );
+                        
+                        console.log('📍 Resposta da API de estabelecimentos próximos:', estabelecimentosProximosRes);
+                        console.log('📍 Success:', estabelecimentosProximosRes.success);
+                        console.log('📍 Quantidade retornada:', estabelecimentosProximosRes.data?.length);
+                        console.log('📍 Dados completos retornados:', JSON.stringify(estabelecimentosProximosRes.data, null, 2));
+                        
+                        if (estabelecimentosProximosRes.success && estabelecimentosProximosRes.data) {
+                            // A API retorna estabelecimentoId, não id
+                            const estabelecimentosProximosIds = estabelecimentosProximosRes.data.map(e => e.estabelecimentoId);
+                            console.log('🏢 IDs de estabelecimentos próximos:', estabelecimentosProximosIds);
+                            
+                            // Log dos estabelecimentos dos serviços filtrados
+                            console.log('🏢 IDs de estabelecimentos nos serviços disponíveis:', 
+                                filtered.map(s => ({ 
+                                    servicoId: s.id, 
+                                    servicoNome: s.nome,
+                                    estabelecimentoId: s.estabelecimento?.id,
+                                    estabelecimentoNome: s.estabelecimento?.nome
+                                }))
+                            );
+                            
+                            const servicosAntes = filtered.length;
+                            
+                            // Verificar se estabelecimento ID 1 está na lista retornada pela API
+                            const estab1NaLista = estabelecimentosProximosIds.includes(1);
+                            console.log(`🔍 Estabelecimento ID 1 retornado pela API? ${estab1NaLista ? 'SIM ✅' : 'NÃO ❌'}`);
+                            
+                            filtered = filtered.filter(service => {
+                                const estabelecimentoId = service.estabelecimento?.id;
+                                const includes = estabelecimentosProximosIds.includes(estabelecimentoId);
+                                console.log(`${includes ? '✅' : '❌'} Serviço "${service.nome}" (Estabelecimento ID: ${estabelecimentoId}) ${includes ? 'INCLUÍDO' : 'EXCLUÍDO'}`);
+                                return includes;
+                            });
+                            console.log(`✅ Filtro aplicado: ${servicosAntes} → ${filtered.length} serviços`);
+                            console.log('📋 Serviços após filtro:', filtered.map(s => ({ nome: s.nome, estabelecimentoId: s.estabelecimento?.id })));
+                            
+                            if (filtered.length === 0) {
+                                console.warn('⚠️ NENHUM serviço encontrado após filtro.');
+                                console.warn('📍 Estabelecimentos próximos encontrados:', estabelecimentosProximosIds);
+                                
+                                // Encontrar estabelecimentos que não têm serviços
+                                const estabelecimentosComServicos = [...new Set(servicos.map(s => s.estabelecimento?.id))];
+                                const estabelecimentosSemServicos = estabelecimentosProximosIds.filter(
+                                    id => !estabelecimentosComServicos.includes(id)
+                                );
+                                
+                                if (estabelecimentosSemServicos.length > 0) {
+                                    console.warn('🏢 Estabelecimentos próximos SEM serviços cadastrados:', estabelecimentosSemServicos);
+                                    console.warn('💡 Cadastre serviços para estes estabelecimentos para que apareçam na busca!');
+                                }
+                                
+                                console.warn('🏢 Estabelecimentos que TÊM serviços:', estabelecimentosComServicos);
+                                console.warn('📏 Distância configurada:', distanceRange, 'km');
+                            }
+                        } else {
+                            console.warn('⚠️ API não retornou estabelecimentos próximos válidos');
+                        }
+                    } catch (error) {
+                        console.error('❌ Erro ao buscar estabelecimentos próximos:', error);
+                    }
+                }
+
+                // Aplicar filtro de "disponível agora" se ativo
+                if (showOnlyAvailable) {
+                    // Buscar horários dos estabelecimentos
+                    const servicosComHorarios = [];
+                    for (const service of filtered) {
+                        if (service.estabelecimento?.id) {
+                            try {
+                                const estabRes = await estabelecimentosAPI.getById(service.estabelecimento.id);
+                                if (estabRes.success && estabRes.data) {
+                                    const estabelecimentoCompleto = estabRes.data;
+                                    if (isEstabelecimentoAberto(estabelecimentoCompleto)) {
+                                        servicosComHorarios.push(service);
+                                    }
+                                }
+                            } catch (error) {
+                                // Ignorar erro
+                            }
+                        }
+                    }
+                    filtered = servicosComHorarios;
+                }
+
+                // Aplicar ordenação por preço se houver
+                if (sortOrder === 'asc') {
+                    filtered = filtered.sort((a, b) => a.preco - b.preco);
+                } else if (sortOrder === 'desc') {
+                    filtered = filtered.sort((a, b) => b.preco - a.preco);
+                }
+
                 setFilteredServices(filtered);
-            } else {
-                setFilteredServices(enriched);
+            } catch (error) {
+                setFilteredServices([]);
             }
         };
 
         loadData();
-    }, [searchParams]);
+    }, [searchParams, sortOrder, showOnlyAvailable, distanceFilterApplied, distanceFilterTrigger, userLocation]);
 
-    // funcao para mostrar detalhes do servico (já enriquecido)
-    const getServiceDetails = (service) => ({ ...service });
+    // funcao para mostrar detalhes do servico
+    const getServiceDetails = async (service) => {
+        try {
+            // Buscar detalhes do serviço
+            const resultadoServico = await servicosAPI.getById(service.id);
+            
+            if (!resultadoServico.success || !resultadoServico.data) {
+                return service;
+            }
+
+            const detalhes = resultadoServico.data;
+            
+            // Buscar dados completos do estabelecimento separadamente
+            let estabelecimentoCompleto = null;
+            const estabelecimentoId = detalhes.estabelecimentoId || service.estabelecimento?.id;
+            
+            if (estabelecimentoId) {
+                const resultadoEstab = await estabelecimentosAPI.getById(estabelecimentoId);
+                
+                if (resultadoEstab.success && resultadoEstab.data) {
+                    estabelecimentoCompleto = resultadoEstab.data;
+                }
+            }
+            
+            // Buscar dados completos da subcategoria separadamente
+            let subcategoriaCompleta = null;
+            let categoriaNome = detalhes.categoriaNome;
+            const subCategoriaId = detalhes.subCategoriaId;
+            
+            if (subCategoriaId) {
+                const resultadoSubCat = await subcategoriasAPI.getById(subCategoriaId);
+                
+                if (resultadoSubCat.success && resultadoSubCat.data) {
+                    subcategoriaCompleta = resultadoSubCat.data;
+                    
+                    // Buscar categoria pelo ID da subcategoria
+                    const categoriaId = subcategoriaCompleta.categoriaId;
+                    if (categoriaId) {
+                        const resultadoCategoria = await categoriasAPI.getById(categoriaId);
+                        
+                        if (resultadoCategoria.success && resultadoCategoria.data) {
+                            categoriaNome = resultadoCategoria.data.nome;
+                        } else {
+                            categoriaNome = subcategoriaCompleta.categoriaNome;
+                        }
+                    } else {
+                        categoriaNome = subcategoriaCompleta.categoriaNome;
+                    }
+                }
+            }
+            
+            // Mapear para estrutura esperada pelo modal
+            return {
+                id: detalhes.servicoId || detalhes.id,
+                nome: detalhes.nome,
+                descricao: detalhes.descricao,
+                preco: detalhes.preco,
+                imagemServicoUrl: detalhes.imagemServicoUrl,
+                categoria: {
+                    nome: categoriaNome
+                },
+                subCategoria: subcategoriaCompleta ? {
+                    nome: subcategoriaCompleta.nome
+                } : {
+                    nome: detalhes.subCategoriaNome
+                },
+                estabelecimento: estabelecimentoCompleto ? {
+                    nome: estabelecimentoCompleto.nome,
+                    descricao: estabelecimentoCompleto.descricao,
+                    telefone: estabelecimentoCompleto.telefone,
+                    email: estabelecimentoCompleto.email,
+                    cnpj: estabelecimentoCompleto.cnpj,
+                    imagemEstabelecimentoUrl: estabelecimentoCompleto.imagemEstabelecimentoUrl,
+                    endereco: estabelecimentoCompleto.endereco,
+                    horarios: estabelecimentoCompleto.horarios
+                } : null,
+                mediaAvaliacao: service.mediaAvaliacao,
+                totalAvaliacoes: service.totalAvaliacoes
+            };
+        } catch (error) {
+        }
+        return service;
+    };
 
     // funcao para abrir popup com detalhes
-    const handleVerDetalhes = (service) => {
-        const serviceWithDetails = getServiceDetails(service);
+    const handleVerDetalhes = async (service) => {
+        const serviceWithDetails = await getServiceDetails(service);
         setSelectedService(serviceWithDetails);
         setShowModal(true);
     };
@@ -97,6 +454,11 @@ export default function Services(){
         setSelectedService(null);
     };
 
+    const handleAvaliacoesAtualizadas = (novasAvaliacoes) => {
+        // Função placeholder - lógica de avaliações será implementada futuramente
+        console.log('Avaliações atualizadas (funcionalidade em desenvolvimento):', novasAvaliacoes);
+    };
+
     // Função para contratar serviço
     const handleContratarServico = async (serviceId) => {
         if (!isAuthenticated || !user) {
@@ -104,28 +466,44 @@ export default function Services(){
             return;
         }
 
-        if (contractedServices.includes(serviceId)) {
-            alert('Você já contratou este serviço!');
+        if (user.tipo_usuario !== 'cliente') {
+            alert('Apenas clientes podem contratar serviços!');
             return;
         }
 
+        // Verificar novamente se o serviço já foi contratado (consulta atualizada)
         setIsContracting(true);
         
         try {
-            const contratoData = {
-                usuario_id: user.id,
-                servico_id: serviceId,
-                status: 'ativo'
+            const pedidosAtuais = await pedidosAPI.getByCliente(user.id);
+            if (pedidosAtuais.success && pedidosAtuais.data) {
+                // Filtrar apenas pedidos ativos
+                const pedidosAtivos = pedidosAtuais.data.filter(pedido => pedido.ativo !== false);
+                const jaContratado = pedidosAtivos.some(pedido => pedido.servicoId === serviceId);
+                if (jaContratado) {
+                    alert('Você já contratou este serviço!');
+                    setIsContracting(false);
+                    return;
+                }
+            }
+
+            // Criar pedido
+            const pedidoData = {
+                clienteId: user.id,
+                servicoId: serviceId,
+                dataAgendamento: new Date().toISOString(),
+                observacoes: 'Pedido criado pelo sistema'
             };
 
-            const result = await contratosAPI.create(contratoData);
+            const resultado = await pedidosAPI.create(pedidoData);
             
-            if (result.success) {
+            if (resultado.success) {
                 alert('Serviço contratado com sucesso! Você pode visualizar na sua agenda no perfil.');
-                setContractedServices(prev => [...prev, serviceId]);
+                // Recarregar lista de contratos
+                await loadUserContracts();
                 setShowModal(false);
             } else {
-                alert('Erro ao contratar serviço: ' + result.error);
+                alert('Erro ao contratar serviço: ' + (resultado.error || 'Erro desconhecido'));
             }
         } catch (error) {
             alert('Erro ao contratar serviço: ' + error.message);
@@ -156,9 +534,81 @@ export default function Services(){
     // Função para formatar hora exibindo apenas HH:MM
     const formatHora = (hora) => {
         if (!hora || typeof hora !== 'string') return '';
-        // Extrai as duas primeiras partes (HH:MM) mesmo que venha HH:MM:SS
-        const match = hora.match(/^(\d{2}):(\d{2})/);
-        return match ? `${match[1]}:${match[2]}` : hora;
+    };
+
+    // Função para lidar com filtros de preço
+    const handlePriceSort = (order) => {
+        if (sortOrder === order) {
+            // Se já está selecionado, desmarcar
+            setSortOrder('');
+        } else {
+            // Selecionar o novo filtro
+            setSortOrder(order);
+        }
+    };
+
+    // Função para alterar o valor da distância (não aplica filtro automaticamente)
+    const handleDistanceChange = (newDistance) => {
+        console.log('📏 Distância alterada:', newDistance, 'km');
+        setDistanceRange(newDistance);
+    };
+
+    // Função para aplicar o filtro de distância
+    const handleApplyDistanceFilter = () => {
+        console.log('🔍 Aplicando filtro de distância:', distanceRange, 'km');
+        setDistanceFilterApplied(true);
+        setDistanceFilterTrigger(prev => prev + 1); // Incrementa para forçar nova busca
+    };
+
+    // Função para habilitar/desabilitar filtro de distância
+    const handleEnableDistanceFilter = (checked) => {
+        console.log('🔘 Filtro de distância:', checked ? 'HABILITADO' : 'DESABILITADO');
+        setEnableDistanceFilter(checked);
+        if (checked) {
+            if (!userLocation) {
+                alert('⚠️ Você precisa ter latitude e longitude cadastradas para usar o filtro de distância!');
+                console.warn('⚠️ Usuário não possui localização cadastrada');
+            } else {
+                console.log('✅ Filtro de distância ativo com localização:', userLocation);
+                setDistanceFilterApplied(true);
+            }
+        } else {
+            console.log('❌ Filtro de distância desativado - mostrando todos os serviços');
+            setDistanceFilterApplied(false);
+        }
+    };
+
+    // Função para verificar se estabelecimento está aberto agora
+    const isEstabelecimentoAberto = (estabelecimento) => {
+        if (!estabelecimento || !estabelecimento.horarios || estabelecimento.horarios.length === 0) {
+            return false; // Se não tem horários, considera fechado
+        }
+
+        const agora = new Date();
+        const diaSemanaAtual = agora.getDay(); // 0 = Domingo, 1 = Segunda, ..., 6 = Sábado
+        const horaAtual = agora.getHours();
+        const minutoAtual = agora.getMinutes();
+        const minutosTotalAtual = horaAtual * 60 + minutoAtual;
+
+        // Converter dia da semana do JS (0-6, domingo=0) para formato do banco (1-7, segunda=1, domingo=7)
+        let diaConvertido = diaSemanaAtual === 0 ? 7 : diaSemanaAtual;
+
+        // Buscar horário do dia atual
+        const horarioHoje = estabelecimento.horarios.find(h => h.diaSemana === diaConvertido);
+
+        if (!horarioHoje || horarioHoje.fechado) {
+            return false; // Fechado hoje
+        }
+
+        // Converter horários de abertura e fechamento para minutos
+        const [horaAbertura, minutoAbertura] = horarioHoje.horaAbertura.split(':').map(Number);
+        const [horaFechamento, minutoFechamento] = horarioHoje.horaFechamento.split(':').map(Number);
+        
+        const minutosTotalAbertura = horaAbertura * 60 + minutoAbertura;
+        const minutosTotalFechamento = horaFechamento * 60 + minutoFechamento;
+
+        // Verificar se está dentro do horário de funcionamento
+        return minutosTotalAtual >= minutosTotalAbertura && minutosTotalAtual <= minutosTotalFechamento;
     };
 
     return(
@@ -168,21 +618,90 @@ export default function Services(){
                 <div className="filters">
                     <h3>Filtros</h3>
                     <div className="filter-section">
+                        {isAuthenticated && user ? (
+                            <>
+                                <label>
+                                    <input 
+                                        type="checkbox" 
+                                        checked={enableDistanceFilter}
+                                        onChange={(e) => handleEnableDistanceFilter(e.target.checked)}
+                                        disabled={!userLocation}
+                                    />
+                                    Filtrar por distância
+                                    {!userLocation && (
+                                        <span style={{ fontSize: '0.85em', color: '#dc3545', marginLeft: '8px' }}>
+                                            (localização não cadastrada)
+                                        </span>
+                                    )}
+                                </label> <br/>
+                                {enableDistanceFilter && userLocation && (
+                                    <div style={{ marginLeft: '20px' }}>
+                                        <label>
+                                            Distância: {distanceRange} km
+                                            <input 
+                                                type="range" 
+                                                min="1" 
+                                                max="20" 
+                                                value={distanceRange}
+                                                onChange={(e) => handleDistanceChange(Number(e.target.value))}
+                                                style={{ width: '100%', marginTop: '8px' }}
+                                            />
+                                        </label>
+                                        <button 
+                                            onClick={handleApplyDistanceFilter}
+                                            style={{
+                                                marginTop: '10px',
+                                                padding: '6px 12px',
+                                                backgroundColor: '#007bff',
+                                                color: 'white',
+                                                border: 'none',
+                                                borderRadius: '4px',
+                                                cursor: 'pointer',
+                                                fontSize: '0.9em'
+                                            }}
+                                        >
+                                            Aplicar Filtro
+                                        </button>
+                                    </div>
+                                )}
+                                <br/>
+                            </>
+                        ) : (
+                            <p style={{ fontSize: '0.9em', color: '#666', fontStyle: 'italic', marginBottom: '10px' }}>
+                                Faça login para usar o filtro de distância
+                            </p>
+                        )}
                         <label>
-                            <input type="checkbox" />
+                            <input 
+                                type="checkbox" 
+                                checked={showOnlyAvailable}
+                                onChange={(e) => setShowOnlyAvailable(e.target.checked)}
+                            />
                             Disponível agora
-                        </label>
+                        </label> <br/>
                         <label>
                             <input type="checkbox" />
                             Melhor avaliado
-                        </label>
+                        </label> <br/>
                         <label>
-                            Distância
-                            <input type="range" min="0" max="100" />
-                        </label>
+                            <input 
+                                type="checkbox" 
+                                checked={sortOrder === 'asc'}
+                                onChange={() => handlePriceSort('asc')}
+                            />
+                            Preço: Menor para o maior
+                        </label> <br/>
+                        <label>
+                            <input 
+                                type="checkbox" 
+                                checked={sortOrder === 'desc'}
+                                onChange={() => handlePriceSort('desc')}
+                            />
+                            Preço: Maior para o menor
+                        </label> <br/>
                     </div>
                 </div>
-                
+
                 <div className="services-content">
                     {searchTerm && (
                         <h3>Resultados para: "{searchTerm}"</h3>
@@ -195,6 +714,24 @@ export default function Services(){
                                     <h3>Nenhum serviço encontrado para "{searchTerm}"</h3>
                                     <p>Tente buscar por outro termo</p>
                                 </div>
+                            ) : enableDistanceFilter && distanceFilterApplied ? (
+                                <div>
+                                    <h3>📍 Nenhum serviço encontrado no raio de {distanceRange}km</h3>
+                                    <p>Embora existam estabelecimentos próximos, eles ainda não têm serviços cadastrados.</p>
+                                    <p style={{ marginTop: '10px', fontSize: '0.9em' }}>
+                                        💡 Dica: Aumente a distância ou desmarque o filtro de distância para ver mais opções.
+                                    </p>
+                                </div>
+                            ) : showOnlyAvailable ? (
+                                <div>
+                                    <h3>🕒 Nenhum estabelecimento aberto no momento</h3>
+                                    <p>Tente novamente mais tarde ou desmarque o filtro "Disponível agora".</p>
+                                </div>
+                            ) : searchParams.get('categoriaId') || searchParams.get('subcategoriaId') ? (
+                                <div>
+                                    <h3>⚠️ Nenhum serviço cadastrado</h3>
+                                    <p>Não há serviços disponíveis nesta categoria no momento.</p>
+                                </div>
                             ) : (
                                 <p>Nenhum serviço disponível no momento.</p>
                             )}
@@ -204,23 +741,47 @@ export default function Services(){
                             {filteredServices.map((service, index) => {
                                 return (
                                     <div key={service.id || index} className="service-box">
-                                        <h4>{service.nome}</h4>
-                                        <p><strong>R$ {service.preco}</strong></p>
-                                        {service.estabelecimento && <p><em>{service.estabelecimento.nome}</em></p>}
+                                        <div className="service-content-wrapper">
+                                            {service.categoria && (
+                                                <span className="service-category-badge">
+                                                    {service.categoria.nome}
+                                                </span>
+                                            )}
+                                            <h4>{service.nome}</h4>                                            
+                                            
+                                            <div className="service-price">
+                                                R$ {Number(service.preco).toFixed(2).replace('.', ',')}
+                                            </div>
+                                            
+                                            {service.estabelecimento && (
+                                                <div className="service-establishment">
+                                                    🏢 {service.estabelecimento.nome}
+                                                </div>
+                                            )}
+                                            
+                                            {service.estabelecimento?.endereco && (
+                                                <div style={{ color: '#666', fontSize: '0.85em', marginTop: '4px' }}>
+                                                    📍 {service.estabelecimento.endereco.rua}, {service.estabelecimento.endereco.numero} - {service.estabelecimento.endereco.bairro}
+                                                    <br />
+                                                    {service.estabelecimento.endereco.cidade}/{service.estabelecimento.endereco.estado} - CEP: {service.estabelecimento.endereco.cep}
+                                                </div>
+                                            )}
+                                            
+                                            {service.subCategoria && (
+                                                <div style={{ color: '#666', fontSize: '0.85em', marginTop: '4px' }}>
+                                                    📂 {service.subCategoria.nome}
+                                                </div>
+                                            )}
+                                        </div>
+
                                         <div className="service-actions">
-                                            <button onClick={() => handleVerDetalhes(service)}>Ver Detalhes</button>
+                                            <button onClick={() => handleVerDetalhes(service)}>Detalhes</button>
                                             <button 
                                                 onClick={() => handleContratarServico(service.id)}
                                                 disabled={isServiceContracted(service.id) || isContracting}
-                                                className={`btn-contratar ${
-                                                    isServiceContracted(service.id) 
-                                                        ? 'service-contract-btn-disabled' 
-                                                        : isContracting 
-                                                            ? 'service-contract-btn-disabled'
-                                                            : 'service-contract-btn-contracted'
-                                                }`}
+                                                className={isServiceContracted(service.id) ? 'btn-disabled' : 'btn-primary'}
                                             >
-                                                {isServiceContracted(service.id) ? 'Já Contratado' : 'Contratar'}
+                                                {isServiceContracted(service.id) ? 'Contratado' : 'Contratar'}
                                             </button>
                                         </div>
                                     </div>
@@ -241,72 +802,132 @@ export default function Services(){
                         </div>
                         
                         <div className="modal-body">
+                            {/* Imagem do Serviço */}
+                            {selectedService.imagemServicoUrl && (
+                                <div className="service-detail-section" style={{ textAlign: 'center', marginBottom: '20px' }}>
+                                    <img 
+                                        src={imagensAPI.getImageUrl(selectedService.imagemServicoUrl)} 
+                                        alt={selectedService.nome}
+                                        style={{
+                                            maxWidth: '100%',
+                                            maxHeight: '300px',
+                                            borderRadius: '8px',
+                                            objectFit: 'cover'
+                                        }}
+                                        onError={(e) => {
+                                            e.target.style.display = 'none';
+                                        }}
+                                    />
+                                </div>
+                            )}
+
+                            {/* Informações do Serviço */}
                             <div className="service-detail-section">
-                                <h3>Informações do Serviço</h3>
-                                <p><strong>Preço:</strong> R$ {selectedService.preco}</p>
-                                {selectedService.estabelecimento && (
-                                    <p><strong>Estabelecimento:</strong> {selectedService.estabelecimento.nome}</p>
+                                <h3>🛎️ Informações do Serviço</h3>
+                                <p><strong>Nome:</strong> {selectedService.nome}</p>
+                                {selectedService.descricao && (
+                                    <p><strong>Descrição:</strong> {selectedService.descricao}</p>
                                 )}
-                                {selectedService.usuario && (
-                                    <p><strong>Profissional:</strong> {selectedService.usuario.nome}</p>
+                                <p><strong>Preço:</strong> R$ {Number(selectedService.preco).toFixed(2).replace('.', ',')}</p>
+                                
+                                {/* Categoria e Subcategoria */}
+                                {selectedService.categoria && (
+                                    <p><strong>Categoria:</strong> {selectedService.categoria.nome}</p>
+                                )}
+                                {selectedService.subCategoria && (
+                                    <p><strong>Subcategoria:</strong> {selectedService.subCategoria.nome}</p>
                                 )}
                             </div>
 
-                            {selectedService.endereco && (
-                                <div className="service-detail-section">
-                                    <h3>📍 Localização</h3>
-                                    <div className="location-info">
-                                        <p><strong>Endereço:</strong></p>
-                                        <p>{selectedService.endereco.rua}, {selectedService.endereco.numero}</p>
-                                        {selectedService.endereco.complemento && (
-                                            <p>{selectedService.endereco.complemento}</p>
+                            {/* Informações do Estabelecimento */}
+                            {selectedService.estabelecimento && (
+                                <>
+                                    {/* Imagem do Estabelecimento */}
+                                    {selectedService.estabelecimento.imagemEstabelecimentoUrl && (
+                                        <div className="service-detail-section" style={{ textAlign: 'center', marginBottom: '20px' }}>
+                                            <img 
+                                                src={imagensAPI.getImageUrl(selectedService.estabelecimento.imagemEstabelecimentoUrl)} 
+                                                alt={selectedService.estabelecimento.nome}
+                                                style={{
+                                                    maxWidth: '100%',
+                                                    maxHeight: '300px',
+                                                    borderRadius: '8px',
+                                                    objectFit: 'cover'
+                                                }}
+                                                onError={(e) => {
+                                                    e.target.style.display = 'none';
+                                                }}
+                                            />
+                                        </div>
+                                    )}
+
+                                    <div className="service-detail-section">
+                                        <h3>🏢 Estabelecimento</h3>
+                                        <p><strong>Nome:</strong> {selectedService.estabelecimento.nome}</p>
+                                        {selectedService.estabelecimento.descricao && (
+                                            <p><strong>Descrição:</strong> {selectedService.estabelecimento.descricao}</p>
                                         )}
-                                        <p>{selectedService.endereco.bairro} - {selectedService.endereco.cidade}/{selectedService.endereco.estado}</p>
-                                        <p><strong>CEP:</strong> {selectedService.endereco.cep}</p>
                                     </div>
-                                </div>
+
+                                    {/* Endereço */}
+                                    {selectedService.estabelecimento.endereco && (
+                                        <div className="service-detail-section">
+                                            <h3>📍 Localização</h3>
+                                            <div className="location-info">
+                                                <p><strong>CEP:</strong> {selectedService.estabelecimento.endereco.cep}</p>
+                                                <p><strong>Endereço:</strong> {selectedService.estabelecimento.endereco.rua}, {selectedService.estabelecimento.endereco.numero}</p>
+                                                <p><strong>Cidade:</strong> {selectedService.estabelecimento.endereco.cidade}/{selectedService.estabelecimento.endereco.estado}</p>
+                                                {selectedService.estabelecimento.endereco.complemento && (
+                                                    <p><strong>Complemento:</strong> {selectedService.estabelecimento.endereco.complemento}</p>
+                                                )}
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* Contato */}
+                                    <div className="service-detail-section">
+                                        <h3>📞 Contato</h3>
+                                        {selectedService.estabelecimento.telefone && (
+                                            <p><strong>Telefone:</strong> {selectedService.estabelecimento.telefone}</p>
+                                        )}
+                                        {selectedService.estabelecimento.email && (
+                                            <p><strong>Email:</strong> {selectedService.estabelecimento.email}</p>
+                                        )}
+                                    </div>
+
+                                    {/* Horários de Funcionamento */}
+                                    {selectedService.estabelecimento.horarios && selectedService.estabelecimento.horarios.length > 0 && (
+                                        <div className="service-detail-section">
+                                            <h3>🕒 Horário de Funcionamento</h3>
+                                            <div className="horarios-info">
+                                                {selectedService.estabelecimento.horarios.map((horario, index) => (
+                                                    <p key={index}>
+                                                        <strong>{formatDiaSemana(horario.diaSemana)}:</strong> 
+                                                        {horario.fechado ? ' Fechado' : ` ${horario.horaAbertura?.substring(0, 5)} às ${horario.horaFechamento?.substring(0, 5)}`}
+                                                    </p>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
+                                </>
                             )}
 
-                            {selectedService.horarios && selectedService.horarios.length > 0 && (
-                                <div className="service-detail-section">
-                                    <h3>🕒 Horário de Funcionamento</h3>
-                                    <div className="horarios-info">
-                                        {selectedService.horarios.map((horario, index) => (
-                                            <p key={index}>
-                                                <strong>{formatDiaSemana(horario.dia_semana)}:</strong> {formatHora(horario.hora_abertura)} às {formatHora(horario.hora_fechamento)}
-                                            </p>
-                                        ))}
-                                    </div>
-                                </div>
-                            )}
-
+                            {/* Avaliações */}
                             <div className="service-detail-section">
-                                <h3>📞 Contato</h3>
-                                {selectedService.usuario && (
-                                    <>
-                                        <p><strong>Email:</strong> {selectedService.usuario.email}</p>
-                                        {selectedService.usuario.telefone && (
-                                            <p><strong>Telefone:</strong> {formatarTelefone(selectedService.usuario.telefone)}</p>
-                                        )}
-                                    </>
-                                )}
-                                {selectedService.estabelecimento && (
-                                    <p><strong>CNPJ:</strong> {selectedService.estabelecimento.cnpj}</p>
-                                )}
+                                <RatingForm servico={selectedService} onAvaliacoesAtualizadas={handleAvaliacoesAtualizadas} />
                             </div>
                         </div>
 
                         <div className="modal-footer">
                             <button 
-                                className={`btn-contratar ${
-                                    isServiceContracted(selectedService.id) 
-                                        ? 'service-contract-btn-disabled' 
-                                        : isContracting 
-                                            ? 'service-contract-btn-disabled'
-                                            : 'service-contract-btn-contracted'
-                                }`}
+                                className="btn-contratar" 
                                 onClick={() => handleContratarServico(selectedService.id)}
                                 disabled={isServiceContracted(selectedService.id) || isContracting}
+                                style={{
+                                    backgroundColor: isServiceContracted(selectedService.id) ? '#6c757d' : '#28a745',
+                                    opacity: isServiceContracted(selectedService.id) ? 0.6 : 1,
+                                    cursor: isServiceContracted(selectedService.id) ? 'not-allowed' : 'pointer'
+                                }}
                             >
                                 {isContracting ? 'Contratando...' : 
                                  isServiceContracted(selectedService.id) ? 'Já Contratado' : 'Contratar Serviço'}

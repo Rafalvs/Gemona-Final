@@ -119,15 +119,125 @@
       "id": 2
     },
     {
-      "nome": "Kratos",
-      "email": "k@gmail.com",
-      "cpf": "12345678945",
-      "cep": "12345678",
-      "telefone": "21965789456",
+      "nome": "Sandoval Muricy",
+      "email": "sdmc@yahoo.com.br",
+      "cpf": "87918294582",
+      "cep": "82931234",
+      "telefone": "11984198433",
       "tipo_usuario": "pj",
-      "senha_hash": "pipipipopopo",
+      "senha_hash": "questao",
       "ativo": true,
       "id": 3
+    },
+    {
+      "nome": "Carlos Silva",
+      "email": "carlos@email.com",
+      "cpf": "11122233344",
+      "cep": "01001000",
+      "telefone": "11911111111",
+      "tipo_usuario": "pj",
+      "senha_hash": "senha123",
+      "ativo": true,
+      "id": 4
+    },
+    {
+      "nome": "Ana Souza",
+      "email": "ana@email.com",
+      "cpf": "22233344455",
+      "cep": "02002000",
+      "telefone": "11922222222",
+      "tipo_usuario": "pj",
+      "senha_hash": "senha123",
+      "ativo": true,
+      "id": 5
+    },
+    {
+      "nome": "Marcos Oliveira",
+      "email": "marcos@email.com",
+      "cpf": "33344455566",
+      "cep": "03003000",
+      "telefone": "11933333333",
+      "tipo_usuario": "pj",
+      "senha_hash": "senha123",
+      "ativo": true,
+      "id": 6
+    },
+    {
+      "nome": "Julia Santos",
+      "email": "julia@email.com",
+      "cpf": "44455566677",
+      "cep": "04004000",
+      "telefone": "11944444444",
+      "tipo_usuario": "pj",
+      "senha_hash": "senha123",
+      "ativo": true,
+      "id": 7
+    },
+    {
+      "nome": "Pedro Lima",
+      "email": "pedro@email.com",
+      "cpf": "55566677788",
+      "cep": "05005000",
+      "telefone": "11955555555",
+      "tipo_usuario": "pj",
+      "senha_hash": "senha123",
+      "ativo": true,
+      "id": 8
+    },
+    {
+      "nome": "Fernanda Costa",
+      "email": "fernanda@email.com",
+      "cpf": "66677788899",
+      "cep": "06006000",
+      "telefone": "11966666666",
+      "tipo_usuario": "pj",
+      "senha_hash": "senha123",
+      "ativo": true,
+      "id": 9
+    },
+    {
+      "nome": "Lucas Pereira",
+      "email": "lucas@email.com",
+      "cpf": "77788899900",
+      "cep": "07007000",
+      "telefone": "11977777777",
+      "tipo_usuario": "pj",
+      "senha_hash": "senha123",
+      "ativo": true,
+      "id": 10
+    },
+    {
+      "nome": "Mariana Rodrigues",
+      "email": "mariana@email.com",
+      "cpf": "88899900011",
+      "cep": "08008000",
+      "telefone": "11988888888",
+      "tipo_usuario": "pj",
+      "senha_hash": "senha123",
+      "ativo": true,
+      "id": 11
+    },
+    {
+      "nome": "Gabriel Almeida",
+      "email": "gabriel@email.com",
+      "cpf": "99900011122",
+      "cep": "09009000",
+      "telefone": "11999999999",
+      "tipo_usuario": "pj",
+      "senha_hash": "senha123",
+      "ativo": true,
+      "id": 12
+    },
+    {
+      "nome": "Beatriz Nunes",
+      "email": "beatriz@email.com",
+      "cpf": "00011122233",
+      "cep": "10010000",
+      "telefone": "11900000000",
+      "tipo_usuario": "pj",
+      "senha_hash": "senha123",
+      "ativo": true,
+      "id": 13
     }
   ],
   "enderecos": [
@@ -145,17 +255,125 @@
       "id": 1
     },
     {
-      "rua": "Abluble",
-      "numero": "456",
-      "bairro": "asdmkepp",
-      "cidade": "wqeqw",
-      "estado": "SA",
-      "cep": "16165165",
+      "rua": "Av 25 de Marco",
+      "numero": "2183",
+      "bairro": "Liberdade",
+      "cidade": "Sao Paulo",
+      "estado": "SP",
+      "cep": "04098129",
       "complemento": "",
-      "latitude": null,
-      "longitude": null,
       "ativo": 1,
       "id": 2
+    },
+    {
+      "rua": "Rua A",
+      "numero": "100",
+      "bairro": "Centro",
+      "cidade": "São Paulo",
+      "estado": "SP",
+      "cep": "01001000",
+      "complemento": "",
+      "ativo": 1,
+      "id": 3
+    },
+    {
+      "rua": "Rua B",
+      "numero": "200",
+      "bairro": "Vila Madalena",
+      "cidade": "São Paulo",
+      "estado": "SP",
+      "cep": "02002000",
+      "complemento": "",
+      "ativo": 1,
+      "id": 4
+    },
+    {
+      "rua": "Rua C",
+      "numero": "300",
+      "bairro": "Pinheiros",
+      "cidade": "São Paulo",
+      "estado": "SP",
+      "cep": "03003000",
+      "complemento": "",
+      "ativo": 1,
+      "id": 5
+    },
+    {
+      "rua": "Rua D",
+      "numero": "400",
+      "bairro": "Moema",
+      "cidade": "São Paulo",
+      "estado": "SP",
+      "cep": "04004000",
+      "complemento": "",
+      "ativo": 1,
+      "id": 6
+    },
+    {
+      "rua": "Rua E",
+      "numero": "500",
+      "bairro": "Itaim Bibi",
+      "cidade": "São Paulo",
+      "estado": "SP",
+      "cep": "05005000",
+      "complemento": "",
+      "ativo": 1,
+      "id": 7
+    },
+    {
+      "rua": "Rua F",
+      "numero": "600",
+      "bairro": "Jardins",
+      "cidade": "São Paulo",
+      "estado": "SP",
+      "cep": "06006000",
+      "complemento": "",
+      "ativo": 1,
+      "id": 8
+    },
+    {
+      "rua": "Rua G",
+      "numero": "700",
+      "bairro": "Lapa",
+      "cidade": "São Paulo",
+      "estado": "SP",
+      "cep": "07007000",
+      "complemento": "",
+      "ativo": 1,
+      "id": 9
+    },
+    {
+      "rua": "Rua H",
+      "numero": "800",
+      "bairro": "Barra Funda",
+      "cidade": "São Paulo",
+      "estado": "SP",
+      "cep": "08008000",
+      "complemento": "",
+      "ativo": 1,
+      "id": 10
+    },
+    {
+      "rua": "Rua I",
+      "numero": "900",
+      "bairro": "Tatuapé",
+      "cidade": "São Paulo",
+      "estado": "SP",
+      "cep": "09009000",
+      "complemento": "",
+      "ativo": 1,
+      "id": 11
+    },
+    {
+      "rua": "Rua J",
+      "numero": "1000",
+      "bairro": "Santana",
+      "cidade": "São Paulo",
+      "estado": "SP",
+      "cep": "10010000",
+      "complemento": "",
+      "ativo": 1,
+      "id": 12
     }
   ],
   "estabelecimentos": [
@@ -167,11 +385,81 @@
       "id": 1
     },
     {
-      "nome": "Olimpo",
-      "cnpj": "00623904000173",
+      "nome": "Cabeleleira Leila",
+      "cnpj": "02933011000193",
       "profissional_id": 3,
       "endereco_id": 2,
       "id": 2
+    },
+    {
+      "nome": "Carlos Tech",
+      "cnpj": "11111111000111",
+      "profissional_id": 4,
+      "endereco_id": 3,
+      "id": 3
+    },
+    {
+      "nome": "Ana Doces",
+      "cnpj": "22222222000122",
+      "profissional_id": 5,
+      "endereco_id": 4,
+      "id": 4
+    },
+    {
+      "nome": "Marcos Reformas",
+      "cnpj": "33333333000133",
+      "profissional_id": 6,
+      "endereco_id": 5,
+      "id": 5
+    },
+    {
+      "nome": "Julia Saúde",
+      "cnpj": "44444444000144",
+      "profissional_id": 7,
+      "endereco_id": 6,
+      "id": 6
+    },
+    {
+      "nome": "Pedro Auto",
+      "cnpj": "55555555000155",
+      "profissional_id": 8,
+      "endereco_id": 7,
+      "id": 7
+    },
+    {
+      "nome": "Fernanda Aulas",
+      "cnpj": "66666666000166",
+      "profissional_id": 9,
+      "endereco_id": 8,
+      "id": 8
+    },
+    {
+      "nome": "Lucas Limpeza",
+      "cnpj": "77777777000177",
+      "profissional_id": 10,
+      "endereco_id": 9,
+      "id": 9
+    },
+    {
+      "nome": "Mariana Eventos",
+      "cnpj": "88888888000188",
+      "profissional_id": 11,
+      "endereco_id": 10,
+      "id": 10
+    },
+    {
+      "nome": "Gabriel Design",
+      "cnpj": "99999999000199",
+      "profissional_id": 12,
+      "endereco_id": 11,
+      "id": 11
+    },
+    {
+      "nome": "Beatriz Segurança",
+      "cnpj": "00000000000100",
+      "profissional_id": 13,
+      "endereco_id": 12,
+      "id": 12
     }
   ],
   "profissionais": [],
@@ -193,39 +481,179 @@
   ],
   "servicos": [
     {
-      "nome": "Limpeza de Sanitário",
-      "preco": 89.99,
-      "descricao": "",
+      "nome": "Desenvolvimento Web",
+      "preco": 1500,
+      "categoria_id": 12,
       "estabelecimento_id": 1,
       "id": 1
     },
     {
-      "nome": "Troca de Chuveiro",
-      "preco": 210,
-      "descricao": "",
+      "nome": "Manutenção de Computadores",
+      "preco": 300,
+      "categoria_id": 12,
       "estabelecimento_id": 1,
       "id": 2
     },
     {
-      "nome": "Reparo de Placa-Mãe",
-      "preco": 540,
-      "descricao": "",
-      "estabelecimento_id": 1,
+      "nome": "Corte de Cabelo Feminino",
+      "preco": 50,
+      "categoria_id": 9,
+      "estabelecimento_id": 2,
       "id": 3
     },
     {
-      "nome": "Marido de Aluguel",
-      "preco": 666,
-      "descricao": "Pode",
+      "nome": "Coloração de Cabelo",
+      "preco": 120,
+      "categoria_id": 9,
       "estabelecimento_id": 2,
       "id": 4
     },
     {
-      "nome": "asoikdemqwio",
-      "preco": 15616,
-      "descricao": "",
+      "nome": "Corte de Cabelo Masculino",
+      "preco": 30,
+      "categoria_id": 9,
       "estabelecimento_id": 2,
       "id": 5
+    },
+    {
+      "nome": "Formatação de PC",
+      "preco": 100,
+      "categoria_id": 12,
+      "estabelecimento_id": 3,
+      "id": 6
+    },
+    {
+      "nome": "Instalação de Redes",
+      "preco": 250,
+      "categoria_id": 12,
+      "estabelecimento_id": 3,
+      "id": 7
+    },
+    {
+      "nome": "Bolo de Aniversário",
+      "preco": 150,
+      "categoria_id": 1,
+      "estabelecimento_id": 4,
+      "id": 8
+    },
+    {
+      "nome": "Cento de Salgados",
+      "preco": 80,
+      "categoria_id": 1,
+      "estabelecimento_id": 4,
+      "id": 9
+    },
+    {
+      "nome": "Pintura de Parede",
+      "preco": 300,
+      "categoria_id": 3,
+      "estabelecimento_id": 5,
+      "id": 10
+    },
+    {
+      "nome": "Troca de Piso",
+      "preco": 500,
+      "categoria_id": 3,
+      "estabelecimento_id": 5,
+      "id": 11
+    },
+    {
+      "nome": "Consulta Nutricional",
+      "preco": 200,
+      "categoria_id": 4,
+      "estabelecimento_id": 6,
+      "id": 12
+    },
+    {
+      "nome": "Sessão de Fisioterapia",
+      "preco": 150,
+      "categoria_id": 4,
+      "estabelecimento_id": 6,
+      "id": 13
+    },
+    {
+      "nome": "Troca de Óleo",
+      "preco": 120,
+      "categoria_id": 5,
+      "estabelecimento_id": 7,
+      "id": 14
+    },
+    {
+      "nome": "Alinhamento e Balanceamento",
+      "preco": 100,
+      "categoria_id": 5,
+      "estabelecimento_id": 7,
+      "id": 15
+    },
+    {
+      "nome": "Aula de Inglês",
+      "preco": 80,
+      "categoria_id": 6,
+      "estabelecimento_id": 8,
+      "id": 16
+    },
+    {
+      "nome": "Reforço de Matemática",
+      "preco": 70,
+      "categoria_id": 6,
+      "estabelecimento_id": 8,
+      "id": 17
+    },
+    {
+      "nome": "Faxina Completa",
+      "preco": 200,
+      "categoria_id": 7,
+      "estabelecimento_id": 9,
+      "id": 18
+    },
+    {
+      "nome": "Limpeza de Sofá",
+      "preco": 150,
+      "categoria_id": 7,
+      "estabelecimento_id": 9,
+      "id": 19
+    },
+    {
+      "nome": "Decoração de Festa",
+      "preco": 800,
+      "categoria_id": 8,
+      "estabelecimento_id": 10,
+      "id": 20
+    },
+    {
+      "nome": "Assessoria de Casamento",
+      "preco": 2000,
+      "categoria_id": 8,
+      "estabelecimento_id": 10,
+      "id": 21
+    },
+    {
+      "nome": "Logo e Identidade Visual",
+      "preco": 500,
+      "categoria_id": 11,
+      "estabelecimento_id": 11,
+      "id": 22
+    },
+    {
+      "nome": "Design de Cartão de Visita",
+      "preco": 100,
+      "categoria_id": 11,
+      "estabelecimento_id": 11,
+      "id": 23
+    },
+    {
+      "nome": "Instalação de Câmeras",
+      "preco": 400,
+      "categoria_id": 13,
+      "estabelecimento_id": 12,
+      "id": 24
+    },
+    {
+      "nome": "Monitoramento 24h",
+      "preco": 150,
+      "categoria_id": 13,
+      "estabelecimento_id": 12,
+      "id": 25
     }
   ],
   "servicos_mais_procurados": [
@@ -362,8 +790,51 @@
     {
       "id": 1,
       "pedido_id": 1,
+      "servico_id": 1,
       "cliente_id": 1,
       "nota": 5
+    },
+    {
+      "servico_id": 2,
+      "pedido_id": null,
+      "cliente_id": 1,
+      "nota": 3,
+      "id": 2
+    },
+    {
+      "servico_id": 1,
+      "pedido_id": null,
+      "cliente_id": 2,
+      "nota": 5,
+      "id": 3
+    },
+    {
+      "servico_id": 9,
+      "pedido_id": null,
+      "cliente_id": 1,
+      "nota": 5,
+      "id": 4
+    },
+    {
+      "servico_id": 9,
+      "pedido_id": null,
+      "cliente_id": 1,
+      "nota": 5,
+      "id": 7
+    },
+    {
+      "servico_id": 5,
+      "pedido_id": null,
+      "cliente_id": 1,
+      "nota": 4,
+      "id": 8
+    },
+    {
+      "servico_id": 11,
+      "pedido_id": null,
+      "cliente_id": 1,
+      "nota": 3,
+      "id": 9
     }
   ],
   "contratos": [
@@ -371,22 +842,43 @@
       "usuario_id": 1,
       "servico_id": 1,
       "status": "ativo",
-      "data_contrato": "2025-11-07T01:29:44.498Z",
+      "data_contrato": "2025-11-23T19:05:09.293Z",
       "id": 1
     },
     {
       "usuario_id": 1,
       "servico_id": 2,
       "status": "ativo",
-      "data_contrato": "2025-11-07T01:30:19.514Z",
+      "data_contrato": "2025-11-23T19:05:22.756Z",
       "id": 2
     },
     {
-      "usuario_id": 3,
+      "usuario_id": 2,
+      "servico_id": 1,
+      "status": "ativo",
+      "data_contrato": "2025-11-23T19:30:30.556Z",
+      "id": 3
+    },
+    {
+      "usuario_id": 1,
+      "servico_id": 9,
+      "status": "ativo",
+      "data_contrato": "2025-11-23T20:24:20.666Z",
+      "id": 4
+    },
+    {
+      "usuario_id": 1,
       "servico_id": 5,
       "status": "ativo",
-      "data_contrato": "2025-11-07T01:31:31.843Z",
-      "id": 3
+      "data_contrato": "2025-11-23T20:37:02.410Z",
+      "id": 5
+    },
+    {
+      "usuario_id": 1,
+      "servico_id": 11,
+      "status": "ativo",
+      "data_contrato": "2025-11-23T20:37:43.712Z",
+      "id": 6
     }
   ]
 }

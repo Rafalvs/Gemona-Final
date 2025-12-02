@@ -2,8 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Layout from '../../components/layout/Layout';
 import { useAuth } from '../../contexts/AuthContext';
-import { servicosAPI, estabelecimentosAPI } from '../../services/apiService';
-import { campoObrigatorio } from '../../utils/validators';
+import { servicosAPI, estabelecimentosAPI, subcategoriasAPI } from '../../services/apiService';
 
 export default function NewService(){
     const { user, isAuthenticated } = useAuth();
@@ -11,28 +10,50 @@ export default function NewService(){
 
     const [formData, setFormData] = useState({
         nome: '',
+        descricao: '',
         preco: '',
-        descricao: ''
+        subcategoria_id: ''
     });
+    const [subcategorias, setSubcategorias] = useState([]);
+    const [imagemPreview, setImagemPreview] = useState(null);
+    const [imagemBase64, setImagemBase64] = useState(null);
     const [errors, setErrors] = useState({});
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState('');
 
     // verifica se usuário tem estabelecimento
     const [estabelecimentoId, setEstabelecimentoId] = useState(null);
+    const [checkingEstabelecimento, setCheckingEstabelecimento] = useState(true);
 
     useEffect(() => {
-        const loadEstabelecimento = async () => {
-            if (!isAuthenticated || !user) return;
-            if (user.tipo_usuario !== 'pj') return;
-
-            const res = await estabelecimentosAPI.getByProfissional(user.id);
-            if (res.success && Array.isArray(res.data) && res.data.length > 0) {
-                setEstabelecimentoId(res.data[0].id);
+        const loadData = async () => {
+            if (!isAuthenticated || !user) {
+                setCheckingEstabelecimento(false);
+                return;
             }
+            if (user.tipo_usuario !== 'profissional') {
+                setCheckingEstabelecimento(false);
+                return;
+            }
+
+            setCheckingEstabelecimento(true);
+
+            // Carregar estabelecimento
+            const resEst = await estabelecimentosAPI.getByProfissional(user.id);
+            if (resEst.success && Array.isArray(resEst.data) && resEst.data.length > 0) {
+                setEstabelecimentoId(resEst.data[0].estabelecimentoId);
+            }
+
+            // Carregar todas subcategorias
+            const resSub = await subcategoriasAPI.getAll();
+            if (resSub.success) {
+                setSubcategorias(resSub.data);
+            }
+
+            setCheckingEstabelecimento(false);
         };
 
-        loadEstabelecimento();
+        loadData();
     }, [isAuthenticated, user]);
 
     const handleInputChange = (field, value) => {
@@ -40,10 +61,52 @@ export default function NewService(){
         if (errors[field]) setErrors(prev => ({ ...prev, [field]: '' }));
     };
 
+    const handleImageChange = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        // Validar tipo de arquivo
+        if (!file.type.startsWith('image/')) {
+            setMessage('❌ Por favor, selecione apenas arquivos de imagem');
+            setTimeout(() => setMessage(''), 3000);
+            return;
+        }
+
+        // Validar tamanho (máx 5MB)
+        if (file.size > 5 * 1024 * 1024) {
+            setMessage('❌ A imagem deve ter no máximo 5MB');
+            setTimeout(() => setMessage(''), 3000);
+            return;
+        }
+
+        // Criar preview
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            setImagemPreview(reader.result);
+            // Extrair apenas a parte Base64 (remover o prefixo data:image/...)
+            const base64String = reader.result.split(',')[1];
+            setImagemBase64({
+                fileName: file.name,
+                contentType: file.type,
+                base64Data: base64String
+            });
+        };
+        reader.readAsDataURL(file);
+    };
+
+    const handleRemoveImage = () => {
+        setImagemPreview(null);
+        setImagemBase64(null);
+        const inputFile = document.getElementById('imagemServicoInput');
+        if (inputFile) inputFile.value = '';
+    };
+
     const validar = () => {
         const novosErros = {};
-        if (!campoObrigatorio(formData.nome)) novosErros.nome = 'Nome é obrigatório';
-        if (!campoObrigatorio(formData.preco) || isNaN(Number(formData.preco))) novosErros.preco = 'Preço válido é obrigatório';
+        if (!formData.nome?.trim()) novosErros.nome = 'Nome é obrigatório';
+        if (!formData.descricao?.trim()) novosErros.descricao = 'Descrição é obrigatória';
+        if (!formData.preco?.trim() || isNaN(Number(formData.preco))) novosErros.preco = 'Preço válido é obrigatório';
+        if (!formData.subcategoria_id) novosErros.subcategoria_id = 'Selecione uma subcategoria';
         return novosErros;
     };
 
@@ -54,8 +117,8 @@ export default function NewService(){
             return;
         }
 
-        if (user.tipo_usuario !== 'pj') {
-            setMessage('❌ Apenas Pessoa Jurídica pode cadastrar serviços');
+        if (user.tipo_usuario !== 'profissional') {
+            setMessage('❌ Apenas profissionais podem cadastrar serviços');
             return;
         }
 
@@ -74,16 +137,20 @@ export default function NewService(){
         try {
             const servicoDados = {
                 nome: formData.nome.trim(),
-                preco: Number(formData.preco),
                 descricao: formData.descricao.trim(),
-                estabelecimento_id: estabelecimentoId
+                subCategoriaId: parseInt(formData.subcategoria_id),
+                preco: parseFloat(formData.preco),
+                imagemServico: imagemBase64 || null,
+                estabelecimentoId: estabelecimentoId
             };
 
             const res = await servicosAPI.create(servicoDados);
             if (res.success) {
                 setMessage('✅ Serviço criado com sucesso!');
-                setFormData({ nome: '', preco: '', descricao: '' });
-                setTimeout(() => navigate('/services'), 1200);
+                setFormData({ nome: '', descricao: '', preco: '', subcategoria_id: '' });
+                setImagemPreview(null);
+                setImagemBase64(null);
+                setTimeout(() => navigate('/companyProfile'), 1200);
             } else {
                 setMessage(`❌ Erro ao criar serviço: ${res.error}`);
             }
@@ -97,8 +164,8 @@ export default function NewService(){
     return (
         <Layout>
             <main>
-                <div className="company-profile-container">
-                    <h2 className="form-title">➕ Novo Serviço</h2>
+                <div style={{ maxWidth: 700, margin: '0 auto', padding: 20, color: '#fff' }}>
+                    <h2 style={{ textAlign: 'center' }}>➕ Novo Serviço</h2>
 
                     {!isAuthenticated && (
                         <div>
@@ -107,43 +174,113 @@ export default function NewService(){
                         </div>
                     )}
 
-                    {isAuthenticated && user?.tipo_usuario !== 'pj' && (
+                    {isAuthenticated && user?.tipo_usuario !== 'profissional' && (
                         <div>
-                            <p>Somente contas do tipo Pessoa Jurídica podem cadastrar serviços.</p>
+                            <p>Somente profissionais podem cadastrar serviços.</p>
                         </div>
                     )}
 
-                    {isAuthenticated && user?.tipo_usuario === 'pj' && !estabelecimentoId && (
+                    {checkingEstabelecimento && (
+                        <div style={{ textAlign: 'center', padding: '20px' }}>
+                            <p>⏳ Verificando estabelecimento...</p>
+                        </div>
+                    )}
+
+                    {!checkingEstabelecimento && isAuthenticated && user?.tipo_usuario === 'profissional' && !estabelecimentoId && (
                         <div>
                             <p>Você precisa cadastrar um estabelecimento primeiro.</p>
-                            <Link to="/createBusiness"><button>🏢 Cadastrar Estabelecimento</button></Link>
+                            <Link to="/newCompany"><button>🏢 Cadastrar Estabelecimento</button></Link>
                         </div>
                     )}
 
-                    {isAuthenticated && user?.tipo_usuario === 'pj' && estabelecimentoId && (
+                    {!checkingEstabelecimento && isAuthenticated && user?.tipo_usuario === 'profissional' && estabelecimentoId && (
                         <form className="form-center" onSubmit={handleSubmit}>
-                            {message && <div className="form-success-message">{message}</div>}
+                            {message && <div style={{ marginBottom: 12 }}>{message}</div>}
 
                             <div className="form-group">
                                 <label>Nome do Serviço</label>
-                                <input value={formData.nome} onChange={(e) => handleInputChange('nome', e.target.value)} disabled={loading} />
-                                {errors.nome && <span className="form-error-message">{errors.nome}</span>}
+                                <input value={formData.nome} onChange={(e) => handleInputChange('nome', e.target.value)} disabled={loading} placeholder="Ex: Corte de Cabelo" />
+                                {errors.nome && <span style={{ color: '#dc3545' }}>{errors.nome}</span>}
+                            </div>
+
+                            <div className="form-group">
+                                <label>Descrição</label>
+                                <textarea value={formData.descricao} onChange={(e) => handleInputChange('descricao', e.target.value)} disabled={loading} placeholder="Descreva o serviço..." rows="4" style={{ width: '100%', padding: '8px', borderRadius: '4px' }} />
+                                {errors.descricao && <span style={{ color: '#dc3545' }}>{errors.descricao}</span>}
+                            </div>
+
+                            <div className="form-group">
+                                <label>Imagem do Serviço (Opcional)</label>
+                                {imagemPreview && (
+                                    <div style={{ marginBottom: '15px' }}>
+                                        <img 
+                                            src={imagemPreview} 
+                                            alt="Preview"
+                                            style={{
+                                                maxWidth: '300px',
+                                                width: '100%',
+                                                height: 'auto',
+                                                borderRadius: '8px',
+                                                border: '2px solid #28a745'
+                                            }}
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={handleRemoveImage}
+                                            disabled={loading}
+                                            style={{
+                                                marginTop: '10px',
+                                                padding: '8px 16px',
+                                                backgroundColor: '#dc3545',
+                                                color: 'white',
+                                                border: 'none',
+                                                borderRadius: '6px',
+                                                cursor: 'pointer',
+                                                fontSize: '14px'
+                                            }}
+                                        >
+                                            🗑️ Remover Imagem
+                                        </button>
+                                    </div>
+                                )}
+                                <input 
+                                    type="file"
+                                    id="imagemServicoInput"
+                                    accept="image/*"
+                                    onChange={handleImageChange}
+                                    disabled={loading}
+                                    style={{ marginBottom: '5px' }}
+                                />
+                                <small style={{ color: '#999', fontSize: '12px', display: 'block' }}>
+                                    Formatos aceitos: JPG, PNG, GIF. Tamanho máximo: 5MB
+                                </small>
+                            </div>
+
+                            <div className="form-group">
+                                <label>Subcategoria</label>
+                                <select 
+                                    value={formData.subcategoria_id} 
+                                    onChange={(e) => handleInputChange('subcategoria_id', e.target.value)} 
+                                    disabled={loading}
+                                    style={{ width: '100%', padding: '8px', borderRadius: '4px' }}
+                                >
+                                    <option value="">Selecione uma subcategoria...</option>
+                                    {subcategorias.map(sub => (
+                                        <option key={sub.subCategoriaId} value={sub.subCategoriaId}>{sub.nome}</option>
+                                    ))}
+                                </select>
+                                {errors.subcategoria_id && <span style={{ color: '#dc3545' }}>{errors.subcategoria_id}</span>}
                             </div>
 
                             <div className="form-group">
                                 <label>Preço (R$)</label>
                                 <input value={formData.preco} onChange={(e) => handleInputChange('preco', e.target.value)} disabled={loading} placeholder="0.00" />
-                                {errors.preco && <span className="form-error-message">{errors.preco}</span>}
+                                {errors.preco && <span style={{ color: '#dc3545' }}>{errors.preco}</span>}
                             </div>
 
-                            <div className="form-group">
-                                <label>Descrição (opcional)</label>
-                                <textarea value={formData.descricao} onChange={(e) => handleInputChange('descricao', e.target.value)} disabled={loading}></textarea>
-                            </div>
-
-                            <div className="service-edit-buttons">
-                                <button type="submit" disabled={loading} className="btn-save">{loading ? '⏳ Salvando...' : '💾 Salvar Serviço'}</button>
-                                <Link to="/services"><button type="button" disabled={loading}>⬅️ Voltar</button></Link>
+                            <div style={{ display: 'flex', gap: 10, marginTop: 12 }}>
+                                <button type="submit" disabled={loading} style={{ backgroundColor: '#28a745' }}>{loading ? '⏳ Salvando...' : '💾 Salvar Serviço'}</button>
+                                <Link to="/companyProfile"><button type="button" disabled={loading}>⬅️ Voltar</button></Link>
                             </div>
                         </form>
                     )}

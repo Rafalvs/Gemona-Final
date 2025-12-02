@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route, BrowserRouter } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 
 import Contact from "./pages/Contact";
@@ -12,12 +12,11 @@ import EditCompany from './pages/business/EditCompany';
 import BusinessProfile from './pages/business/CompanyProfile';
 import NewService from './pages/business/NewService';
 import Services from "./pages/Services";
-import AdminCRUD from "./pages/AdminCRUD";
   
 export default function App(){
     return (
-        <AuthProvider>
-            <Router>
+        <Router>
+            <AuthProvider>
                 <Routes>
                     <Route path="/" element={<Home />} />
                     <Route path="contact" element={<Contact />} />
@@ -25,15 +24,13 @@ export default function App(){
                     <Route path="checkout" element={<Checkout />} />
                     <Route path="login" element={<Login />} />
                     <Route path="register" element={<Register />} />
-                    <Route path="createBusiness" element={<NewCompany />} />
-                    <Route path="editBusiness" element={<EditCompany />} />
                     <Route path="newCompany" element={<NewCompany />} />
-                    <Route path="businessProfile" element={<BusinessProfile />} />
-                    <Route path="createService" element={<NewService />} />
+                    <Route path="editCompany" element={<EditCompany />} />
+                    <Route path="companyProfile" element={<BusinessProfile />} />
+                    <Route path="newService" element={<NewService />} />
                     <Route path="services" element={<Services />} />
-                    <Route path="admin" element={<AdminCRUD />} />
                 </Routes>
-            </Router>
-        </AuthProvider>
+            </AuthProvider>
+        </Router>
     )
 }

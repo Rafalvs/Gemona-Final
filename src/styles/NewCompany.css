@@ -1,0 +1,198 @@
+/* Estilos para NewCompany */
+
+.new-company-title {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #fff;
+}
+
+.feedback-message {
+    padding: 10px;
+    margin-bottom: 20px;
+    border-radius: 4px;
+    text-align: center;
+}
+
+.feedback-message.success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.feedback-message.error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+.section-title {
+    color: #fff;
+    margin-bottom: 15px;
+}
+
+.section-title.address {
+    margin-bottom: 15px;
+    margin-top: 30px;
+}
+
+.form-row {
+    display: flex;
+    gap: 15px;
+}
+
+.form-field {
+    flex: 2;
+}
+
+.form-field.complement {
+    flex: 3;
+}
+
+.form-field.city {
+    flex: 3;
+}
+
+.form-field.state {
+    flex: 1;
+}
+
+.input-error {
+    border-color: #dc3545 !important;
+}
+
+.error-text {
+    color: #dc3545;
+    font-size: 14px;
+    display: block;
+    margin-top: 5px;
+}
+
+.btn-submit {
+    margin-top: 20px;
+}
+
+.btn-submit.loading {
+    background-color: #ccc !important;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.btn-submit.normal {
+    background-color: #007bff;
+    cursor: pointer;
+    opacity: 1;
+}
+
+/* Hover effects */
+.btn-submit.normal:hover {
+    background-color: #0056b3;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .form-row {
+        flex-direction: column;
+        gap: 0;
+    }
+    
+    .form-field,
+    .form-field.complement,
+    .form-field.city,
+    .form-field.state {
+        flex: 1;
+    }
+}
+
+/* Loading state improvements */
+.btn-submit:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+/* Info text for loading states */
+.info-text {
+    color: #17a2b8;
+    font-size: 14px;
+    display: block;
+    margin-top: 5px;
+    font-style: italic;
+}
+
+/* Horários de Funcionamento */
+.horario-row {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 15px;
+    background-color: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    margin-bottom: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.horario-dia {
+    min-width: 150px;
+    color: #fff;
+}
+
+.horario-inputs {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex: 1;
+}
+
+.horario-inputs label {
+    display: flex;
+    align-items: center;
+    color: #fff;
+}
+
+.horario-field {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.horario-field label {
+    color: #fff;
+    min-width: 80px;
+}
+
+.horario-field input[type="time"] {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+    background-color: #fff;
+}
+
+.horario-inputs input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+}
+
+/* Responsive para horários */
+@media (max-width: 768px) {
+    .horario-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    
+    .horario-inputs {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+        width: 100%;
+    }
+    
+    .horario-field {
+        width: 100%;
+    }
+    
+    .horario-field input[type="time"] {
+        flex: 1;
+    }
+}
