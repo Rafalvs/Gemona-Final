@@ -64,6 +64,10 @@ header {
   margin: 0 24px 0 0;
 }
 
+#home {
+  margin: 1%;
+}
+
 header a {
   display: inline-block;
   height: 100%;
@@ -118,6 +122,61 @@ header a button {
   color: #ffecd1;
   border: 1px solid #ffecd1;
   box-shadow: var(--shadow-black);
+}
+
+/* Carousel customizations */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.carousel-container {
+  scroll-behavior: smooth;
+  scroll-snap-type: x mandatory;
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: nowrap !important;
+  margin: 10px;
+}
+
+.carousel-item {
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  flex-shrink: 0 !important;
+}
+
+/* Garantir que os cards dentro do carrossel mantenham o layout horizontal */
+.carousel-container > div {
+  display: inline-flex !important;
+}
+
+/* Prevenir que o Card do HeroUI quebre o layout */
+[data-slot="base"] {
+  flex-shrink: 0 !important;
+}
+
+/* Forçar cards a ficarem lado a lado no carrossel */
+.carousel-item > * {
+  width: 100%;
+  height: 100%;
+  min-width: 300px;
+  margin-right: 10px;
+}
+
+/* Sobrescrever estilos do HeroUI que possam estar causando quebra */
+.carousel-container [data-slot="base"] {
+  width: 100% !important;
+  flex-shrink: 0 !important;
+  min-width: inherit !important;
+}
+
+/* Garantir que os cards não sejam comprimidos */
+.carousel-item {
+  min-width: 300px !important;
 }
 
 /* ===================== FOOTER ===================== */
@@ -774,6 +833,16 @@ h3 {
   color: #fff;
 }
 
+/* Forçar layout horizontal no espaçamento da home */
+.space-y-4 > * {
+  margin-top: 1rem;
+  margin-bottom: 0;
+}
+
+.space-y-4 > *:first-child {
+  margin-top: 0;
+}
+
 /* Grid de Cards */
 .cards-grid {
   display: grid;
@@ -789,89 +858,7 @@ h3 {
   padding: 20px 0;
 }
 
-/* Cards de Categoria */
-.category-card {
-  background: linear-gradient(135deg, rgba(244, 143, 66, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
-  border: 2px solid rgba(244, 143, 66, 0.3);
-  border-radius: 15px;
-  padding: 25px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-  -webkit-user-select: none;
-  user-select: none;
-}
-
-.category-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 25px rgba(244, 143, 66, 0.2);
-  border-color: rgba(244, 143, 66, 0.6);
-}
-
-.category-card:active {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(244, 143, 66, 0.3);
-}
-
-.category-card-content {
-  text-align: center;
-}
-
-.category-card-title {
-  color: #f48f42;
-  font-size: 20px;
-  margin-bottom: 15px;
-  font-weight: bold;
-}
-
-.category-card-description {
-  color: #fff;
-  font-size: 14px;
-  line-height: 1.5;
-  opacity: 0.9;
-}
-
-/* Cards de Serviço */
-.service-card {
-  background: linear-gradient(135deg, rgba(40, 167, 69, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
-  border: 2px solid rgba(40, 167, 69, 0.3);
-  border-radius: 15px;
-  padding: 20px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-  -webkit-user-select: none;
-  user-select: none;
-}
-
-.service-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 25px rgba(40, 167, 69, 0.2);
-  border-color: rgba(40, 167, 69, 0.6);
-}
-
-.service-card:active {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(40, 167, 69, 0.3);
-}
-
-.service-card-content {
-  text-align: center;
-}
-
-.service-card-title {
-  color: #28a745;
-  font-size: 18px;
-  margin-bottom: 12px;
-  font-weight: bold;
-}
-
-.service-card-description {
-  color: #fff;
-  font-size: 14px;
-  line-height: 1.4;
-  opacity: 0.9;
-}
+/* Cards de Categoria e Serviço - Estilos removidos para evitar conflito com HeroUI Cards */
 
 /* Responsividade Services */
 @media (max-width: 768px) {
@@ -884,6 +871,254 @@ h3 {
     position: relative;
     top: 0;
     margin-bottom: 1.5rem;
+  }
+}
+
+/* ===================== RESPONSIVIDADE MOBILE ===================== */
+
+/* Tablets e smartphones em landscape */
+@media (max-width: 1024px) {
+  .space-y-4 {
+    padding-left: 2rem !important;
+    padding-right: 2rem !important;
+  }
+  
+  .sophisticated-card {
+    width: 95%;
+  }
+  
+  .carousel-item {
+    min-width: 280px !important;
+  }
+}
+
+/* Smartphones em portrait */
+@media (max-width: 768px) {
+  /* Header mobile */
+  header {
+    flex-wrap: wrap;
+    padding: 10px 12px;
+    font-size: 14px;
+  }
+  
+  .header-left {
+    flex: 0 0 auto;
+  }
+  
+  .header-center {
+    flex: 1 1 100%;
+    order: 3;
+    margin-top: 10px;
+  }
+  
+  .header-center input[type="text"] {
+    width: 100%;
+    max-width: 100%;
+  }
+  
+  .header-right {
+    flex: 0 0 auto;
+    gap: 0.3em;
+  }
+  
+  .header-right button,
+  .header-right h1 {
+    padding: 0.4em 0.8em;
+    font-size: 0.85em;
+    min-width: 60px;
+  }
+  
+  #logo {
+    width: 40px;
+    margin: 0 10px 0 0;
+  }
+  
+  /* Home page mobile */
+  .space-y-4 {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+  }
+  
+  .sophisticated-card {
+    width: 100%;
+  }
+  
+  .sophisticated-card h1 {
+    font-size: 1.75rem !important;
+  }
+  
+  .sophisticated-card p {
+    font-size: 0.95rem !important;
+  }
+  
+  /* Carrossel mobile */
+  .carousel-container {
+    padding-left: 2rem !important;
+    padding-right: 2rem !important;
+  }
+  
+  .carousel-item {
+    min-width: 260px !important;
+  }
+  
+  .carousel-item > * {
+    min-width: 260px !important;
+  }
+  
+  /* Botões de navegação do carrossel */
+  .carousel-container + div button {
+    width: 36px;
+    height: 36px;
+  }
+  
+  /* Cards mobile */
+  [data-slot="base"].h-60 {
+    height: auto !important;
+    min-height: 180px;
+  }
+  
+  [data-slot="base"].h-40 {
+    height: auto !important;
+    min-height: 120px;
+  }
+  
+  /* Formulários mobile */
+  .form-center {
+    max-width: 100%;
+    padding: 10px;
+  }
+  
+  .form-row {
+    flex-direction: column;
+  }
+  
+  button {
+    padding: 0.5em 1em;
+    font-size: 0.95em;
+  }
+  
+  /* Services grid mobile */
+  .services-grid {
+    grid-template-columns: 1fr;
+    gap: 2rem 1rem;
+  }
+  
+  .service-box {
+    padding: 1rem;
+  }
+}
+
+/* Smartphones pequenos */
+@media (max-width: 480px) {
+  /* Header extra small */
+  header {
+    padding: 8px 10px;
+    font-size: 13px;
+  }
+  
+  .header-right button,
+  .header-right h1 {
+    padding: 0.3em 0.6em;
+    font-size: 0.8em;
+    min-width: 50px;
+  }
+  
+  #logo {
+    width: 35px;
+    margin: 0 8px 0 0;
+  }
+  
+  /* Home mobile small */
+  .space-y-4 {
+    padding-left: 0.5rem !important;
+    padding-right: 0.5rem !important;
+  }
+  
+  .sophisticated-card {
+    padding: 1rem !important;
+  }
+  
+  .sophisticated-card h1 {
+    font-size: 1.5rem !important;
+  }
+  
+  .sophisticated-card p {
+    font-size: 0.85rem !important;
+  }
+  
+  /* Card headers mobile */
+  [data-slot="header"] h2 {
+    font-size: 1.25rem !important;
+  }
+  
+  /* Carrossel extra small */
+  .carousel-container {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+  }
+  
+  .carousel-item {
+    min-width: 240px !important;
+  }
+  
+  .carousel-item > * {
+    min-width: 240px !important;
+  }
+  
+  /* Textos mobile */
+  h3 {
+    font-size: 1.5rem;
+  }
+  
+  .home-section-title {
+    font-size: 1.25rem;
+  }
+  
+  /* Input e botões mobile */
+  input {
+    font-size: 13px;
+    padding: 8px 10px;
+  }
+  
+  button {
+    font-size: 0.9em;
+    padding: 0.4em 0.9em;
+  }
+  
+  /* Loading overlay mobile */
+  .loading-logo {
+    width: 100px;
+    height: 100px;
+  }
+  
+  .loading-text {
+    font-size: 16px;
+  }
+}
+
+/* Orientação landscape em smartphones */
+@media (max-height: 500px) and (orientation: landscape) {
+  .sophisticated-card {
+    padding: 1rem !important;
+  }
+  
+  .sophisticated-card h1 {
+    font-size: 1.5rem !important;
+    margin-bottom: 0.5rem !important;
+  }
+  
+  .sophisticated-card p {
+    font-size: 0.85rem !important;
+    margin-top: 0.5rem !important;
+  }
+  
+  .loading-logo-container {
+    gap: 15px;
+  }
+  
+  .loading-logo {
+    width: 80px;
+    height: 80px;
   }
 }
 
