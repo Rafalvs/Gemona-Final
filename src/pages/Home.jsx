@@ -2,7 +2,9 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Layout from "../components/layout/Layout"
 import { categoriasAPI, subcategoriasAPI } from '../services/apiService'
-import Logo from '../assets/logo.jpg'
+import Logo from '../components/ui/Logo'
+import Peixe from '../assets/peixe.png';
+import { Card, CardHeader, CardBody, Divider, Chip, Button, Image } from '@heroui/react'
 
 // Componente para seção de subcategorias (substituindo serviços mais procurados)
 function ServicesSection({ subcategorias, loadingSubcategorias }) {
@@ -170,7 +172,7 @@ export default function Home(){
                     <div className={`loading-overlay ${isFadingOut ? 'fade-out' : ''}`}>
                         <div className="loading-logo-container">
                             <h1>Gêmona</h1>
-                            <img src={Logo} alt="Logo" className="loading-logo" />
+                            <img src={Peixe} alt="Logo" className="loading-logo" />
                             <div className="loading-spinner"></div>                          
                             <p className="loading-text">Carregando...</p>
                         </div>
@@ -184,14 +186,26 @@ export default function Home(){
         <Layout>
             <main id="home">
                 <div className="home-container">
-                    <div className="home-intro">
-                        <h3 className="home-intro-title">
-                            Está buscando um serviço? Entenda como nossa plataforma funciona:
-                        </h3>
-                        <p className="home-intro-text">
-                            Faça uma busca ou clique em uma das categorias abaixo, selecione o serviço desejado e entre em contato diretamente com o prestador.
-                        </p>
-                    </div>
+                    <div className="flex justify-center">
+        <Card className="sophisticated-card shadow-2xl rounded-lg">
+          <CardBody className="p-8 text-center">
+            {/* Logo Section */}
+            <div className="flex justify-center mb-6">
+              <Logo size="xl" showText={false} border={true} />
+            </div>
+            <h1 className="text-4xl font-bold mb-4 text-[#ffecd1]">
+              Bem-vindo ao Gêmona
+            </h1>
+            <p className="text-xl opacity-90 text-[#ffecd1]">
+              Está buscando um serviço? Entenda como nossa plataforma funciona:
+            </p>
+            <p className="text-lg mt-4 opacity-80 text-[#ffecd1]">
+              Faça uma busca ou clique em uma das categorias abaixo, <br></br>
+              selecione o serviço desejado e entre em contato diretamente com o prestador.
+            </p>
+          </CardBody>
+        </Card>
+        </div>
 
                     <div className="home-section">
                         <h3 className="home-section-title">

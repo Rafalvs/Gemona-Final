@@ -112,6 +112,14 @@ header a button {
   height: 40px;
 }
 
+.sophisticated-card {
+  width: 87%;
+  background: linear-gradient(135deg, #000000 0%, #05315e 50%, #000000 100%);
+  color: #ffecd1;
+  border: 1px solid #ffecd1;
+  box-shadow: var(--shadow-black);
+}
+
 /* ===================== FOOTER ===================== */
 footer {
   background-color: #ffecd1;
