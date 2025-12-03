@@ -767,60 +767,113 @@ export default function Profile(){
                                     </CardBody>
                                 </Card>
                             ) : (
-                                <div className="agenda-grid">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     {agenda.map((item) => (
-                                        <div key={item.id} className="agenda-card">
-                                            <div className="agenda-card-header">
-                                                <div>
-                                                    <h3 className="service-title">
-                                                        🛎️ {item.servico?.nome || 'Serviço não encontrado'}
-                                                    </h3>
-                                                    {item.servico && (
-                                                        <p className="service-price">
-                                                            💰 R$ {Number(item.servico.preco).toFixed(2).replace('.', ',')}
-                                                        </p>
+                                        <Card 
+                                            key={item.id} 
+                                            className="shadow-lg hover:shadow-xl transition-all duration-300 border-2 border-gray-200"
+                                        >
+                                            <CardBody className="p-5">
+                                                {/* Header com imagem e título */}
+                                                <div className="flex gap-4 mb-4">
+                                                    {item.servico?.imagemServicoUrl ? (
+                                                        <img 
+                                                            src={imagensAPI.getImageUrl(item.servico.imagemServicoUrl)} 
+                                                            alt={item.servico.nome}
+                                                            className="w-20 h-20 object-cover rounded-lg shadow-md"
+                                                            onError={(e) => {
+                                                                e.target.style.display = 'none';
+                                                            }}
+                                                        />
+                                                    ) : (
+                                                        <div className="w-20 h-20 bg-gradient-to-br from-blue-100 to-blue-200 rounded-lg flex items-center justify-center shadow-md">
+                                                            <span className="text-3xl">🛎️</span>
+                                                        </div>
                                                     )}
-                                                    {item.estabelecimento && (
-                                                        <p className="service-establishment">
-                                                            🏢 {item.estabelecimento.nome}
-                                                        </p>
-                                                    )}
-                                                    <p className="service-contract-date">
-                                                        📅 Contratado em: {new Date(item.data_contrato).toLocaleDateString('pt-BR')}
+                                                    <div className="flex-1">
+                                                        <h3 className="text-lg font-bold text-[#05315f] mb-1">
+                                                            {item.servico?.nome || 'Serviço não encontrado'}
+                                                        </h3>
+                                                        {item.estabelecimento && (
+                                                            <Chip 
+                                                                size="sm" 
+                                                                variant="flat" 
+                                                                color="secondary"
+                                                                startContent={<span>🏢</span>}
+                                                            >
+                                                                {item.estabelecimento.nome}
+                                                            </Chip>
+                                                        )}
+                                                    </div>
+                                                </div>
+
+                                                {/* Descrição */}
+                                                {item.servico?.descricao && (
+                                                    <p className="text-sm text-gray-600 mb-3 italic">
+                                                        "{item.servico.descricao}"
                                                     </p>
+                                                )}
+
+                                                <Divider className="my-3" />
+
+                                                {/* Informações */}
+                                                <div className="space-y-2 mb-4">
+                                                    {item.servico && (
+                                                        <div className="flex items-center justify-between">
+                                                            <Chip 
+                                                                size="md" 
+                                                                variant="flat" 
+                                                                color="success"
+                                                                startContent={<span>💰</span>}
+                                                                className="font-bold"
+                                                            >
+                                                                R$ {Number(item.servico.preco).toFixed(2).replace('.', ',')}
+                                                            </Chip>
+                                                            <Chip 
+                                                                size="sm" 
+                                                                variant="flat" 
+                                                                color="primary"
+                                                                startContent={<span>📅</span>}
+                                                            >
+                                                                {new Date(item.data_contrato).toLocaleDateString('pt-BR')}
+                                                            </Chip>
+                                                        </div>
+                                                    )}
+                                                    
                                                     {item.observacoes && (
-                                                        <p className="service-notes">
-                                                            📝 {item.observacoes}
-                                                        </p>
+                                                        <div className="bg-yellow-50 p-3 rounded-lg border border-yellow-200">
+                                                            <p className="text-sm text-gray-700">
+                                                                <strong className="text-yellow-700">📝 Observações:</strong> {item.observacoes}
+                                                            </p>
+                                                        </div>
                                                     )}
                                                 </div>
-                                                <div className="flex gap-2">
+
+                                                {/* Botões de ação */}
+                                                <div className="flex gap-2 justify-end">
                                                     <Button
                                                         onClick={() => handleVerDetalhes(item)}
                                                         color="primary"
                                                         variant="solid"
-                                                        size="sm"
-                                                        className="bg-black text-[#ffecd1] border border-[#ffecd1] font-bold px-3 py-1 rounded-lg hover:bg-[#ffecd1] hover:text-black transition-all duration-300"
+                                                        size="md"
+                                                        className="bg-[#05315f] text-white font-semibold hover:bg-[#041f3f] transition-all duration-300 shadow-md hover:shadow-lg"
+                                                        startContent={<span>👁️</span>}
                                                     >
-                                                        👁️ Ver Detalhes
+                                                        Ver Detalhes
                                                     </Button>
                                                     <Button
                                                         onClick={() => handleCancelarContrato(item.id)}
                                                         color="danger"
-                                                        variant="flat"
-                                                        size="sm"
+                                                        variant="bordered"
+                                                        size="md"
+                                                        className="font-semibold hover:bg-red-50 transition-all duration-300"
+                                                        startContent={<span>❌</span>}
                                                     >
-                                                        ❌ Cancelar
+                                                        Cancelar
                                                     </Button>
                                                 </div>
-                                            </div>
-                                            
-                                            {item.servico?.descricao && (
-                                                <p className="service-description">
-                                                    "{item.servico.descricao}"
-                                                </p>
-                                            )}
-                                        </div>
+                                            </CardBody>
+                                        </Card>
                                     ))}
                                 </div>
                             )}

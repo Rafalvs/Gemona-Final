@@ -54,7 +54,7 @@ function ServicesSection({ subcategorias, loadingSubcategorias }) {
                                     onPress={() => handleSubcategoriaClick(subcategoria.subCategoriaId)}
                                     className="hover:shadow-2xl transition-all duration-300 hover:scale-95 backdrop-blur-sm border-2 border-[#ffecd1] hover:border-[#f48f42] min-h-[100px] sm:h-30 rounded-xl overflow-hidden"
                                     style={{ 
-                                        background: 'linear-gradient(135deg, #ffecd1 0%, #ffffff 100%)'
+                                        background: 'linear-gradient(135deg, #e9d2a9ff 0%, #ffffffff 100%)'
                                     }}
                                 >
                                     <CardBody className="p-3 sm:p-5 flex flex-col justify-between h-full relative">
@@ -213,7 +213,7 @@ export default function Home(){
                                         onPress={() => navigate('/services')}
                                         className="hover:shadow-2xl transition-all duration-300 hover:scale-99 border-2 border-purple-300 min-h-[120px] sm:h-30 rounded-xl overflow-hidden"
                                         style={{ 
-                                            background: 'linear-gradient(135deg, #05315f 0%, #4c1880ff 100%)'
+                                            background: 'linear-gradient(135deg, #05315f 40%, #f0bf87ff 100%)'
                                         }}
                                     >
                                         <CardBody className="p-3 sm:p-4 flex flex-col justify-between h-full relative">
@@ -241,7 +241,7 @@ export default function Home(){
                                                 onPress={() => handleCategoryClick(categoria.categoriaId || categoria.id)}
                                                 className="hover:shadow-2xl transition-all duration-300 hover:scale-95 backdrop-blur-sm border-2 border-[#05315f] hover:border-[#ffecd1] min-h-[120px] sm:h-30 rounded-xl overflow-hidden"
                                                 style={{ 
-                                                    background: 'linear-gradient(135deg, #001f3f 0%, #05315f 100%)'
+                                                    background: 'linear-gradient(135deg, #05315f 20%, #f0e7ceff 100%)'
                                                 }}
                                             >
                                                 <CardBody className="p-3 sm:p-4 flex flex-col justify-between h-full relative">

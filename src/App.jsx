@@ -2,7 +2,6 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 
 import Contact from "./pages/Contact";
-import Checkout from "./pages/Checkout";
 import Home from "./pages/Home";
 import Login from "./pages/user/Login";
 import Profile from "./pages/user/Profile";
@@ -21,7 +20,6 @@ export default function App(){
                     <Route path="/" element={<Home />} />
                     <Route path="contact" element={<Contact />} />
                     <Route path="profile" element={<Profile />} />
-                    <Route path="checkout" element={<Checkout />} />
                     <Route path="login" element={<Login />} />
                     <Route path="register" element={<Register />} />
                     <Route path="newCompany" element={<NewCompany />} />

@@ -3,6 +3,9 @@ import Layout from "../../components/layout/Layout";
 import { Link, useNavigate } from "react-router-dom";
 import { enderecosAPI, clientesAPI, profissionaisAPI } from '../../services/apiService';
 import { useForm } from '../../hooks/useForm';
+import { Card, CardHeader, CardBody, Button, Divider } from '@heroui/react';
+import { User, Mail, Lock, Phone, CreditCard, Calendar, MapPin, Home, Building, ArrowRight, ArrowLeft, UserPlus, LogIn, Search } from 'lucide-react';
+import Logo from '../../assets/peixe.png';
 
 export default function Register() {
     const navigate = useNavigate();
@@ -178,367 +181,475 @@ export default function Register() {
 
     return (
         <Layout>
-            <main>
-                <form className="form-center" onSubmit={handleSubmit}>
-                    <h2 className="register-title">
-                        📝 Cadastro de Usuário
-                    </h2>
-
-                    {/* Mensagem de feedback */}
-                    {message && (
-                        <div className={`feedback-message ${message.includes('✅') ? 'feedback-success' : 'feedback-error'}`}>
-                            {message}
+            <main style={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                justifyContent: 'center', 
+                minHeight: 'calc(100vh - 200px)', 
+                padding: '2rem 1rem' 
+            }}>
+                <Card style={{ width: '100%', maxWidth: '600px' }} className="shadow-2xl">
+                    <CardHeader style={{ 
+                        display: 'flex', 
+                        flexDirection: 'column', 
+                        gap: '1rem', 
+                        paddingBottom: '1rem' 
+                    }}>
+                        <div style={{ display: 'flex', justifyContent: 'center' }}>
+                            <img src={Logo} alt="Logo" style={{ maxWidth: '100px', height: 'auto' }} />
                         </div>
-                    )}
+                        <div style={{ 
+                            display: 'flex', 
+                            flexDirection: 'column', 
+                            gap: '0.25rem', 
+                            textAlign: 'center' 
+                        }}>
+                            <h2 style={{ 
+                                fontSize: '1.5rem', 
+                                fontWeight: 'bold', 
+                                color: '#05315f',
+                                margin: 0
+                            }}>
+                                {showAddressForm ? '🏡 Cadastro de Endereço' : '📝 Cadastro de Usuário'}
+                            </h2>
+                            <p style={{ 
+                                fontSize: '0.875rem', 
+                                color: '#666',
+                                margin: 0
+                            }}>
+                                {showAddressForm ? 'Complete seu cadastro com seu endereço' : 'Preencha os dados abaixo para criar sua conta'}
+                            </p>
+                        </div>
+                    </CardHeader>
+                    <Divider />
+                    <CardBody style={{ gap: '1rem' }}>
+                        {/* Mensagem de feedback */}
+                        {message && (
+                            <div style={{
+                                padding: '0.75rem',
+                                borderRadius: '0.5rem',
+                                textAlign: 'center',
+                                fontSize: '0.875rem',
+                                fontWeight: '500',
+                                backgroundColor: message.includes('✅') ? '#d4edda' : '#f8d7da',
+                                color: message.includes('✅') ? '#155724' : '#721c24',
+                                border: `1px solid ${message.includes('✅') ? '#c3e6cb' : '#f5c6cb'}`
+                            }}>
+                                {message}
+                            </div>
+                        )}
 
+                        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                     {/* Formulário de Dados Pessoais */}
                     {!showAddressForm && (
-                        <div>
-                    <div className="form-group">
-                        <label htmlFor="nameInput">Nome:</label>
-                        <input 
-                            name="nameInput" 
-                            id="nameInput" 
-                            type="text" 
-                            value={formData.nome}
-                            onChange={(e) => handleInputChange('nome', e.target.value)}
-                            className={errors.nome ? 'input-error' : ''}
-                            disabled={loading}
-                        />
-                        {errors.nome && (
-                            <span className="error-text">
-                                {errors.nome}
-                            </span>
-                        )}
-                    </div>
+                        <>
+                            {/* Nome */}
+                            <div style={{ width: '100%' }}>
+                                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500', color: '#374151', fontSize: '0.875rem' }}>
+                                    Nome Completo
+                                </label>
+                                <div style={{ position: 'relative' }}>
+                                    <User size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#9ca3af', zIndex: 1 }} />
+                                    <input 
+                                        type="text" 
+                                        value={formData.nome}
+                                        onChange={(e) => handleInputChange('nome', e.target.value)}
+                                        disabled={loading}
+                                        placeholder="Digite seu nome completo"
+                                        style={{ width: '100%', padding: '0.75rem 0.75rem 0.75rem 2.5rem', fontSize: '1rem', border: `2px solid ${errors.nome ? '#dc3545' : '#d1d5db'}`, borderRadius: '0.5rem', outline: 'none', transition: 'all 0.2s', backgroundColor: '#fff', color: '#05315f', boxSizing: 'border-box' }}
+                                        onFocus={(e) => { if (!errors.nome) e.target.style.borderColor = '#05315f'; }}
+                                        onBlur={(e) => { if (!errors.nome) e.target.style.borderColor = '#d1d5db'; }}
+                                    />
+                                </div>
+                                {errors.nome && <span style={{ display: 'block', marginTop: '0.25rem', color: '#dc3545', fontSize: '0.875rem' }}>{errors.nome}</span>}
+                            </div>
 
-                    <div className="form-group">
-                        <label htmlFor="emailInput">E-mail:</label>
-                        <input 
-                            name="emailInput" 
-                            id="emailInput" 
-                            type="email" 
-                            value={formData.email}
-                            onChange={(e) => handleInputChange('email', e.target.value)}
-                            className={errors.email ? 'input-error' : ''}
-                            disabled={loading}
-                        />
-                        {errors.email && (
-                            <span className="error-text">
-                                {errors.email}
-                            </span>
-                        )}
-                    </div>
+                            {/* Email */}
+                            <div style={{ width: '100%' }}>
+                                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500', color: '#374151', fontSize: '0.875rem' }}>
+                                    E-mail
+                                </label>
+                                <div style={{ position: 'relative' }}>
+                                    <Mail size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#9ca3af', zIndex: 1 }} />
+                                    <input 
+                                        type="email" 
+                                        value={formData.email}
+                                        onChange={(e) => handleInputChange('email', e.target.value)}
+                                        disabled={loading}
+                                        placeholder="seu@email.com"
+                                        style={{ width: '100%', padding: '0.75rem 0.75rem 0.75rem 2.5rem', fontSize: '1rem', border: `2px solid ${errors.email ? '#dc3545' : '#d1d5db'}`, borderRadius: '0.5rem', outline: 'none', transition: 'all 0.2s', backgroundColor: '#fff', color: '#05315f', boxSizing: 'border-box' }}
+                                        onFocus={(e) => { if (!errors.email) e.target.style.borderColor = '#05315f'; }}
+                                        onBlur={(e) => { if (!errors.email) e.target.style.borderColor = '#d1d5db'; }}
+                                    />
+                                </div>
+                                {errors.email && <span style={{ display: 'block', marginTop: '0.25rem', color: '#dc3545', fontSize: '0.875rem' }}>{errors.email}</span>}
+                            </div>
 
-                    <div className="form-group">
-                        <label htmlFor="passwordInput">Senha:</label>
-                        <input 
-                            name="passwordInput" 
-                            id="passwordInput" 
-                            type="password" 
-                            value={formData.senha}
-                            onChange={(e) => handleInputChange('senha', e.target.value)}
-                            className={errors.senha ? 'input-error' : ''}
-                            disabled={loading}
-                            placeholder="Mínimo 8 caracteres"
-                        />
-                        <small style={{ color: '#999', fontSize: '12px', display: 'block', marginTop: '5px' }}>
-                            A senha deve conter um número, um caractere alfanumérico e uma letra maiúscula.
-                        </small>
-                        {errors.senha && (
-                            <span className="error-text">
-                                {errors.senha}
-                            </span>
-                        )}
-                    </div>
+                            {/* Senha */}
+                            <div style={{ width: '100%' }}>
+                                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500', color: '#374151', fontSize: '0.875rem' }}>
+                                    Senha
+                                </label>
+                                <div style={{ position: 'relative' }}>
+                                    <Lock size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#9ca3af', zIndex: 1 }} />
+                                    <input 
+                                        type="password" 
+                                        value={formData.senha}
+                                        onChange={(e) => handleInputChange('senha', e.target.value)}
+                                        disabled={loading}
+                                        placeholder="Mínimo 8 caracteres"
+                                        style={{ width: '100%', padding: '0.75rem 0.75rem 0.75rem 2.5rem', fontSize: '1rem', border: `2px solid ${errors.senha ? '#dc3545' : '#d1d5db'}`, borderRadius: '0.5rem', outline: 'none', transition: 'all 0.2s', backgroundColor: '#fff', color: '#05315f', boxSizing: 'border-box' }}
+                                        onFocus={(e) => { if (!errors.senha) e.target.style.borderColor = '#05315f'; }}
+                                        onBlur={(e) => { if (!errors.senha) e.target.style.borderColor = '#d1d5db'; }}
+                                    />
+                                </div>
+                                <small style={{ color: '#666', fontSize: '0.75rem', display: 'block', marginTop: '0.25rem' }}>
+                                    Deve conter número, caractere especial e letra maiúscula
+                                </small>
+                                {errors.senha && <span style={{ display: 'block', marginTop: '0.25rem', color: '#dc3545', fontSize: '0.875rem' }}>{errors.senha}</span>}
+                            </div>
 
-                    <div className="form-group">
-                        <label htmlFor="confirmPasswordInput">Confirme sua Senha:</label>
-                        <input 
-                            name="confirmPasswordInput" 
-                            id="confirmPasswordInput" 
-                            type="password" 
-                            disabled={loading}
-                            placeholder="Digite a senha novamente"
-                        />
-                    </div>
+                            {/* Confirmar Senha */}
+                            <div style={{ width: '100%' }}>
+                                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500', color: '#374151', fontSize: '0.875rem' }}>
+                                    Confirmar Senha
+                                </label>
+                                <div style={{ position: 'relative' }}>
+                                    <Lock size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#9ca3af', zIndex: 1 }} />
+                                    <input 
+                                        type="password" 
+                                        disabled={loading}
+                                        placeholder="Digite a senha novamente"
+                                        style={{ width: '100%', padding: '0.75rem 0.75rem 0.75rem 2.5rem', fontSize: '1rem', border: '2px solid #d1d5db', borderRadius: '0.5rem', outline: 'none', transition: 'all 0.2s', backgroundColor: '#fff', color: '#05315f', boxSizing: 'border-box' }}
+                                        onFocus={(e) => e.target.style.borderColor = '#05315f'}
+                                        onBlur={(e) => e.target.style.borderColor = '#d1d5db'}
+                                    />
+                                </div>
+                            </div>
 
-                    <div className="form-group">
-                        <label htmlFor="telefoneInput">Telefone:</label>
-                        <input 
-                            name="telefoneInput" 
-                            id="telefoneInput" 
-                            type="text" 
-                            value={formData.telefone}
-                            onChange={(e) => handleInputChange('telefone', e.target.value)}
-                            className={errors.telefone ? 'input-error' : ''}
-                            disabled={loading}
-                            placeholder="(11) 99999-9999"
-                        />
-                        {errors.telefone && (
-                            <span className="error-text">
-                                {errors.telefone}
-                            </span>
-                        )}
-                    </div>
+                            {/* Telefone */}
+                            <div style={{ width: '100%' }}>
+                                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500', color: '#374151', fontSize: '0.875rem' }}>
+                                    Telefone
+                                </label>
+                                <div style={{ position: 'relative' }}>
+                                    <Phone size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#9ca3af', zIndex: 1 }} />
+                                    <input 
+                                        type="text" 
+                                        value={formData.telefone}
+                                        onChange={(e) => handleInputChange('telefone', e.target.value)}
+                                        disabled={loading}
+                                        placeholder="(11) 99999-9999"
+                                        style={{ width: '100%', padding: '0.75rem 0.75rem 0.75rem 2.5rem', fontSize: '1rem', border: `2px solid ${errors.telefone ? '#dc3545' : '#d1d5db'}`, borderRadius: '0.5rem', outline: 'none', transition: 'all 0.2s', backgroundColor: '#fff', color: '#05315f', boxSizing: 'border-box' }}
+                                        onFocus={(e) => { if (!errors.telefone) e.target.style.borderColor = '#05315f'; }}
+                                        onBlur={(e) => { if (!errors.telefone) e.target.style.borderColor = '#d1d5db'; }}
+                                    />
+                                </div>
+                                {errors.telefone && <span style={{ display: 'block', marginTop: '0.25rem', color: '#dc3545', fontSize: '0.875rem' }}>{errors.telefone}</span>}
+                            </div>
 
-                    <div className="form-group">
-                        <label htmlFor="cpfInput">CPF:</label>
-                        <input 
-                            name="cpfInput" 
-                            id="cpfInput" 
-                            type="text" 
-                            value={formData.cpf}
-                            onChange={(e) => handleInputChange('cpf', e.target.value)}
-                            className={errors.cpf ? 'input-error' : ''}
-                            disabled={loading}
-                            placeholder="000.000.000-00"
-                        />
-                        {errors.cpf && (
-                            <span className="error-text">
-                                {errors.cpf}
-                            </span>
-                        )}
-                    </div>
+                            {/* CPF */}
+                            <div style={{ width: '100%' }}>
+                                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500', color: '#374151', fontSize: '0.875rem' }}>
+                                    CPF
+                                </label>
+                                <div style={{ position: 'relative' }}>
+                                    <CreditCard size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#9ca3af', zIndex: 1 }} />
+                                    <input 
+                                        type="text" 
+                                        value={formData.cpf}
+                                        onChange={(e) => handleInputChange('cpf', e.target.value)}
+                                        disabled={loading}
+                                        placeholder="000.000.000-00"
+                                        style={{ width: '100%', padding: '0.75rem 0.75rem 0.75rem 2.5rem', fontSize: '1rem', border: `2px solid ${errors.cpf ? '#dc3545' : '#d1d5db'}`, borderRadius: '0.5rem', outline: 'none', transition: 'all 0.2s', backgroundColor: '#fff', color: '#05315f', boxSizing: 'border-box' }}
+                                        onFocus={(e) => { if (!errors.cpf) e.target.style.borderColor = '#05315f'; }}
+                                        onBlur={(e) => { if (!errors.cpf) e.target.style.borderColor = '#d1d5db'; }}
+                                    />
+                                </div>
+                                {errors.cpf && <span style={{ display: 'block', marginTop: '0.25rem', color: '#dc3545', fontSize: '0.875rem' }}>{errors.cpf}</span>}
+                            </div>
 
-                    <div className="form-group">
-                        <label htmlFor="dataNascimentoInput">Data de Nascimento:</label>
-                        <input 
-                            name="dataNascimentoInput" 
-                            id="dataNascimentoInput" 
-                            type="date" 
-                            value={dataNascimento}
-                            onChange={(e) => setDataNascimento(e.target.value)}
-                            disabled={loading}
-                        />
-                    </div>
+                            {/* Data de Nascimento */}
+                            <div style={{ width: '100%' }}>
+                                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500', color: '#374151', fontSize: '0.875rem' }}>
+                                    Data de Nascimento
+                                </label>
+                                <div style={{ position: 'relative' }}>
+                                    <Calendar size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#9ca3af', zIndex: 1 }} />
+                                    <input 
+                                        type="date" 
+                                        value={dataNascimento}
+                                        onChange={(e) => setDataNascimento(e.target.value)}
+                                        disabled={loading}
+                                        style={{ width: '100%', padding: '0.75rem 0.75rem 0.75rem 2.5rem', fontSize: '1rem', border: '2px solid #d1d5db', borderRadius: '0.5rem', outline: 'none', transition: 'all 0.2s', backgroundColor: '#fff', color: '#05315f', boxSizing: 'border-box' }}
+                                        onFocus={(e) => e.target.style.borderColor = '#05315f'}
+                                        onBlur={(e) => e.target.style.borderColor = '#d1d5db'}
+                                    />
+                                </div>
+                            </div>
 
-                    
-                    <div className="form-group">
-                        <label>Tipo de Usuário:</label>
-                        <div className="radio-group">
-                            <label htmlFor="pfInput" className="radio-label">
-                                <input 
-                                    name="tipoUsuario" 
-                                    id="pfInput" 
-                                    type="radio" 
-                                    value="pf"
-                                    checked={formData.tipoUsuario === 'pf'}
-                                    onChange={(e) => handleInputChange('tipoUsuario', e.target.value)}
-                                    disabled={loading}
-                                />
-                                Pessoa Física
-                            </label>
-                            <label htmlFor="pjInput" className="radio-label">
-                                <input 
-                                    name="tipoUsuario" 
-                                    id="pjInput" 
-                                    type="radio" 
-                                    value="pj"
-                                    checked={formData.tipoUsuario === 'pj'}
-                                    onChange={(e) => handleInputChange('tipoUsuario', e.target.value)}
-                                    disabled={loading}
-                                />
-                                Pessoa Jurídica
-                            </label>
-                        </div>
-                        {errors.tipoUsuario && (
-                            <span className="error-text">
-                                {errors.tipoUsuario}
-                            </span>
-                        )}
-                    </div>
 
-                    {!showAddressForm && formData.tipoUsuario === 'pf' && (
-                        <button 
-                            type="button"
-                            onClick={() => setShowAddressForm(true)}
-                            disabled={loading}
-                            style={{
-                                backgroundColor: '#28a745',
-                                width: '100%',
-                                marginTop: '10px'
-                            }}
-                        >
-                            ➡️ Cadastrar Endereço
-                        </button>
+                            {/* Tipo de Usuário */}
+                            <div style={{ width: '100%' }}>
+                                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500', color: '#374151', fontSize: '0.875rem' }}>
+                                    Tipo de Usuário
+                                </label>
+                                <div style={{ display: 'flex', gap: '1rem' }}>
+                                    <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', padding: '0.75rem', border: `2px solid ${formData.tipoUsuario === 'pf' ? '#05315f' : '#d1d5db'}`, borderRadius: '0.5rem', flex: 1, backgroundColor: formData.tipoUsuario === 'pf' ? '#f0f9ff' : '#fff', transition: 'all 0.2s' }}>
+                                        <input 
+                                            type="radio" 
+                                            name="tipoUsuario"
+                                            value="pf"
+                                            checked={formData.tipoUsuario === 'pf'}
+                                            onChange={(e) => handleInputChange('tipoUsuario', e.target.value)}
+                                            disabled={loading}
+                                            style={{ width: '18px', height: '18px', cursor: 'pointer' }}
+                                        />
+                                        <span style={{ fontWeight: '500', color: '#374151', fontSize: '0.875rem' }}>Pessoa Física</span>
+                                    </label>
+                                    <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', padding: '0.75rem', border: `2px solid ${formData.tipoUsuario === 'pj' ? '#05315f' : '#d1d5db'}`, borderRadius: '0.5rem', flex: 1, backgroundColor: formData.tipoUsuario === 'pj' ? '#f0f9ff' : '#fff', transition: 'all 0.2s' }}>
+                                        <input 
+                                            type="radio" 
+                                            name="tipoUsuario"
+                                            value="pj"
+                                            checked={formData.tipoUsuario === 'pj'}
+                                            onChange={(e) => handleInputChange('tipoUsuario', e.target.value)}
+                                            disabled={loading}
+                                            style={{ width: '18px', height: '18px', cursor: 'pointer' }}
+                                        />
+                                        <span style={{ fontWeight: '500', color: '#374151', fontSize: '0.875rem' }}>Pessoa Jurídica</span>
+                                    </label>
+                                </div>
+                                {errors.tipoUsuario && <span style={{ display: 'block', marginTop: '0.25rem', color: '#dc3545', fontSize: '0.875rem' }}>{errors.tipoUsuario}</span>}
+                            </div>
+
+                            <Divider style={{ margin: '0.5rem 0' }} />
+
+                            {/* Botões */}
+                            {formData.tipoUsuario === 'pf' && (
+                                <Button
+                                    type="button"
+                                    onClick={() => setShowAddressForm(true)}
+                                    isDisabled={loading}
+                                    size="lg"
+                                    className="hover:bg-[#dbcab2] w-full bg-[#ffecd1] text-[#05315f] font-bold border-2 border-[#05315f] transition-all duration-300 shadow-md hover:shadow-lg"
+                                    endContent={<ArrowRight size={20} />}
+                                >
+                                    Cadastrar Endereço
+                                </Button>
+                            )}
+                            {formData.tipoUsuario === 'pj' && (
+                                <Button
+                                    type="submit"
+                                    isDisabled={loading || !isFormComplete()}
+                                    isLoading={loading}
+                                    size="lg"
+                                    className="bg-[#05315f] text-white font-bold hover:bg-[#041f3f] transition-all duration-300 shadow-md hover:shadow-lg"
+                                    startContent={!loading && <UserPlus size={20} />}
+                                >
+                                    {loading ? 'Cadastrando...' : 'Cadastrar'}
+                                </Button>
+                            )}
+
+                            <Link to="/login">
+                                <Button
+                                    type="button"
+                                    isDisabled={loading}
+                                    size="lg"
+                                    variant="bordered"
+                                    className="bg-black border-2 w-full border-gray-300 text-white font-semibold hover:border-[#05315f] hover:text-[#000000] hover:bg-white transition-all duration-300"
+                                    startContent={<LogIn size={20} />}
+                                >
+                                    Já tenho conta
+                                </Button>
+                            </Link>
+                        </>
                     )}
-                    {!showAddressForm && formData.tipoUsuario === 'pj' && (
-                        <button 
-                            type="submit"
-                            disabled={loading || !isFormComplete()}
-                            style={{
-                                backgroundColor: '#28a745',
-                                width: '100%',
-                                marginTop: '10px',
-                                opacity: (!isFormComplete() && !loading) ? 0.5 : 1,
-                                cursor: (!isFormComplete() && !loading) ? 'not-allowed' : 'pointer'
-                            }}
-                        >
-                            {loading ? '⏳ Cadastrando...' : '📝 Cadastrar'}
-                        </button>
-                    )}
-                </div>
-            )}
 
             {/* Formulário de Endereço */}
             {showAddressForm && (
-                <div>
-                    <h2 className="register-section-title2">
-                        🏡 Endereço
-                    </h2>
+                <>
+                    <Divider style={{ margin: '1.5rem 0' }} />
+                    
+                    <h3 style={{ fontSize: '1.25rem', fontWeight: '700', color: '#05315f', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                        <MapPin size={24} />
+                        Endereço
+                    </h3>
 
-                    <div className="form-group">
-                        <label htmlFor="enderecoInput">CEP:</label>
-                        <div style={{ display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
-                            <input 
-                                name="enderecoInput" 
-                                id="enderecoInput" 
-                                type="text" 
-                                value={formData.cep}
-                                onChange={(e) => handleInputChange('cep', e.target.value)}
-                                className={errors.cep ? 'input-error' : ''}
-                                disabled={loading}
-                                placeholder="00000-000"
-                                style={{ flex: 1 }}
-                            />
-                            <button
+                    {/* CEP */}
+                    <div style={{ width: '100%' }}>
+                        <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500', color: '#374151', fontSize: '0.875rem' }}>CEP</label>
+                        <div style={{ display: 'flex', gap: '0.5rem' }}>
+                            <div style={{ position: 'relative', flex: 1 }}>
+                                <MapPin size={18} style={{ position: 'absolute', left: '0.75rem', top: '50%', transform: 'translateY(-50%)', color: '#6b7280' }} />
+                                <input
+                                    type="text"
+                                    name="enderecoInput"
+                                    placeholder="00000-000"
+                                    value={formData.cep}
+                                    onChange={(e) => handleInputChange('cep', e.target.value)}
+                                    disabled={loading}
+                                    style={{ width: '100%', padding: '0.75rem', paddingLeft: '2.5rem', fontSize: '1rem', border: `2px solid ${errors.cep ? '#dc3545' : '#d1d5db'}`, borderRadius: '0.5rem', outline: 'none', transition: 'all 0.2s', backgroundColor: loading ? '#f3f4f6' : '#fff' }}
+                                    onFocus={(e) => e.target.style.borderColor = '#05315f'}
+                                    onBlur={(e) => { if (!e.target.value && !errors.cep) e.target.style.borderColor = '#d1d5db'; }}
+                                />
+                            </div>
+                            <Button
                                 type="button"
                                 onClick={buscarCep}
-                                disabled={loading || buscandoCep || !formData.cep}
-                                style={{
-                                    padding: '10px 15px',
-                                    backgroundColor: '#007bff',
-                                    color: 'white',
-                                    border: 'none',
-                                    borderRadius: '4px',
-                                    cursor: 'pointer',
-                                    fontSize: '16px',
-                                    opacity: (!formData.cep || loading || buscandoCep) ? 0.5 : 1
-                                }}
-                                title="Buscar endereço pelo CEP"
+                                isDisabled={loading || buscandoCep || !formData.cep}
+                                isLoading={buscandoCep}
+                                size="lg"
+                                className="bg-black border-2 border-gray-300 text-white font-semibold hover:border-[#05315f] hover:text-[#000000] hover:bg-white transition-all duration-300"
+                                startContent={!buscandoCep && <Search size={18} />}
                             >
-                                {buscandoCep ? '⏳' : '🔍'}
-                            </button>
+                                Buscar
+                            </Button>
                         </div>
-                        {errors.cep && (
-                            <span className="error-text">
-                                {errors.cep}
-                            </span>
-                        )}
+                        {errors.cep && <span style={{ display: 'block', marginTop: '0.25rem', color: '#dc3545', fontSize: '0.875rem' }}>{errors.cep}</span>}
                     </div>
 
-                    <div className="form-group form-row">
-                        <div className="form-col-3">
-                            <label htmlFor="ruaInput">Rua:</label>
-                            <input 
-                                name="ruaInput" 
-                                id="ruaInput" 
-                                type="text" 
-                                value={addressData.rua}
-                                onChange={(e) => setAddressData({...addressData, rua: e.target.value})}
-                                disabled={loading}
-                                placeholder="Aguardando CEP..."
-                            />
+                    {/* Rua e Número */}
+                    <div style={{ width: '100%', display: 'flex', gap: '1rem' }}>
+                        <div style={{ flex: 3 }}>
+                            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500', color: '#374151', fontSize: '0.875rem' }}>Rua</label>
+                            <div style={{ position: 'relative' }}>
+                                <Home size={18} style={{ position: 'absolute', left: '0.75rem', top: '50%', transform: 'translateY(-50%)', color: '#6b7280' }} />
+                                <input
+                                    type="text"
+                                    name="ruaInput"
+                                    placeholder="Aguardando CEP..."
+                                    value={addressData.rua}
+                                    onChange={(e) => setAddressData({...addressData, rua: e.target.value})}
+                                    disabled={loading}
+                                    style={{ width: '100%', padding: '0.75rem', paddingLeft: '2.5rem', fontSize: '1rem', border: '2px solid #d1d5db', borderRadius: '0.5rem', outline: 'none', transition: 'all 0.2s', backgroundColor: loading ? '#f3f4f6' : '#fff' }}
+                                    onFocus={(e) => e.target.style.borderColor = '#05315f'}
+                                    onBlur={(e) => { if (!e.target.value) e.target.style.borderColor = '#d1d5db'; }}
+                                />
+                            </div>
                         </div>
-                        <div className="form-col-1">
-                            <label htmlFor="numeroInput">Número:</label>
-                            <input 
-                                name="numeroInput" 
-                                id="numeroInput" 
-                                type="text" 
-                                value={addressData.numero}
-                                onChange={(e) => setAddressData({...addressData, numero: e.target.value})}
-                                disabled={loading}
-                                placeholder="Nº"
-                            />
+
+                        <div style={{ flex: 1 }}>
+                            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500', color: '#374151', fontSize: '0.875rem' }}>Número</label>
+                            <div style={{ position: 'relative' }}>
+                                <Building size={18} style={{ position: 'absolute', left: '0.75rem', top: '50%', transform: 'translateY(-50%)', color: '#6b7280' }} />
+                                <input
+                                    type="text"
+                                    name="numeroInput"
+                                    placeholder="Nº"
+                                    value={addressData.numero}
+                                    onChange={(e) => setAddressData({...addressData, numero: e.target.value})}
+                                    disabled={loading}
+                                    style={{ width: '100%', padding: '0.75rem', paddingLeft: '2.5rem', fontSize: '1rem', border: '2px solid #d1d5db', borderRadius: '0.5rem', outline: 'none', transition: 'all 0.2s', backgroundColor: loading ? '#f3f4f6' : '#fff' }}
+                                    onFocus={(e) => e.target.style.borderColor = '#05315f'}
+                                    onBlur={(e) => { if (!e.target.value) e.target.style.borderColor = '#d1d5db'; }}
+                                />
+                            </div>
                         </div>
                     </div>
 
-                    <div className="form-group">
-                        <label htmlFor="complementoInput">Complemento:</label>
-                        <input 
-                            name="complementoInput" 
-                            id="complementoInput" 
-                            type="text" 
-                            value={addressData.complemento}
-                            onChange={(e) => setAddressData({...addressData, complemento: e.target.value})}
-                            disabled={loading}
-                            placeholder="Apartamento, bloco, etc. (opcional)"
-                        />
-                    </div>
-
-                    <div className="form-group form-row">
-                        <div className="form-col-2">
-                            <label htmlFor="cidadeInput">Cidade:</label>
-                            <input 
-                                name="cidadeInput" 
-                                id="cidadeInput" 
-                                type="text" 
-                                value={addressData.cidade}
-                                onChange={(e) => setAddressData({...addressData, cidade: e.target.value})}
+                    {/* Complemento */}
+                    <div style={{ width: '100%' }}>
+                        <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500', color: '#374151', fontSize: '0.875rem' }}>Complemento <span style={{ color: '#6b7280' }}>(Opcional)</span></label>
+                        <div style={{ position: 'relative' }}>
+                            <Home size={18} style={{ position: 'absolute', left: '0.75rem', top: '50%', transform: 'translateY(-50%)', color: '#6b7280' }} />
+                            <input
+                                type="text"
+                                name="complementoInput"
+                                placeholder="Apartamento, bloco, etc."
+                                value={addressData.complemento}
+                                onChange={(e) => setAddressData({...addressData, complemento: e.target.value})}
                                 disabled={loading}
-                                placeholder="Aguardando CEP..."
-                            />
-                        </div>
-                        <div className="form-col-1">
-                            <label htmlFor="estadoInput">Estado:</label>
-                            <input 
-                                name="estadoInput" 
-                                id="estadoInput" 
-                                type="text" 
-                                value={addressData.estado}
-                                onChange={(e) => setAddressData({...addressData, estado: e.target.value})}
-                                disabled={loading}
-                                placeholder="UF"
-                                maxLength="2"
+                                style={{ width: '100%', padding: '0.75rem', paddingLeft: '2.5rem', fontSize: '1rem', border: '2px solid #d1d5db', borderRadius: '0.5rem', outline: 'none', transition: 'all 0.2s', backgroundColor: loading ? '#f3f4f6' : '#fff' }}
+                                onFocus={(e) => e.target.style.borderColor = '#05315f'}
+                                onBlur={(e) => { if (!e.target.value) e.target.style.borderColor = '#d1d5db'; }}
                             />
                         </div>
                     </div>
 
-                    <button 
+                    {/* Cidade e Estado */}
+                    <div style={{ width: '100%', display: 'flex', gap: '1rem' }}>
+                        <div style={{ flex: 3 }}>
+                            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500', color: '#374151', fontSize: '0.875rem' }}>Cidade</label>
+                            <div style={{ position: 'relative' }}>
+                                <Building size={18} style={{ position: 'absolute', left: '0.75rem', top: '50%', transform: 'translateY(-50%)', color: '#6b7280' }} />
+                                <input
+                                    type="text"
+                                    name="cidadeInput"
+                                    placeholder="Aguardando CEP..."
+                                    value={addressData.cidade}
+                                    onChange={(e) => setAddressData({...addressData, cidade: e.target.value})}
+                                    disabled={loading}
+                                    style={{ width: '100%', padding: '0.75rem', paddingLeft: '2.5rem', fontSize: '1rem', border: '2px solid #d1d5db', borderRadius: '0.5rem', outline: 'none', transition: 'all 0.2s', backgroundColor: loading ? '#f3f4f6' : '#fff' }}
+                                    onFocus={(e) => e.target.style.borderColor = '#05315f'}
+                                    onBlur={(e) => { if (!e.target.value) e.target.style.borderColor = '#d1d5db'; }}
+                                />
+                            </div>
+                        </div>
+
+                        <div style={{ flex: 1 }}>
+                            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500', color: '#374151', fontSize: '0.875rem' }}>Estado</label>
+                            <div style={{ position: 'relative' }}>
+                                <MapPin size={18} style={{ position: 'absolute', left: '0.75rem', top: '50%', transform: 'translateY(-50%)', color: '#6b7280' }} />
+                                <input
+                                    type="text"
+                                    name="estadoInput"
+                                    placeholder="UF"
+                                    value={addressData.estado}
+                                    onChange={(e) => setAddressData({...addressData, estado: e.target.value})}
+                                    disabled={loading}
+                                    maxLength="2"
+                                    style={{ width: '100%', padding: '0.75rem', paddingLeft: '2.5rem', fontSize: '1rem', border: '2px solid #d1d5db', borderRadius: '0.5rem', outline: 'none', transition: 'all 0.2s', backgroundColor: loading ? '#f3f4f6' : '#fff', textTransform: 'uppercase' }}
+                                    onFocus={(e) => e.target.style.borderColor = '#05315f'}
+                                    onBlur={(e) => { if (!e.target.value) e.target.style.borderColor = '#d1d5db'; }}
+                                />
+                            </div>
+                        </div>
+                    </div>
+
+                    <Divider style={{ margin: '1rem 0' }} />
+
+                    {/* Botões do formulário de endereço */}
+                    <Button
                         type="button"
                         onClick={() => setShowAddressForm(false)}
-                        disabled={loading}
-                        style={{
-                            backgroundColor: '#6c757d',
-                            width: '100%',
-                            marginBottom: '20px',
-                            marginTop: '20px'
-                        }}
+                        isDisabled={loading}
+                        size="lg"
+                        variant="bordered"
+                        className="bg-[#ffecd1] w-full border-2 border-gray-300 text-gray-700 font-semibold hover:border-gray-500 hover:text-gray-900 transition-all duration-300 mb-3"
+                        startContent={<ArrowLeft size={20} />}
                     >
-                        ⬅️ Retornar
-                    </button>
+                        Retornar
+                    </Button>
 
-                    <button 
-                        type="submit" 
-                        disabled={loading || !isFormComplete()}
-                        className="submit-button"
-                        style={{
-                            opacity: (!isFormComplete() && !loading) ? 0.5 : 1,
-                            cursor: (!isFormComplete() && !loading) ? 'not-allowed' : 'pointer'
-                        }}
+                    <Button
+                        type="submit"
+                        isDisabled={loading || !isFormComplete()}
+                        isLoading={loading}
+                        size="lg"
+                        className="w-full bg-[#05315f] text-white font-bold hover:bg-[#041f3f] transition-all duration-300 shadow-md hover:shadow-lg"
+                        startContent={!loading && <UserPlus size={20} />}
                     >
-                        {loading ? '⏳ Cadastrando...' : '📝 Cadastrar'}
-                    </button>
-                </div>
-            )}
+                        {loading ? 'Cadastrando...' : 'Cadastrar'}
+                    </Button>
 
-            {!showAddressForm && formData.tipoUsuario !== 'pj' && (
-                <Link to="/login">
-                    <button type="button" disabled={loading}>
-                        🔑 Já tenho conta
-                    </button>
-                </Link>
-            )}
-            {!showAddressForm && formData.tipoUsuario === 'pj' && (
-                <Link to="/login">
-                    <button type="button" disabled={loading}>
-                        🔑 Já tenho conta
-                    </button>
-                </Link>
+                    <Link to="/login">
+                        <Button
+                            type="button"
+                            isDisabled={loading}
+                            size="lg"
+                            variant="bordered"
+                            className="bg-black border-2 w-full border-gray-300 text-white font-semibold hover:border-[#05315f] hover:text-[#000000] hover:bg-white transition-all duration-300"
+                            startContent={<LogIn size={20} />}
+                        >
+                            Já tenho conta
+                        </Button>
+                    </Link>
+                </>
             )}
                 </form>
+                </CardBody>
+            </Card>
             </main>
         </Layout>
     );

@@ -3,6 +3,9 @@ import { Link, useNavigate } from 'react-router-dom';
 import Layout from '../../components/layout/Layout';
 import { authAPI } from '../../services/apiService';
 import { useAuth } from '../../contexts/AuthContext';
+import { Card, CardHeader, CardBody, Button, Divider } from '@heroui/react';
+import { Mail, Lock, LogIn, UserPlus, Key } from 'lucide-react';
+import Logo from '../../assets/peixe.png';
 
 export default function Login() {
     const { login } = useAuth();
@@ -150,113 +153,227 @@ export default function Login() {
 
     return (
         <Layout>
-            <main>
-                <form className="form-center" onSubmit={handleSubmit}>
-                    <h2 style={{ textAlign: 'center', marginBottom: '20px', color: '#fff' }}>
-                        🔑 Login do Usuário
-                    </h2>
-
-                    {/* Mensagem de feedback */}
-                    {message && (
-                        <div style={{
-                            padding: '10px',
-                            marginBottom: '20px',
-                            borderRadius: '4px',
-                            textAlign: 'center',
-                            backgroundColor: message.includes('✅') ? '#d4edda' : '#f8d7da',
-                            color: message.includes('✅') ? '#155724' : '#721c24',
-                            border: `1px solid ${message.includes('✅') ? '#c3e6cb' : '#f5c6cb'}`
-                        }}>
-                            {message}
-                        </div>
-                    )}
-
-                    <div className="form-group">
-                        <label htmlFor="userInput">Email:</label>
-                        <input 
-                            name="userInput" 
-                            id="userInput" 
-                            type="email" 
-                            value={formData.email}
-                            onChange={(e) => handleInputChange('email', e.target.value)}
-                            style={{
-                                borderColor: errors.email ? '#dc3545' : '#ddd'
-                            }}
-                            disabled={loading}
-                            placeholder="Digite seu email..."
-                        />
-                        {errors.email && (
-                            <span style={{ color: '#dc3545', fontSize: '14px' }}>
-                                {errors.email}
-                            </span>
-                        )}
-                    </div>
-
-                    <div className="form-group">
-                        <label htmlFor="passwordInput">Senha:</label>
-                        <input 
-                            name="passwordInput" 
-                            id="passwordInput" 
-                            type="password" 
-                            value={formData.senha}
-                            onChange={(e) => handleInputChange('senha', e.target.value)}
-                            style={{
-                                borderColor: errors.senha ? '#dc3545' : '#ddd'
-                            }}
-                            disabled={loading}
-                            placeholder="Digite sua senha..."
-                        />
-                        {errors.senha && (
-                            <span style={{ color: '#dc3545', fontSize: '14px' }}>
-                                {errors.senha}
-                            </span>
-                        )}
-                    </div>
-
-                    <button 
-                        type="submit" 
-                        disabled={loading}
-                        style={{
-                            backgroundColor: loading ? '#ccc' : '#007bff',
-                            cursor: loading ? 'not-allowed' : 'pointer',
-                            opacity: loading ? 0.6 : 1
-                        }}
-                    >
-                        {loading ? '⏳ Entrando...' : '🔑 Entrar'}
-                    </button>
-                    
-                    <div style={{ 
+            <main style={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                justifyContent: 'center', 
+                minHeight: 'calc(100vh - 200px)', 
+                padding: '2rem 1rem' 
+            }}>
+                <Card style={{ width: '100%', maxWidth: '450px' }} className="shadow-2xl">
+                    <CardHeader style={{ 
                         display: 'flex', 
                         flexDirection: 'column', 
-                        gap: '10px', 
-                        marginTop: '15px' 
+                        gap: '1rem', 
+                        paddingBottom: '1rem' 
                     }}>
-                        <button 
-                            type="button" 
-                            disabled={loading}
-                            style={{
-                                backgroundColor: '#6c757d',
-                                cursor: loading ? 'not-allowed' : 'pointer'
-                            }}
-                        >
-                            🔄 Esqueceu a senha?
-                        </button>
-                        
-                        <Link to="/register">
-                            <button 
-                                type="button" 
-                                disabled={loading}
-                                style={{
-                                    backgroundColor: '#28a745',
-                                    cursor: loading ? 'not-allowed' : 'pointer',
-                                    width: '100%'
-                                }}
+                        <div style={{ display: 'flex', justifyContent: 'center' }}>
+                            <img src={Logo} alt="Logo" style={{ maxWidth: '100px', height: 'auto' }} />
+                        </div>
+                        <div style={{ 
+                            display: 'flex', 
+                            flexDirection: 'column', 
+                            gap: '0.25rem', 
+                            textAlign: 'center' 
+                        }}>
+                            <h2 style={{ 
+                                fontSize: '1.5rem', 
+                                fontWeight: 'bold', 
+                                color: '#05315f',
+                                margin: 0
+                            }}>
+                                Bem-vindo de volta!
+                            </h2>
+                            <p style={{ 
+                                fontSize: '0.875rem', 
+                                color: '#666',
+                                margin: 0
+                            }}>
+                                Entre com suas credenciais para acessar sua conta
+                            </p>
+                        </div>
+                    </CardHeader>
+                    <Divider />
+                    <CardBody style={{ gap: '1rem' }}>
+                        {/* Mensagem de feedback */}
+                        {message && (
+                            <div style={{
+                                padding: '0.75rem',
+                                borderRadius: '0.5rem',
+                                textAlign: 'center',
+                                fontSize: '0.875rem',
+                                fontWeight: '500',
+                                backgroundColor: message.includes('✅') ? '#d4edda' : '#f8d7da',
+                                color: message.includes('✅') ? '#155724' : '#721c24',
+                                border: `1px solid ${message.includes('✅') ? '#c3e6cb' : '#f5c6cb'}`
+                            }}>
+                                {message}
+                            </div>
+                        )}
+
+                        <form onSubmit={handleSubmit} style={{ 
+                            display: 'flex', 
+                            flexDirection: 'column', 
+                            gap: '1rem' 
+                        }}>
+                            <div style={{ width: '100%' }}>
+                                <label style={{ 
+                                    display: 'block', 
+                                    marginBottom: '0.5rem', 
+                                    fontWeight: '500',
+                                    color: '#374151',
+                                    fontSize: '0.875rem'
+                                }}>
+                                    Email
+                                </label>
+                                <div style={{ position: 'relative' }}>
+                                    <Mail size={18} style={{ 
+                                        position: 'absolute', 
+                                        left: '12px', 
+                                        top: '50%', 
+                                        transform: 'translateY(-50%)',
+                                        color: '#9ca3af',
+                                        zIndex: 1
+                                    }} />
+                                    <input 
+                                        type="email" 
+                                        value={formData.email}
+                                        onChange={(e) => handleInputChange('email', e.target.value)}
+                                        disabled={loading}
+                                        placeholder="seu@email.com"
+                                        style={{
+                                            width: '100%',
+                                            padding: '0.75rem 0.75rem 0.75rem 2.5rem',
+                                            fontSize: '1rem',
+                                            border: `2px solid ${errors.email ? '#dc3545' : '#d1d5db'}`,
+                                            borderRadius: '0.5rem',
+                                            outline: 'none',
+                                            transition: 'all 0.2s',
+                                            backgroundColor: '#fff',
+                                            color: '#05315f',
+                                            boxSizing: 'border-box'
+                                        }}
+                                        onFocus={(e) => {
+                                            if (!errors.email) e.target.style.borderColor = '#05315f';
+                                        }}
+                                        onBlur={(e) => {
+                                            if (!errors.email) e.target.style.borderColor = '#d1d5db';
+                                        }}
+                                    />
+                                </div>
+                                {errors.email && (
+                                    <span style={{ 
+                                        display: 'block',
+                                        marginTop: '0.25rem',
+                                        color: '#dc3545', 
+                                        fontSize: '0.875rem' 
+                                    }}>
+                                        {errors.email}
+                                    </span>
+                                )}
+                            </div>
+
+                            <div style={{ width: '100%' }}>
+                                <label style={{ 
+                                    display: 'block', 
+                                    marginBottom: '0.5rem', 
+                                    fontWeight: '500',
+                                    color: '#374151',
+                                    fontSize: '0.875rem'
+                                }}>
+                                    Senha
+                                </label>
+                                <div style={{ position: 'relative' }}>
+                                    <Lock size={18} style={{ 
+                                        position: 'absolute', 
+                                        left: '12px', 
+                                        top: '50%', 
+                                        transform: 'translateY(-50%)',
+                                        color: '#9ca3af',
+                                        zIndex: 1
+                                    }} />
+                                    <input 
+                                        type="password" 
+                                        value={formData.senha}
+                                        onChange={(e) => handleInputChange('senha', e.target.value)}
+                                        disabled={loading}
+                                        placeholder="Digite sua senha"
+                                        style={{
+                                            width: '100%',
+                                            padding: '0.75rem 0.75rem 0.75rem 2.5rem',
+                                            fontSize: '1rem',
+                                            border: `2px solid ${errors.senha ? '#dc3545' : '#d1d5db'}`,
+                                            borderRadius: '0.5rem',
+                                            outline: 'none',
+                                            transition: 'all 0.2s',
+                                            backgroundColor: '#fff',
+                                            color: '#05315f',
+                                            boxSizing: 'border-box'
+                                        }}
+                                        onFocus={(e) => {
+                                            if (!errors.senha) e.target.style.borderColor = '#05315f';
+                                        }}
+                                        onBlur={(e) => {
+                                            if (!errors.senha) e.target.style.borderColor = '#d1d5db';
+                                        }}
+                                    />
+                                </div>
+                                {errors.senha && (
+                                    <span style={{ 
+                                        display: 'block',
+                                        marginTop: '0.25rem',
+                                        color: '#dc3545', 
+                                        fontSize: '0.875rem' 
+                                    }}>
+                                        {errors.senha}
+                                    </span>
+                                )}
+                            </div>
+
+                            <Button
+                                type="submit"
+                                isDisabled={loading}
+                                isLoading={loading}
+                                size="lg"
+                                className="bg-[#05315f] text-white font-bold hover:bg-[#032447] transition-all duration-300 shadow-md hover:shadow-lg"
+                                startContent={!loading && <LogIn size={20} />}
                             >
-                                📝 Cadastre-se
-                            </button>
-                        </Link>
-                    </div>
-                </form>
+                                {loading ? 'Entrando...' : 'Entrar'}
+                            </Button>
+
+                            <Divider style={{ margin: '0.5rem 0' }} />
+
+                            <div style={{ 
+                                display: 'flex', 
+                                flexDirection: 'column', 
+                                gap: '0.75rem' 
+                            }}>
+                                <Button
+                                    type="button"
+                                    isDisabled={loading}
+                                    size="lg"
+                                    variant="bordered"
+                                    className="bg-black border-2 border-gray-300 text-white font-semibold hover:border-[#05315f] hover:text-[#000000] hover:bg-white transition-all duration-300"
+                                    startContent={<Key size={20} />}
+                                >
+                                    Esqueceu a senha?
+                                </Button>
+
+                                <Link to="/register" style={{ width: '100%' }}>
+                                    <Button
+                                        type="button"
+                                        isDisabled={loading}
+                                        size="lg"
+                                        className="hover:bg-[#dbcab2] w-full bg-[#ffecd1] text-[#05315f] font-bold border-2 border-[#05315f] transition-all duration-300 shadow-md hover:shadow-lg"
+                                        startContent={<UserPlus size={20} />}
+                                    >
+                                        Cadastre-se
+                                    </Button>
+                                </Link>
+                            </div>
+                        </form>
+                    </CardBody>
+                </Card>
             </main>
         </Layout>
     );
