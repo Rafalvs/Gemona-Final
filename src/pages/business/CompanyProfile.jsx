@@ -3,7 +3,9 @@ import Layout from "../../components/layout/Layout";
 import { Link } from "react-router-dom";
 import { useAuth } from '../../contexts/AuthContext';
 import { estabelecimentosAPI, servicosAPI, imagensAPI, subcategoriasAPI, pedidosAPI, clientesAPI } from '../../services/apiService';
+import { Button, Card, CardHeader, CardBody, Chip, Divider, Avatar, Spinner, Input, Select, SelectItem } from '@heroui/react';
 import '../../styles/CompanyProfile.css';
+import '../../styles/HeroUICustom.css';
 
 export default function BusinessProfile(){
     const { user, isAuthenticated, loading: authLoading } = useAuth();
@@ -285,8 +287,8 @@ export default function BusinessProfile(){
         return (
             <Layout>
                 <main>
-                    <div className="loading-container">
-                        <p>⏳ Carregando...</p>
+                    <div className="loading-hero-container">
+                        <Spinner size="lg" color="primary" label="Carregando..." />
                     </div>
                 </main>
             </Layout>
@@ -298,9 +300,16 @@ export default function BusinessProfile(){
             <Layout>
                 <main>
                     <h1>Você precisa estar logado para ver o perfil da empresa</h1>
-                    <Link to="/login">
-                        <button>🔑 Fazer Login</button>
-                    </Link>
+                    <Button 
+                        as={Link} 
+                        to="/login"
+                        color="primary"
+                        variant="solid"
+                        size="md"
+                        className="bg-black text-[#ffecd1] border border-[#ffecd1] font-bold px-4 py-2 rounded-lg hover:bg-[#ffecd1] hover:text-black transition-all duration-300 shadow-md hover:shadow-lg"
+                    >
+                        🔑 Fazer Login
+                    </Button>
                 </main>
             </Layout>
         );
@@ -312,9 +321,16 @@ export default function BusinessProfile(){
                 <main>
                     <h1>Acesso restrito a Profissionais</h1>
                     <p>Esta página é exclusiva para usuários profissionais.</p>
-                    <Link to="/profile">
-                        <button>👤 Ir para Perfil Pessoal</button>
-                    </Link>
+                    <Button 
+                        as={Link} 
+                        to="/profile"
+                        color="primary"
+                        variant="solid"
+                        size="md"
+                        className="bg-black text-[#ffecd1] border border-[#ffecd1] font-bold px-4 py-2 rounded-lg hover:bg-[#ffecd1] hover:text-black transition-all duration-300 shadow-md hover:shadow-lg"
+                    >
+                        👤 Ir para Perfil Pessoal
+                    </Button>
                 </main>
             </Layout>
         );
@@ -324,211 +340,378 @@ export default function BusinessProfile(){
         <Layout>
             <main>
                 <div className="company-profile-container">
-                    <h1 className="company-profile-title">
-                        🏢 Perfil da Empresa
-                    </h1>
+                    <Card className="mb-hero-section card-hero-shadow">
+                        <CardHeader className="pb-3">
+                            <h1 className="text-hero-title">🏢 Perfil da Empresa</h1>
+                        </CardHeader>
+                    </Card>
 
                     {loading && (
-                        <div className="loading-container">
-                            <p>⏳ Carregando dados da empresa...</p>
+                        <div className="loading-hero-section">
+                            <Spinner size="lg" color="primary" label="Carregando dados da empresa..." />
                         </div>
                     )}
 
                     {error && (
-                        <div className="error-container">
-                            <p>❌ {error}</p>
-                            <Link to="/newCompany">
-                                <button className="error-button">
+                        <Card className="card-hero-gradient-red">
+                            <CardBody className="text-hero-center">
+                                <div className="icon-hero-2xl">❌</div>
+                                <p className="text-lg text-red-600 mb-4">{error}</p>
+                                <Button
+                                    as={Link}
+                                    to="/newCompany"
+                                    color="primary"
+                                    variant="solid"
+                                    size="lg"
+                                    className="btn-hero-primary btn-hero-lg"
+                                >
                                     🏢 Cadastrar Estabelecimento
-                                </button>
-                            </Link>
-                        </div>
+                                </Button>
+                            </CardBody>
+                        </Card>
                     )}
 
                     {!loading && !error && estabelecimento && (
                         <div>
                             {/* Imagem do Estabelecimento */}
                             {imagemUrl && (
-                                <div className="company-image-container">
-                                    <img 
-                                        src={imagemUrl} 
-                                        alt={estabelecimento.nome}
-                                        className="company-image"
-                                        onError={(e) => {
-                                            e.target.style.display = 'none';
-                                        }}
-                                    />
-                                </div>
+                                <Card className="mb-hero-section">
+                                    <CardBody className="flex-hero-center p-hero-card">
+                                        <img 
+                                            src={imagemUrl} 
+                                            alt={estabelecimento.nome}
+                                            className="img-hero-rounded img-hero-max-height"
+                                            onError={(e) => {
+                                                e.target.style.display = 'none';
+                                            }}
+                                        />
+                                    </CardBody>
+                                </Card>
                             )}
 
                             {/* Botões de Ação */}
-                            <div className="action-buttons">
-                                <Link to="/editCompany">
-                                    <button className="btn-edit-business">
-                                        ✏️ Editar Empresa
-                                    </button>
-                                </Link>                                            
-                                                        
-                                <Link to="/profile">
-                                    <button className="btn-personal-profile">
-                                        👤 Perfil Pessoal
-                                    </button>
-                                </Link>
+                            <div className="flex-hero-center flex-hero-gap mb-hero-section">
+                                <Button
+                                    as={Link}
+                                    to="/editCompany"
+                                    color="primary"
+                                    variant="solid"
+                                    size="lg"
+                                    className="btn-hero-primary btn-hero-lg"
+                                >
+                                    ✏️ Editar Empresa
+                                </Button>
+                                <Button
+                                    as={Link}
+                                    to="/profile"
+                                    color="secondary"
+                                    variant="solid"
+                                    size="lg"
+                                    className="btn-hero-primary btn-hero-lg"
+                                >
+                                    👤 Perfil Pessoal
+                                </Button>
                             </div>
 
                             {/* Grid de Informações */}
-                            <div className="info-sections-grid">
+                            <div className="grid-hero-responsive mb-hero-section">
                                 {/* Informações da Empresa */}
-                                <div className="info-section">
-                                    <h2 className="section-title">
-                                        📋 Dados da Empresa
-                                    </h2>
-                                    <p><strong>Nome:</strong> {estabelecimento.nome}</p>
-                                    <p><strong>CNPJ:</strong> {estabelecimento.cnpj}</p>
-                                    {estabelecimento.email && (
-                                        <p><strong>Email:</strong> {estabelecimento.email}</p>
-                                    )}
-                                    {estabelecimento.telefone && (
-                                        <p><strong>Telefone:</strong> {estabelecimento.telefone}</p>
-                                    )}
-                                    {estabelecimento.descricao && (
-                                        <p><strong>Descrição:</strong> {estabelecimento.descricao}</p>
-                                    )}
-                                </div>
+                                <Card className="card-hero-shadow">
+                                    <CardHeader>
+                                        <Chip color="primary" variant="flat" size="lg" className="chip-hero-primary">
+                                            📋 Dados da Empresa
+                                        </Chip>
+                                    </CardHeader>
+                                    <Divider />
+                                    <CardBody>
+                                        <div className="space-hero-y">
+                                            <div>
+                                                <p className="text-hero-label">Nome</p>
+                                                <p className="text-hero-emphasis">{estabelecimento.nome}</p>
+                                            </div>
+                                            <Divider />
+                                            <div>
+                                                <p className="text-hero-label">CNPJ</p>
+                                                <p className="text-hero-value">{estabelecimento.cnpj}</p>
+                                            </div>
+                                            {estabelecimento.email && (
+                                                <>
+                                                    <Divider />
+                                                    <div>
+                                                        <p className="text-hero-label">Email</p>
+                                                        <Chip color="secondary" variant="flat" startContent={<span>📧</span>}>
+                                                            {estabelecimento.email}
+                                                        </Chip>
+                                                    </div>
+                                                </>
+                                            )}
+                                            {estabelecimento.telefone && (
+                                                <>
+                                                    <Divider />
+                                                    <div>
+                                                        <p className="text-hero-label">Telefone</p>
+                                                        <Chip color="success" variant="flat" startContent={<span>📱</span>}>
+                                                            {estabelecimento.telefone}
+                                                        </Chip>
+                                                    </div>
+                                                </>
+                                            )}
+                                            {estabelecimento.descricao && (
+                                                <>
+                                                    <Divider />
+                                                    <div>
+                                                        <p className="text-hero-label">Descrição</p>
+                                                        <p className="text-hero-value">{estabelecimento.descricao}</p>
+                                                    </div>
+                                                </>
+                                            )}
+                                        </div>
+                                    </CardBody>
+                                </Card>
 
                                 {/* Informações do Endereço */}
                                 {estabelecimento?.endereco && (
-                                    <div className="info-section">
-                                        <h2 className="section-title">
-                                            📍 Endereço
-                                        </h2>
-                                        <p><strong>CEP:</strong> {estabelecimento.endereco.cep}</p>
-                                        <p><strong>Rua:</strong> {estabelecimento.endereco.rua}, <strong>Nº:</strong> {estabelecimento.endereco.numero}</p>
-                                        {estabelecimento.endereco.complemento && (
-                                            <p><strong>Complemento:</strong> {estabelecimento.endereco.complemento}</p>
-                                        )}
-                                        <p><strong>Bairro:</strong> {estabelecimento.endereco.bairro}</p>
-                                        <p><strong>Cidade:</strong> {estabelecimento.endereco.cidade} - <strong>Estado:</strong> {estabelecimento.endereco.estado}</p>
-                                    </div>
+                                    <Card className="card-hero-shadow">
+                                        <CardHeader>
+                                            <Chip color="warning" variant="flat" size="lg" className="chip-hero-primary">
+                                                📍 Endereço
+                                            </Chip>
+                                        </CardHeader>
+                                        <Divider />
+                                        <CardBody>
+                                            <div className="space-hero-y">
+                                                <div>
+                                                    <p className="text-hero-label">CEP</p>
+                                                    <p className="text-hero-value">{estabelecimento.endereco.cep}</p>
+                                                </div>
+                                                <Divider />
+                                                <div>
+                                                    <p className="text-hero-label">Endereço</p>
+                                                    <p className="text-hero-value">{estabelecimento.endereco.rua}, Nº {estabelecimento.endereco.numero}</p>
+                                                </div>
+                                                {estabelecimento.endereco.complemento && (
+                                                    <>
+                                                        <Divider />
+                                                        <div>
+                                                            <p className="text-hero-label">Complemento</p>
+                                                            <p className="text-hero-value">{estabelecimento.endereco.complemento}</p>
+                                                        </div>
+                                                    </>
+                                                )}
+                                                <Divider />
+                                                <div>
+                                                    <p className="text-hero-label">Bairro</p>
+                                                    <p className="text-hero-value">{estabelecimento.endereco.bairro}</p>
+                                                </div>
+                                                <Divider />
+                                                <div>
+                                                    <p className="text-hero-label">Cidade/Estado</p>
+                                                    <Chip color="primary" variant="bordered">
+                                                        {estabelecimento.endereco.cidade} - {estabelecimento.endereco.estado}
+                                                    </Chip>
+                                                </div>
+                                            </div>
+                                        </CardBody>
+                                    </Card>
                                 )}
 
                                 {/* Horários de Funcionamento */}
                                 {estabelecimento && estabelecimento.horarios && estabelecimento.horarios.length > 0 && (
-                                    <div className="info-section">
-                                        <h2 className="section-title">
-                                            🕐 Horários de Funcionamento
-                                        </h2>
-                                        <div className="horarios-list">
-                                            {diasSemana.map((dia, index) => {
-                                                const diaSemanaNumero = index + 1;
-                                                const horario = estabelecimento.horarios.find(h => h.diaSemana === diaSemanaNumero);
-                                                
-                                                return (
-                                                    <div key={diaSemanaNumero} className="horario-item">
-                                                        <span className="horario-dia">{dia}:</span>
-                                                        <span className="horario-horas">
-                                                            {horario && !horario.fechado
-                                                                ? `${horario.horaAbertura.substring(0, 5)} às ${horario.horaFechamento.substring(0, 5)}`
-                                                                : <span className="fechado">Fechado</span>
-                                                            }
-                                                        </span>
-                                                    </div>
-                                                );
-                                            })}
-                                        </div>
-                                    </div>
+                                    <Card className="card-hero-shadow">
+                                        <CardHeader>
+                                            <Chip color="success" variant="flat" size="lg" className="chip-hero-primary">
+                                                🕐 Horários de Funcionamento
+                                            </Chip>
+                                        </CardHeader>
+                                        <Divider />
+                                        <CardBody>
+                                            <div className="space-hero-y-sm">
+                                                {diasSemana.map((dia, index) => {
+                                                    const diaSemanaNumero = index + 1;
+                                                    const horario = estabelecimento.horarios.find(h => h.diaSemana === diaSemanaNumero);
+                                                    
+                                                    return (
+                                                        <div key={diaSemanaNumero} className="horario-hero-item">
+                                                            <span className="horario-hero-dia">{dia}:</span>
+                                                            {horario && !horario.fechado ? (
+                                                                <Chip color="success" variant="flat" size="sm">
+                                                                    {horario.horaAbertura.substring(0, 5)} às {horario.horaFechamento.substring(0, 5)}
+                                                                </Chip>
+                                                            ) : (
+                                                                <Chip color="danger" variant="flat" size="sm">
+                                                                    Fechado
+                                                                </Chip>
+                                                            )}
+                                                        </div>
+                                                    );
+                                                })}
+                                            </div>
+                                        </CardBody>
+                                    </Card>
                                 )}
 
                                 {/* Informações do Responsável */}
-                                <div className="info-section">
-                                    <h2 className="section-title">
-                                        👤 Responsável
-                                    </h2>
-                                    <p><strong>Nome:</strong> {user.nome}</p>
-                                    <p><strong>Email:</strong> {user.email}</p>
-                                    <p><strong>Tipo:</strong> Profissional</p>
-                                </div>
+                                <Card className="card-hero-shadow">
+                                    <CardHeader>
+                                        <Chip color="secondary" variant="flat" size="lg" className="chip-hero-primary">
+                                            👤 Responsável
+                                        </Chip>
+                                    </CardHeader>
+                                    <Divider />
+                                    <CardBody>
+                                        <div className="space-hero-y">
+                                            <div>
+                                                <p className="text-hero-label">Nome</p>
+                                                <p className="text-hero-emphasis">{user.nome}</p>
+                                            </div>
+                                            <Divider />
+                                            <div>
+                                                <p className="text-hero-label">Email</p>
+                                                <Chip color="secondary" variant="flat" startContent={<span>📧</span>}>
+                                                    {user.email}
+                                                </Chip>
+                                            </div>
+                                            <Divider />
+                                            <div>
+                                                <p className="text-hero-label">Tipo de Conta</p>
+                                                <Chip color="success" variant="solid" startContent={<span>👨‍🚀</span>}>
+                                                    Profissional
+                                                </Chip>
+                                            </div>
+                                        </div>
+                                    </CardBody>
+                                </Card>
                             </div>
 
-                            <div className="action-buttons">
-                             <Link to="/newService">
-                                    <button className="btn-add-service">
-                                        ➕ Adicionar Serviço
-                                    </button>
-                                </Link>
+                            <div className="flex-hero-center p-hero-section">
+                                <Button
+                                    as={Link}
+                                    to="/newService"
+                                    color="success"
+                                    variant="solid"
+                                    size="lg"
+                                    className="btn-hero-primary btn-hero-lg"
+                                >
+                                    ➕ Adicionar Serviço
+                                </Button>
                             </div>
 
                             {/* Seção de Serviços Contratados */}
-                            <div className="info-section">
-                                <h2 className="section-title">
-                                    📋 Serviços Contratados por Clientes
-                                </h2>
+                            <Card className="card-hero-shadow mb-hero-section">
+                                <CardHeader>
+                                    <Chip color="primary" variant="flat" size="lg" className="chip-hero-title">
+                                        📋 Serviços Contratados por Clientes
+                                    </Chip>
+                                </CardHeader>
+                                <Divider />
+                                <CardBody>
                                 {loadingContratacoes ? (
-                                    <p className="loading-message">⏳ Carregando contratações...</p>
+                                    <div className="loading-hero-section">
+                                        <Spinner size="lg" color="primary" label="Carregando contratações..." />
+                                    </div>
                                 ) : contratacoes.length === 0 ? (
-                                    <p className="no-services-message">
-                                        Nenhum serviço foi contratado ainda.
-                                    </p>
+                                    <Card className="card-hero-gradient-yellow">
+                                        <CardBody className="text-hero-center">
+                                            <div className="icon-hero-2xl">📝</div>
+                                            <p className="text-lg text-gray-600">
+                                                Nenhum serviço foi contratado ainda.
+                                            </p>
+                                        </CardBody>
+                                    </Card>
                                 ) : (
-                                    <div className="contratacoes-list">
+                                    <div className="grid grid-cols-1 gap-4">
                                         {contratacoes.map((contratacao) => (
-                                            <div key={contratacao.pedidoId} className="contratacao-card">
-                                                <div className="contratacao-header">
-                                                    <h3 className="contratacao-servico">
-                                                        {contratacao.servico.nome}
+                                            <Card key={contratacao.pedidoId} className="border-hero-hover">
+                                                <CardHeader className="flex-hero-between pb-2">
+                                                    <h3 className="text-hero-subtitle">
+                                                        🛍️ {contratacao.servico.nome}
                                                     </h3>
-                                                    <span className={`contratacao-status status-${String(contratacao.status || 'pendente').toLowerCase()}`}>
-                                                        {contratacao.status || 'PENDENTE'}
-                                                    </span>
-                                                </div>
-                                                <div className="contratacao-info">
-                                                    <p>
-                                                        <strong>👤 Cliente:</strong> {contratacao.cliente.nome}
-                                                    </p>
-                                                    <p>
-                                                        <strong>📧 Email:</strong> {contratacao.cliente.email}
-                                                    </p>
-                                                    {contratacao.cliente.telefone && (
-                                                        <p>
-                                                            <strong>📞 Telefone:</strong> {contratacao.cliente.telefone}
-                                                        </p>
-                                                    )}
-                                                    <p>
-                                                        <strong>📅 Data Agendamento:</strong>{' '}
-                                                        {new Date(contratacao.dataAgendamento).toLocaleString('pt-BR')}
-                                                    </p>
-                                                    <p>
-                                                        <strong>💰 Valor:</strong> {formatarReal(contratacao.servico.preco)}
-                                                    </p>
-                                                    {contratacao.observacoes && (
-                                                        <p>
-                                                            <strong>📝 Observações:</strong> {contratacao.observacoes}
-                                                        </p>
-                                                    )}
-                                                </div>
-                                                <div className="contratacao-actions">
-                                                    <button
-                                                        onClick={() => handleCancelarContratacao(contratacao.pedidoId)}
-                                                        className="btn-cancelar-contratacao"
+                                                    <Chip 
+                                                        color={contratacao.status === 'CONFIRMADO' ? 'success' : 'warning'} 
+                                                        variant="solid"
+                                                        size="sm"
                                                     >
-                                                        ❌ Cancelar Contratação
-                                                    </button>
-                                                </div>
-                                            </div>
+                                                        {contratacao.status || 'PENDENTE'}
+                                                    </Chip>
+                                                </CardHeader>
+                                                <Divider />
+                                                <CardBody>
+                                                    <div className="space-hero-y">
+                                                        <div className="flex items-center gap-2">
+                                                            <Chip color="primary" variant="flat" startContent={<span>👤</span>}>
+                                                                {contratacao.cliente.nome}
+                                                            </Chip>
+                                                        </div>
+                                                        <div className="flex items-center gap-2">
+                                                            <Chip color="secondary" variant="flat" startContent={<span>📧</span>} size="sm">
+                                                                {contratacao.cliente.email}
+                                                            </Chip>
+                                                        </div>
+                                                        {contratacao.cliente.telefone && (
+                                                            <div className="flex items-center gap-2">
+                                                                <Chip color="success" variant="flat" startContent={<span>📞</span>} size="sm">
+                                                                    {contratacao.cliente.telefone}
+                                                                </Chip>
+                                                            </div>
+                                                        )}
+                                                        <Divider />
+                                                        <p className="text-sm">
+                                                            <strong className="text-gray-600">📅 Data Agendamento:</strong>{' '}
+                                                            <span className="font-semibold">{new Date(contratacao.dataAgendamento).toLocaleString('pt-BR')}</span>
+                                                        </p>
+                                                        <p className="text-sm">
+                                                            <strong className="text-gray-600">💰 Valor:</strong>{' '}
+                                                            <span className="font-bold text-green-600 text-lg">{formatarReal(contratacao.servico.preco)}</span>
+                                                        </p>
+                                                        {contratacao.observacoes && (
+                                                            <>
+                                                                <Divider />
+                                                                <div className="note-hero-container">
+                                                                    <p className="text-hero-label">
+                                                                        <strong>📝 Observações:</strong>
+                                                                    </p>
+                                                                    <p className="note-hero-text">{contratacao.observacoes}</p>
+                                                                </div>
+                                                            </>
+                                                        )}
+                                                        <Divider />
+                                                        <div className="flex justify-end mt-3">
+                                                            <Button
+                                                                onClick={() => handleCancelarContratacao(contratacao.pedidoId)}
+                                                                color="danger"
+                                                                variant="flat"
+                                                                size="sm"
+                                                            >
+                                                                ❌ Cancelar Contratação
+                                                            </Button>
+                                                        </div>
+                                                    </div>
+                                                </CardBody>
+                                            </Card>
                                         ))}
                                     </div>
                                 )}
-                            </div>
+                                </CardBody>
+                            </Card>
 
                             {/* Seção de Serviços */}
-                            <div className="info-section">
-                                <h2 className="section-title">
-                                    🛎️ Serviços da Empresa
-                                </h2>
+                            <Card className="card-hero-shadow">
+                                <CardHeader>
+                                    <Chip color="warning" variant="flat" size="lg" className="chip-hero-title">
+                                        🛍️ Serviços da Empresa
+                                    </Chip>
+                                </CardHeader>
+                                <Divider />
+                                <CardBody>
                                 {servicos.length === 0 ? (
-                                    <p className="no-services-message">
-                                        Nenhum serviço cadastrado. Adicione seu primeiro serviço para aparecer na página de serviços!
-                                    </p>
+                                    <Card className="card-hero-gradient-purple">
+                                        <CardBody className="text-hero-center">
+                                            <div className="icon-hero-2xl">🛍️</div>
+                                            <p className="text-lg text-gray-600">
+                                                Nenhum serviço cadastrado. Adicione seu primeiro serviço para aparecer na página de serviços!
+                                            </p>
+                                        </CardBody>
+                                    </Card>
                                 ) : (
                                     <div className="services-grid">
                                         {servicos.map((servico) => {
@@ -716,20 +899,29 @@ export default function BusinessProfile(){
                                         })}
                                     </div>
                                 )}
-                            </div>                            
+                                </CardBody>
+                            </Card>                            
                         </div>
                     )}
 
                     {!loading && !error && !estabelecimento && (
-                        <div className="no-establishment-container">
-                            <h2>🏢 Nenhum estabelecimento cadastrado</h2>
-                            <p>Você ainda não cadastrou um estabelecimento para sua empresa.</p>
-                            <Link to="/newCompany">
-                                <button className="btn-create-establishment">
+                        <Card className="card-hero-shadow card-hero-gradient-blue">
+                            <CardBody className="text-hero-center">
+                                <div className="icon-hero-2xl">🏢</div>
+                                <h2 className="text-hero-title mb-4">Nenhum estabelecimento cadastrado</h2>
+                                <p className="text-lg text-gray-600 mb-6">Você ainda não cadastrou um estabelecimento para sua empresa.</p>
+                                <Button
+                                    as={Link}
+                                    to="/newCompany"
+                                    color="primary"
+                                    variant="solid"
+                                    size="lg"
+                                    className="btn-hero-primary btn-hero-xl"
+                                >
                                     ➕ Cadastrar Estabelecimento
-                                </button>
-                            </Link>
-                        </div>
+                                </Button>
+                            </CardBody>
+                        </Card>
                     )}
                 </div>
             </main>

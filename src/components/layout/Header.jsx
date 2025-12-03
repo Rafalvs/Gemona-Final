@@ -86,7 +86,19 @@ export default function Header() {
     <>
       <header className="bg-gradient-to-r from-black via-[#05315e] to-black text-[#ffecd1] shadow-2xl border-b border-[#ffecd1]/20 header-compact"> 
         <div className="header-left">
-          <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none' }}>
+          <Link 
+            to="/" 
+            style={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              gap: '10px', 
+              textDecoration: 'none',
+              transition: 'transform 0.3s ease',
+              cursor: 'pointer'
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
+            onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+          >
            <Logo size="md" textSize="2xl" />
           </Link>
         </div>
@@ -110,12 +122,16 @@ export default function Header() {
                       src={fotoPerfilUrl} 
                       alt="Foto de perfil" 
                       style={{
-                        width: '40px',
-                        height: '40px',
+                        width: '60px',
+                        height: '60px',
                         borderRadius: '50%',
                         objectFit: 'cover',
-                        border: '2px solid #f48f42'
+                        border: '2px solid #f48f42',
+                        transition: 'transform 0.3s ease',
+                        cursor: 'pointer'
                       }}
+                      onMouseEnter={(e) => e.target.style.transform = 'scale(1.1)'}
+                      onMouseLeave={(e) => e.target.style.transform = 'scale(1)'}
                       onError={(e) => {
                         e.target.style.display = 'none';
                       }}
@@ -129,19 +145,58 @@ export default function Header() {
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      fontSize: '20px'
-                    }}>
+                      fontSize: '20px',
+                      transition: 'transform 0.3s ease',
+                      cursor: 'pointer'
+                    }}
+                    onMouseEnter={(e) => e.target.style.transform = 'scale(1.1)'}
+                    onMouseLeave={(e) => e.target.style.transform = 'scale(1)'}
+                    >
                       👤
                     </div>
                   )}
-                  <h1>Olá, {user?.nome}!</h1>
+                  <h1 
+                    style={{ 
+                      color: '#f48f42', 
+                      fontWeight: 'bold', 
+                      fontSize: '18px',
+                      transition: 'all 0.3s ease',
+                      cursor: 'pointer'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.target.style.color = 'white';
+                      e.target.style.transform = 'scale(1.1)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.target.style.color = '#f48f42';
+                      e.target.style.transform = 'scale(1)';
+                    }}
+                  >
+                    {user?.nome}
+                  </h1>
                 </Link>
                 {user?.tipo_usuario === 'pj' && (
-                  <Link to="/companyProfile">
-                    <button style={{ backgroundColor: '#17a2b8' }}>🏢 Empresa</button>
-                  </Link>
+                  <Button 
+                    as={Link} 
+                    to="/companyProfile"
+                    color="primary"
+                    variant="solid"
+                    size="md"
+                    className="bg-white text-[#ffecd1] border border-[#ffecd1] font-bold px-4 py-2 rounded-lg hover:bg-[#ffecd1] hover:text-black transition-all duration-300 shadow-md hover:shadow-lg"
+                  >
+                    🏢 Empresa
+                  </Button>
                 )}
-                <button onClick={logout}>Sair</button>
+                  <Button 
+                    onClick={logout} 
+                    to="/login"
+                    color="primary"
+                    variant="solid"
+                    size="md"
+                    className="bg-black text-[#ffecd1] border border-[#ffecd1] font-bold px-4 py-2 rounded-lg hover:bg-[#ffecd1] hover:text-black transition-all duration-300 shadow-md hover:shadow-lg"
+                > 
+                    Sair
+                  </Button>
 
               </>
             ) : (

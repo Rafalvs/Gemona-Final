@@ -4,8 +4,9 @@ import Layout from "../components/layout/Layout"
 import { categoriasAPI, subcategoriasAPI } from '../services/apiService'
 import Logo from '../components/ui/Logo'
 import Peixe from '../assets/peixe.png';
-import { Card, CardHeader, CardBody, Divider, Chip, Button, Image } from '@heroui/react'
+import { Card, CardHeader, CardBody, Divider} from '@heroui/react'
 import HorizontalCarousel from '../components/ui/HorizontalCarousel'
+import { getCategoryIcon } from '../components/ui/Icons'
 
 // Componente para seção de subcategorias (substituindo serviços mais procurados)
 function ServicesSection({ subcategorias, loadingSubcategorias }) {
@@ -27,7 +28,7 @@ function ServicesSection({ subcategorias, loadingSubcategorias }) {
                 {loadingSubcategorias ? (
                     <div className="flex gap-4 overflow-hidden">
                         {[...Array(5)].map((_, i) => (
-                            <Card key={i} className="animate-pulse min-w-[200px] h-40">
+                            <Card key={i} className="animate-pulse min-w-[150px] h-40">
                                 <CardBody className="p-5">
                                     <div className="h-4 bg-gray-300 rounded w-3/4 mb-3"></div>
                                     <div className="h-3 bg-gray-200 rounded w-full mb-2"></div>
@@ -40,30 +41,39 @@ function ServicesSection({ subcategorias, loadingSubcategorias }) {
                 ) : (
                     <HorizontalCarousel 
                         itemsPerView={1}
-                        itemWidth={320}
-                        gap={20}
+                        itemWidth={300}
+                        gap={14}
                         controlsColor="secondary"
                     >
-                        {subcategorias.map((subcategoria) => (
-                            <Card 
-                                key={subcategoria.subCategoriaId} 
-                                isPressable
-                                onPress={() => handleSubcategoriaClick(subcategoria.subCategoriaId)}
-                                className="hover:shadow-lg transition-all duration-300 hover:scale-105 bg-white/90 backdrop-blur-sm border border-gray-200/50 min-h-[120px] sm:h-40 rounded-lg"
-                            >
-                                <CardBody className="p-3 sm:p-5 flex flex-col justify-between h-full">
-                                    <div>
-                                        <div className="flex items-center gap-2 sm:gap-3 mb-2">
-                                            <span className="text-xl sm:text-2xl">🛎️</span>
-                                            <h3 className="font-semibold text-xs sm:text-sm text-gray-800">{subcategoria.nome}</h3>
+                        {subcategorias.map((subcategoria) => {
+                            const IconComponent = getCategoryIcon(subcategoria.nome);
+                            return (
+                                <Card 
+                                    key={subcategoria.subCategoriaId} 
+                                    isPressable
+                                    onPress={() => handleSubcategoriaClick(subcategoria.subCategoriaId)}
+                                    className="hover:shadow-2xl transition-all duration-300 hover:scale-95 backdrop-blur-sm border-2 border-[#ffecd1] hover:border-[#f48f42] min-h-[100px] sm:h-30 rounded-xl overflow-hidden"
+                                    style={{ 
+                                        background: 'linear-gradient(135deg, #ffecd1 0%, #ffffff 100%)'
+                                    }}
+                                >
+                                    <CardBody className="p-3 sm:p-5 flex flex-col justify-between h-full relative">
+                                        <div>
+                                            <div className="flex items-center gap-2 sm:gap-3 mb-2">
+                                                <div className="bg-[#f48f42]/20 p-1.5 rounded-lg shadow-sm">
+                                                    <IconComponent size={20} className="text-[#05315e]" />
+                                                </div>
+                                                <h3 className="font-bold text-xs sm:text-sm text-[#05315e]">{subcategoria.nome}</h3>
+                                            </div>
+                                            <Divider className="mb-1" />
+                                            <p className="text-[10px] sm:text-xs text-gray-700 leading-relaxed font-medium">
+                                                {subcategoria.categoriaNome}
+                                            </p>
                                         </div>
-                                        <p className="text-[10px] sm:text-xs text-gray-600 leading-relaxed">
-                                            {subcategoria.categoriaNome}
-                                        </p>
-                                    </div>
-                                </CardBody>
-                            </Card>
-                        ))}
+                                    </CardBody>
+                                </Card>
+                            );
+                        })}
                     </HorizontalCarousel>
                 )}
             </CardBody>
@@ -126,10 +136,10 @@ export default function Home(){
     if (isInitialLoading) {
         return (
             <Layout>
-                <main id="home">
+                <main id="home" className="min-h-screen flex items-center justify-center">
                     <div className={`loading-overlay ${isFadingOut ? 'fade-out' : ''}`}>
                         <div className="loading-logo-container">
-                            <h1>Gêmona</h1>
+                            <h1 className='font-bold text-[#ffecd1] drop-shadow-lg text-2xl'>Gêmona</h1>
                             <img src={Peixe} alt="Logo" className="loading-logo" />
                             <div className="loading-spinner"></div>                          
                             <p className="loading-text">Carregando...</p>
@@ -178,9 +188,9 @@ export default function Home(){
                         <Divider />
                         <CardBody>
                             {loadingCategorias ? (
-                                <div className="flex gap-4 overflow-hidden">
+                                <div className="flex gap-2 overflow-hidden">
                                     {[...Array(5)].map((_, i) => (
-                                        <Card key={i} className="animate-pulse min-w-[240px] h-48">
+                                        <Card key={i} className="category-card animate-pulse min-w-[200px] h-48">
                                             <CardBody className="p-6">
                                                 <div className="h-6 bg-gray-300 rounded w-3/4 mb-4"></div>
                                                 <div className="h-4 bg-gray-200 rounded w-full mb-2"></div>
@@ -193,52 +203,64 @@ export default function Home(){
                             ) : (
                                 <HorizontalCarousel 
                                     itemsPerView={1}
-                                    itemWidth={350}
-                                    gap={20}
+                                    itemWidth={200}
+                                    gap={16}
                                     controlsColor="primary"
                                 >
                                     {/* Card para ver todos os serviços */}
                                     <Card 
                                         isPressable
                                         onPress={() => navigate('/services')}
-                                        className="hover:shadow-lg transition-all duration-300 hover:scale-105 bg-white/80 backdrop-blur-sm border-gray-200/50 min-h-[180px] sm:h-60 rounded-lg"
+                                        className="hover:shadow-2xl transition-all duration-300 hover:scale-99 border-2 border-purple-300 min-h-[120px] sm:h-30 rounded-xl overflow-hidden"
                                         style={{ 
-                                            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
+                                            background: 'linear-gradient(135deg, #05315f 0%, #4c1880ff 100%)'
                                         }}
                                     >
-                                        <CardBody className="p-4 sm:p-6 md:p-8 flex flex-col justify-between h-full">
+                                        <CardBody className="p-3 sm:p-4 flex flex-col justify-between h-full relative">
                                             <div>
-                                                <div className="flex items-center gap-2 sm:gap-3 mb-2">
-                                                    <span className="text-2xl sm:text-3xl">🔍</span>
-                                                    <h3 className="font-bold text-base sm:text-lg text-white">Todos os Serviços</h3>
+                                                <div className="flex items-center gap-2 mb-2">
+                                                    <div className="bg-white/20 p-1.5 rounded-lg backdrop-blur-sm">
+                                                        <span className="text-xl sm:text-2xl">🔍</span>
+                                                    </div>
+                                                    <h3 className="font-bold text-sm sm:text-base text-white drop-shadow-lg">Todos os Serviços</h3>
                                                 </div>
-                                                <p className="text-xs sm:text-sm text-white/90 leading-relaxed">
+                                                <Divider className="mb-1.5 bg-white/30" />
+                                                <p className="text-[10px] sm:text-xs text-white/90 leading-snug font-medium">
                                                     Visualize todos os serviços disponíveis na plataforma
                                                 </p>
                                             </div>
                                         </CardBody>
                                     </Card>
 
-                                    {categorias.map((categoria) => (
-                                        <Card 
-                                            key={categoria.categoriaId || categoria.id} 
-                                            isPressable
-                                            onPress={() => handleCategoryClick(categoria.categoriaId || categoria.id)}
-                                            className="hover:shadow-lg transition-all duration-300 hover:scale-105 bg-white/80 backdrop-blur-sm border-gray-200/50 min-h-[180px] sm:h-60 rounded-lg"
-                                        >
-                                            <CardBody className="p-4 sm:p-6 md:p-8 flex flex-col justify-between h-full">
-                                                <div>
-                                                    <div className="flex items-center gap-2 sm:gap-3 mb-2">
-                                                        <span className="text-2xl sm:text-3xl">📋</span>
-                                                        <h3 className="font-bold text-base sm:text-lg text-gray-800">{categoria.nome}</h3>
+                                    {categorias.map((categoria) => {
+                                        const IconComponent = getCategoryIcon(categoria.nome);
+                                        return (
+                                            <Card 
+                                                key={categoria.categoriaId || categoria.id} 
+                                                isPressable
+                                                onPress={() => handleCategoryClick(categoria.categoriaId || categoria.id)}
+                                                className="hover:shadow-2xl transition-all duration-300 hover:scale-95 backdrop-blur-sm border-2 border-[#05315f] hover:border-[#ffecd1] min-h-[120px] sm:h-30 rounded-xl overflow-hidden"
+                                                style={{ 
+                                                    background: 'linear-gradient(135deg, #001f3f 0%, #05315f 100%)'
+                                                }}
+                                            >
+                                                <CardBody className="p-3 sm:p-4 flex flex-col justify-between h-full relative">
+                                                    <div>
+                                                        <div className="flex items-center gap-2 mb-2">
+                                                            <div className="bg-white/20 p-1.5 rounded-lg backdrop-blur-sm">
+                                                                <IconComponent size={24} className="text-white" />
+                                                            </div>
+                                                            <h3 className="font-bold text-sm sm:text-base text-white drop-shadow-lg">{categoria.nome}</h3>
+                                                        </div>
+                                                        <Divider className="mb-1.5 bg-white/30" />
+                                                        <p className="text-[10px] sm:text-xs text-white/90 leading-snug font-medium">
+                                                            {categoria.descricao}
+                                                        </p>
                                                     </div>
-                                                    <p className="text-xs sm:text-sm text-gray-600 leading-relaxed">
-                                                        {categoria.descricao}
-                                                    </p>
-                                                </div>
-                                            </CardBody>
-                                        </Card>
-                                    ))}
+                                                </CardBody>
+                                            </Card>
+                                        );
+                                    })}
                                 </HorizontalCarousel>
                             )}
                         </CardBody>

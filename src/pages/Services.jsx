@@ -4,6 +4,7 @@ import { useSearchParams } from "react-router-dom";
 import { servicosAPI, avaliacoesAPI, imagensAPI, estabelecimentosAPI, subcategoriasAPI, categoriasAPI, pedidosAPI } from '../services/apiService';
 import RatingForm from '../components/RatingForm';
 import { useAuth } from '../contexts/AuthContext';
+import { Button, Spinner } from '@heroui/react';
 
 export default function Services(){
     const [searchParams] = useSearchParams();
@@ -20,6 +21,8 @@ export default function Services(){
     const [enableDistanceFilter, setEnableDistanceFilter] = useState(false); // Habilitar filtro de distância
     const [distanceFilterApplied, setDistanceFilterApplied] = useState(false); // Controla se a busca foi aplicada
     const [distanceFilterTrigger, setDistanceFilterTrigger] = useState(0); // Trigger para forçar nova busca
+    const [isLoading, setIsLoading] = useState(true); // Estado de loading
+    const [showAllServices, setShowAllServices] = useState(false); // Mostrar todos os serviços sem filtro
     
     const { user, isAuthenticated } = useAuth();
 
@@ -112,6 +115,7 @@ export default function Services(){
         setSearchTerm(busca);
 
         const loadData = async () => {
+            setIsLoading(true);
             try {
                 // Buscar serviços da API
                 const servicosRes = await servicosAPI.getAll();
@@ -241,7 +245,8 @@ export default function Services(){
                 }
 
                 // Aplicar filtro de distância se usuário estiver logado, tiver localização e filtro estiver habilitado
-                if (userLocation && enableDistanceFilter && distanceFilterApplied) {
+                // Mas não aplicar se "Exibir todos" estiver ativo
+                if (userLocation && enableDistanceFilter && distanceFilterApplied && !showAllServices) {
                     console.log('🔍 Aplicando filtro de distância:', {
                         latitude: userLocation.latitude,
                         longitude: userLocation.longitude,
@@ -320,7 +325,8 @@ export default function Services(){
                 }
 
                 // Aplicar filtro de "disponível agora" se ativo
-                if (showOnlyAvailable) {
+                // Mas não aplicar se "Exibir todos" estiver ativo
+                if (showOnlyAvailable && !showAllServices) {
                     // Buscar horários dos estabelecimentos
                     const servicosComHorarios = [];
                     for (const service of filtered) {
@@ -341,7 +347,7 @@ export default function Services(){
                     filtered = servicosComHorarios;
                 }
 
-                // Aplicar ordenação por preço se houver
+                // Aplicar ordenação por preço se houver (mesmo com "Exibir todos" ativo)
                 if (sortOrder === 'asc') {
                     filtered = filtered.sort((a, b) => a.preco - b.preco);
                 } else if (sortOrder === 'desc') {
@@ -351,11 +357,13 @@ export default function Services(){
                 setFilteredServices(filtered);
             } catch (error) {
                 setFilteredServices([]);
+            } finally {
+                setIsLoading(false);
             }
         };
 
         loadData();
-    }, [searchParams, sortOrder, showOnlyAvailable, distanceFilterApplied, distanceFilterTrigger, userLocation]);
+    }, [searchParams, sortOrder, showOnlyAvailable, distanceFilterApplied, distanceFilterTrigger, userLocation, showAllServices]);
 
     // funcao para mostrar detalhes do servico
     const getServiceDetails = async (service) => {
@@ -618,6 +626,23 @@ export default function Services(){
                 <div className="filters">
                     <h3>Filtros</h3>
                     <div className="filter-section">
+                        <Button
+                            onClick={() => setShowAllServices(!showAllServices)}
+                            color={showAllServices ? 'success' : 'default'}
+                            variant="solid"
+                            size="sm"
+                            className={showAllServices 
+                                ? 'bg-[#05315f] text-white font-bold mb-4' 
+                                : 'bg-gray-200 text-gray-700 font-bold mb-4 hover:bg-gray-300'
+                            }
+                        >
+                            {showAllServices ? '✓ Exibindo Todos' : 'Exibir Todos'}
+                        </Button> <br/>
+                        {showAllServices && (
+                            <p style={{ fontSize: '0.85em', color: '#666', marginBottom: '12px', fontStyle: 'italic' }}>
+                                Filtros de distância e disponibilidade desativados
+                            </p>
+                        )}
                         {isAuthenticated && user ? (
                             <>
                                 <label>
@@ -652,7 +677,7 @@ export default function Services(){
                                             style={{
                                                 marginTop: '10px',
                                                 padding: '6px 12px',
-                                                backgroundColor: '#007bff',
+                                                backgroundColor: '#05315f',
                                                 color: 'white',
                                                 border: 'none',
                                                 borderRadius: '4px',
@@ -707,7 +732,21 @@ export default function Services(){
                         <h3>Resultados para: "{searchTerm}"</h3>
                     )}
                     
-                    {filteredServices.length === 0 ? (
+                    {isLoading ? (
+                        <div className="loading-container" style={{ 
+                            display: 'flex', 
+                            flexDirection: 'column', 
+                            alignItems: 'center', 
+                            justifyContent: 'center', 
+                            minHeight: '400px',
+                            gap: '16px'
+                        }}>
+                            <Spinner size="lg" color="primary" />
+                            <p style={{ color: '#05315f', fontSize: '1.1em', fontWeight: 'bold' }}>
+                                Carregando serviços...
+                            </p>
+                        </div>
+                    ) : filteredServices.length === 0 ? (
                         <div className="no-results">
                             {searchTerm ? (
                                 <div>
@@ -775,14 +814,25 @@ export default function Services(){
                                         </div>
 
                                         <div className="service-actions">
-                                            <button onClick={() => handleVerDetalhes(service)}>Detalhes</button>
-                                            <button 
+                                            <Button 
+                                                onClick={() => handleVerDetalhes(service)}
+                                                color="primary"
+                                                variant="solid"
+                                                size="md"
+                                                className="bg-black text-[#ffecd1] border border-[#ffecd1] font-bold px-4 py-2 rounded-lg hover:bg-[#ffecd1] hover:text-black transition-all duration-300 shadow-md hover:shadow-lg"
+                                            >
+                                                Detalhes
+                                            </Button>
+                                            <Button 
                                                 onClick={() => handleContratarServico(service.id)}
                                                 disabled={isServiceContracted(service.id) || isContracting}
-                                                className={isServiceContracted(service.id) ? 'btn-disabled' : 'btn-primary'}
+                                                color={isServiceContracted(service.id) ? 'default' : 'success'}
+                                                variant="solid"
+                                                size="md"
+                                                className={isServiceContracted(service.id) ? '' : 'bg-black text-[#ffecd1] border border-[#ffecd1] font-bold px-4 py-2 rounded-lg hover:bg-[#ffecd1] hover:text-black transition-all duration-300 shadow-md hover:shadow-lg'}
                                             >
                                                 {isServiceContracted(service.id) ? 'Contratado' : 'Contratar'}
-                                            </button>
+                                            </Button>
                                         </div>
                                     </div>
                                 );
@@ -924,7 +974,7 @@ export default function Services(){
                                 onClick={() => handleContratarServico(selectedService.id)}
                                 disabled={isServiceContracted(selectedService.id) || isContracting}
                                 style={{
-                                    backgroundColor: isServiceContracted(selectedService.id) ? '#6c757d' : '#28a745',
+                                    backgroundColor: isServiceContracted(selectedService.id) ? '#6c757d' : '#05315f',
                                     opacity: isServiceContracted(selectedService.id) ? 0.6 : 1,
                                     cursor: isServiceContracted(selectedService.id) ? 'not-allowed' : 'pointer'
                                 }}

@@ -279,7 +279,7 @@ export default function NewService(){
                             </div>
 
                             <div style={{ display: 'flex', gap: 10, marginTop: 12 }}>
-                                <button type="submit" disabled={loading} style={{ backgroundColor: '#28a745' }}>{loading ? '⏳ Salvando...' : '💾 Salvar Serviço'}</button>
+                                <button type="submit" disabled={loading} style={{ backgroundColor: '#000000ff' }}>{loading ? '⏳ Salvando...' : '💾 Salvar Serviço'}</button>
                                 <Link to="/companyProfile"><button type="button" disabled={loading}>⬅️ Voltar</button></Link>
                             </div>
                         </form>

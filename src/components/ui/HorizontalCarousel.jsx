@@ -58,7 +58,7 @@ export default function HorizontalCarousel({
           {/* Botão Esquerdo */}
           <Button
             isIconOnly
-            size="lg"
+            size="md"
             variant="shadow"
             color="primary"
             onClick={() => scroll('left')}
@@ -70,7 +70,7 @@ export default function HorizontalCarousel({
             } ${!canScrollLeft ? 'opacity-50 cursor-not-allowed' : 'hover:scale-110'}`}
           >
             <ChevronLeft 
-              size={20} 
+              size={16} 
               className={controlsColor === 'primary' ? "text-[#05315e]" : "text-[#ffecd1]"} 
             />
           </Button>
@@ -78,7 +78,7 @@ export default function HorizontalCarousel({
           {/* Botão Direito */}
           <Button
             isIconOnly
-            size="lg"
+            size="md"
             variant="shadow"
             color="primary"
             onClick={() => scroll('right')}
@@ -90,7 +90,7 @@ export default function HorizontalCarousel({
             } ${!canScrollRight ? 'opacity-50 cursor-not-allowed' : 'hover:scale-110'}`}
           >
             <ChevronRight 
-              size={20} 
+              size={16} 
               className={controlsColor === 'primary' ? "text-[#05315e]" : "text-[#ffecd1]"} 
             />
           </Button>

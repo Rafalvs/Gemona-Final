@@ -1,0 +1,276 @@
+/* HeroUI Custom Styles - Classes reutilizáveis para componentes */
+
+/* Botões padrão do projeto */
+.btn-hero-primary {
+    background-color: #000000;
+    color: #ffecd1;
+    border: 1px solid #ffecd1;
+    font-weight: bold;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.btn-hero-primary:hover {
+    background-color: #000000;
+    color: #ffecd1;
+    border-color: #f48f42;
+    box-shadow: 0 8px 20px rgba(244, 143, 66, 0.4);
+    transform: translateY(-2px);
+}
+
+.btn-hero-sm {
+    padding: 0.25rem 0.75rem;
+}
+
+.btn-hero-md {
+    padding: 0.5rem 1rem;
+}
+
+.btn-hero-lg {
+    padding: 0.75rem 1.5rem;
+}
+
+.btn-hero-xl {
+    padding: 1rem 2rem;
+}
+
+/* Cards personalizados */
+.card-hero-shadow {
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.card-hero-gradient-yellow {
+    background: linear-gradient(to right, #fef9c3, #fed7aa);
+}
+
+.card-hero-gradient-purple {
+    background: linear-gradient(to right, #faf5ff, #fce7f3);
+}
+
+.card-hero-gradient-blue {
+    background: linear-gradient(to right, #dbeafe, #e0e7ff);
+}
+
+.card-hero-gradient-red {
+    background: linear-gradient(to right, #fef2f2, #fecaca);
+    border: 2px solid #fca5a5;
+}
+
+/* Títulos e textos */
+.text-hero-title {
+    font-size: 1.875rem;
+    font-weight: bold;
+    color: #05315e;
+}
+
+.text-hero-subtitle {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #05315e;
+}
+
+.text-hero-label {
+    font-size: 0.875rem;
+    color: #6b7280;
+}
+
+.text-hero-value {
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+.text-hero-emphasis {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #05315e;
+}
+
+/* Chips personalizados */
+.chip-hero-primary {
+    font-size: 1.125rem;
+    font-weight: bold;
+}
+
+.chip-hero-title {
+    font-size: 1.25rem;
+    font-weight: bold;
+}
+
+/* Grid e Layout */
+.grid-hero-responsive {
+    display: grid;
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+    gap: 1.5rem;
+}
+
+@media (min-width: 1024px) {
+    .grid-hero-responsive {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+/* Container flex centralizado */
+.flex-hero-center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.flex-hero-between {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.flex-hero-gap {
+    display: flex;
+    gap: 1rem;
+}
+
+/* Espaçamentos */
+.space-hero-y {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.space-hero-y-sm {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.space-hero-y-lg {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+/* Loading e estados */
+.loading-hero-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.loading-hero-section {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 3rem 0;
+}
+
+/* Ícones grandes */
+.icon-hero-xl {
+    font-size: 3.75rem;
+    margin-bottom: 1rem;
+}
+
+.icon-hero-2xl {
+    font-size: 4.5rem;
+    margin-bottom: 1.5rem;
+}
+
+/* Imagens */
+.img-hero-rounded {
+    max-width: 100%;
+    height: auto;
+    border-radius: 0.5rem;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+.img-hero-max-height {
+    max-height: 400px;
+}
+
+/* Observações e notas */
+.note-hero-container {
+    background-color: #dbeafe;
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+}
+
+.note-hero-text {
+    font-size: 0.875rem;
+    color: #374151;
+    margin-top: 0.25rem;
+}
+
+/* Status e badges */
+.status-hero-success {
+    color: #16a34a;
+}
+
+.status-hero-warning {
+    color: #ca8a04;
+}
+
+.status-hero-danger {
+    color: #dc2626;
+}
+
+/* Transições suaves */
+.transition-hero-all {
+    transition: all 0.3s ease;
+}
+
+/* Borda com hover */
+.border-hero-hover {
+    border: 2px solid #e5e7eb;
+    transition: border-color 0.3s ease;
+}
+
+.border-hero-hover:hover {
+    border-color: #05315e;
+}
+
+/* Padding customizado */
+.p-hero-section {
+    padding: 2rem 0;
+}
+
+.p-hero-card {
+    padding: 1rem;
+}
+
+/* Margin bottom */
+.mb-hero-section {
+    margin-bottom: 1.5rem;
+}
+
+.mb-hero-large {
+    margin-bottom: 2rem;
+}
+
+/* Texto centralizado */
+.text-hero-center {
+    text-align: center;
+    padding: 2rem 0;
+}
+
+/* Avatar e perfil */
+.avatar-hero-large {
+    width: 8rem;
+    height: 8rem;
+}
+
+/* Horários de funcionamento */
+.horario-hero-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.horario-hero-item:last-child {
+    border-bottom: none;
+}
+
+.horario-hero-dia {
+    font-weight: 600;
+    color: #05315e;
+}

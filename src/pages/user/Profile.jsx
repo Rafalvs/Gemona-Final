@@ -2,6 +2,7 @@ import Layout from "../../components/layout/Layout"
 import { useState, useEffect } from "react"
 import { useAuth } from "../../contexts/AuthContext"
 import { clientesAPI, profissionaisAPI, imagensAPI, estabelecimentosAPI, enderecosAPI, pedidosAPI, servicosAPI } from '../../services/apiService'
+import { Card, CardHeader, CardBody, Button, Chip, Divider, Avatar, Input, Spinner } from '@heroui/react'
 import '../../styles/Profile.css'
 
 export default function Profile(){
@@ -420,37 +421,46 @@ export default function Profile(){
         <Layout>
             <main>
                 <div className="profile-page-container">
-                    <h1 className="profile-page-title">Perfil do Usuário</h1>
+                    <Card className="mb-6 shadow-xl">
+                        <CardHeader className="pb-3">
+                            <h1 className="text-3xl font-bold text-[#05315e]">👤 Perfil do Usuário</h1>
+                        </CardHeader>
+                    </Card>
                     
                     {/* Seção de Informações Pessoais */}
-                    <div className="personal-info-section">
-                        <div className="section-header">
-                            <h2 className="section-title">👤 Informações Pessoais</h2>
+                    <Card className="personal-info-section shadow-xl">
+                        <CardBody>
+                        <div className="flex justify-between items-center mb-6">
+                            <div className="flex items-center gap-3">
+                                <Chip color="primary" variant="flat" size="lg" className="text-lg font-bold">
+                                    👤 Informações Pessoais
+                                </Chip>
+                            </div>
                             {!isEditing && (
-                                <button
+                                <Button
                                     onClick={handleEditClick}
-                                    className="btn-edit-profile"
+                                    color="primary"
+                                    variant="solid"
+                                    size="md"
+                                    className="bg-black text-[#ffecd1] border border-[#ffecd1] font-bold px-4 py-2 rounded-lg hover:bg-[#ffecd1] hover:text-black transition-all duration-300 shadow-md hover:shadow-lg"
                                 >
                                     ✏️ Editar Perfil
-                                </button>
+                                </Button>
                             )}
                         </div>
                         <div className="profile-container">
                             {/* Foto de Perfil */}
-                            {fotoPerfilUrl ? (
-                                <img 
-                                    src={fotoPerfilUrl} 
-                                    alt="Foto de perfil" 
-                                    className="profile-picture"
-                                    onError={(e) => {
-                                        e.target.style.display = 'none';
-                                    }}
+                            <div className="flex justify-center mb-6">
+                                <Avatar
+                                    src={fotoPerfilUrl}
+                                    alt="Foto de perfil"
+                                    className="w-32 h-32 text-large"
+                                    isBordered
+                                    color="primary"
+                                    showFallback
+                                    fallback={<span className="text-4xl">👤</span>}
                                 />
-                            ) : (
-                                <div className="default-profile-pic">
-                                    <span>👤</span>
-                                </div>
-                            )}
+                            </div>
                             {isEditing ? (
                                 <div className="edit-form-container">
                                     <div className="form-field">
@@ -620,69 +630,93 @@ export default function Profile(){
                                     </div>
                                 </div>
                             ) : (
-                                <>
-                                    <p className="profile-name">
-                                        {userData?.nome || user?.nome}
-                                    </p>
-                                    <p className="profile-email">
-                                        📧 {userData?.email || user?.email}
-                                    </p>
-                                    {userData?.telefone && (
-                                        <p className="profile-phone">
-                                            📱 {userData.telefone}
-                                        </p>
-                                    )}
-                                </>
+                                <div className="space-y-4">
+                                    <div className="text-center">
+                                        <h2 className="text-2xl font-bold text-[#05315e] mb-2">
+                                            {userData?.nome || user?.nome}
+                                        </h2>
+                                    </div>
+                                    <Divider />
+                                    <div className="flex flex-col gap-1">
+                                        <Chip color="secondary" variant="flat" startContent={<span>📧</span>} className="text-base px-4 py-2">
+                                            {userData?.email || user?.email}
+                                        </Chip>
+                                        {userData?.telefone && (
+                                            <Chip color="success" variant="flat" startContent={<span>📱</span>} className="text-base px-7 py-2">
+                                                {userData.telefone}
+                                            </Chip>
+                                        )}
+                                    </div>
+                                </div>
                             )}
                             {!isEditing && (
                                 <>
-                                    {userData?.cpf && (
-                                        <p className="profile-cpf">
-                                            📄 CPF: {userData.cpf}
-                                        </p>
-                                    )}
-                                    {userData?.dataNascimento && (
-                                        <p className="profile-birth-date">
-                                            🎂 Data de Nascimento: {new Date(userData.dataNascimento).toLocaleDateString('pt-BR')}
-                                        </p>
-                                    )}
-                                    <p className="profile-user-type">
-                                       👨‍🚀 Tipo: {user?.tipo_usuario === 'cliente' ? 'Cliente' : 'Profissional'}
-                                    </p>
+                                    <Divider className="my-4" />
+                                    <div className="flex flex-wrap gap-3 justify-center">
+                                        {userData?.cpf && (
+                                            <Chip color="default" variant="bordered" startContent={<span>📄</span>} className="text-sm">
+                                                CPF: {userData.cpf}
+                                            </Chip>
+                                        )}
+                                        {userData?.dataNascimento && (
+                                            <Chip color="warning" variant="flat" startContent={<span>🎂</span>} className="text-sm">
+                                                {new Date(userData.dataNascimento).toLocaleDateString('pt-BR')}
+                                            </Chip>
+                                        )}
+                                        <Chip 
+                                            color={user?.tipo_usuario === 'cliente' ? 'primary' : 'success'} 
+                                            variant="solid" 
+                                            startContent={<span>👨‍🚀</span>}
+                                            className="text-sm font-bold"
+                                        >
+                                            {user?.tipo_usuario === 'cliente' ? 'Cliente' : 'Profissional'}
+                                        </Chip>
+                                    </div>
                                     {user?.tipo_usuario === 'cliente' && userData?.endereco?.cep && (
-                                        <div className="address-section">
-                                            <h3>📍 Endereço</h3>
-                                            <p>
-                                                <strong>CEP:</strong> {userData.endereco.cep}
-                                            </p>
-                                            {userData.endereco.rua && (
-                                                <p>
-                                                    <strong>Rua:</strong> {userData.endereco.rua}{userData.endereco.numero ? `, ${userData.endereco.numero}` : ''}
-                                                </p>
-                                            )}
-                                            {userData.endereco.complemento && (
-                                                <p>
-                                                    <strong>Complemento:</strong> {userData.endereco.complemento}
-                                                </p>
-                                            )}
-                                            {userData.endereco.cidade && userData.endereco.estado && (
-                                                <p>
-                                                    <strong>Cidade/UF:</strong> {userData.endereco.cidade} - {userData.endereco.estado}
-                                                </p>
-                                            )}
-                                        </div>
+                                        <Card className="mt-4 bg-gradient-to-r from-blue-50 to-indigo-50">
+                                            <CardHeader>
+                                                <h3 className="text-lg font-bold text-[#05315e] flex items-center gap-2">
+                                                    📍 Endereço
+                                                </h3>
+                                            </CardHeader>
+                                            <Divider />
+                                            <CardBody>
+                                                <div className="space-y-2 text-sm">
+                                                    <p>
+                                                        <strong className="text-[#05315e]">CEP:</strong> {userData.endereco.cep}
+                                                    </p>
+                                                    {userData.endereco.rua && (
+                                                        <p>
+                                                            <strong className="text-[#05315e]">Rua:</strong> {userData.endereco.rua}{userData.endereco.numero ? `, ${userData.endereco.numero}` : ''}
+                                                        </p>
+                                                    )}
+                                                    {userData.endereco.complemento && (
+                                                        <p>
+                                                            <strong className="text-[#05315e]">Complemento:</strong> {userData.endereco.complemento}
+                                                        </p>
+                                                    )}
+                                                    {userData.endereco.cidade && userData.endereco.estado && (
+                                                        <p>
+                                                            <strong className="text-[#05315e]">Cidade/UF:</strong> {userData.endereco.cidade} - {userData.endereco.estado}
+                                                        </p>
+                                                    )}
+                                                </div>
+                                            </CardBody>
+                                        </Card>
                                     )}
                                     {user?.tipo_usuario === 'profissional' && (
-                                        <div className="establishment-buttons">
+                                        <div className="flex justify-center mt-6">
                                             {loadingEstabelecimento ? (
-                                                <button
+                                                <Button
                                                     disabled
-                                                    className="btn-checking"
+                                                    color="bg-black"
+                                                    variant="flat"
+                                                    isLoading
                                                 >
-                                                    ⏳ Verificando...
-                                                </button>
+                                                    Verificando...
+                                                </Button>
                                             ) : (
-                                                <button
+                                                <Button
                                                     onClick={() => {
                                                         if (temEstabelecimento) {
                                                             window.location.href = '/companyProfile';
@@ -690,36 +724,48 @@ export default function Profile(){
                                                             window.location.href = '/newCompany';
                                                         }
                                                     }}
-                                                    className={temEstabelecimento ? 'btn-view-company' : 'btn-create-company'}
+                                                    color={temEstabelecimento ? 'primary' : 'success'}
+                                                    variant="solid"
+                                                    size="lg"
+                                                    className="bg-black text-[#ffecd1] border border-[#ffecd1] font-bold px-6 py-3 rounded-lg hover:bg-[#ffecd1] hover:text-black transition-all duration-300 shadow-md hover:shadow-lg"
                                                 >
                                                     {temEstabelecimento ? '🏢 Ver Perfil da Empresa' : '➕ Criar Empresa'}
-                                                </button>
+                                                </Button>
                                             )}
                                         </div>
                                     )}
                                 </>
                             )}
                         </div>
-                    </div>
+                    </CardBody>
+                    </Card>
 
                     {/* Seção de Agenda - Apenas para Clientes */}
                     {user?.tipo_usuario === 'cliente' && (
-                        <div className="agenda-section">
-                            <h2 className="agenda-title">📅 Minha Agenda de Serviços</h2>
-                            
+                        <Card className="mt-6 shadow-xl">
+                            <CardHeader className="pb-3">
+                                <Chip color="success" variant="flat" size="lg" className="text-xl font-bold">
+                                    📅 Minha Agenda de Serviços
+                                </Chip>
+                            </CardHeader>
+                            <Divider />
+                            <CardBody>
                             {loading ? (
-                                <p className="agenda-loading">
-                                    ⏳ Carregando agenda...
-                                </p>
-                            ) : agenda.length === 0 ? (
-                                <div className="agenda-empty">
-                                    <p className="agenda-empty-title">
-                                        📝 Você ainda não contratou nenhum serviço
-                                    </p>
-                                    <p className="agenda-empty-subtitle">
-                                        Explore nossos serviços na página inicial e contrate o que precisar!
-                                    </p>
+                                <div className="flex justify-center items-center py-8">
+                                    <Spinner size="lg" color="primary" label="Carregando agenda..." />
                                 </div>
+                            ) : agenda.length === 0 ? (
+                                <Card className="bg-gradient-to-r from-yellow-50 to-orange-50">
+                                    <CardBody className="text-center py-8">
+                                        <div className="text-6xl mb-4">📝</div>
+                                        <h3 className="text-xl font-bold text-[#05315e] mb-2">
+                                            Você ainda não contratou nenhum serviço
+                                        </h3>
+                                        <p className="text-gray-600">
+                                            Explore nossos serviços na página inicial e contrate o que precisar!
+                                        </p>
+                                    </CardBody>
+                                </Card>
                             ) : (
                                 <div className="agenda-grid">
                                     {agenda.map((item) => (
@@ -748,19 +794,24 @@ export default function Profile(){
                                                         </p>
                                                     )}
                                                 </div>
-                                                <div style={{ display: 'flex', gap: '10px' }}>
-                                                    <button
+                                                <div className="flex gap-2">
+                                                    <Button
                                                         onClick={() => handleVerDetalhes(item)}
-                                                        className="btn-view-details"
+                                                        color="primary"
+                                                        variant="solid"
+                                                        size="sm"
+                                                        className="bg-black text-[#ffecd1] border border-[#ffecd1] font-bold px-3 py-1 rounded-lg hover:bg-[#ffecd1] hover:text-black transition-all duration-300"
                                                     >
                                                         👁️ Ver Detalhes
-                                                    </button>
-                                                    <button
+                                                    </Button>
+                                                    <Button
                                                         onClick={() => handleCancelarContrato(item.id)}
-                                                        className="btn-cancel-service"
+                                                        color="danger"
+                                                        variant="flat"
+                                                        size="sm"
                                                     >
                                                         ❌ Cancelar
-                                                    </button>
+                                                    </Button>
                                                 </div>
                                             </div>
                                             
@@ -773,7 +824,8 @@ export default function Profile(){
                                     ))}
                                 </div>
                             )}
-                        </div>
+                            </CardBody>
+                        </Card>
                     )}
                 </div>
             </main>

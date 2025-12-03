@@ -339,13 +339,77 @@ export const getCategoryIcon = (categoryName) => {
     'música': Music,
     'arte': PaintBucket,
     'fotografia': Camera,
+    'limpeza': Wrench,
+    'manutenção': Hammer,
+    'jardinagem': Shirt,
+    'pet': Heart,
+    'advocacia': Briefcase,
+    'contabilidade': DollarSign,
+    'consultoria': Target,
+    'marketing': TrendingUp,
+    'design': PaintBucket,
+    'eventos': Calendar,
+    'catering': Coffee,
+    'festas': Star,
+    'casamento': Heart,
+    'fotógrafo': Camera,
+    'vídeo': Video,
+    'música ao vivo': Music,
+    'dj': Music,
+    'massagem': Star,
+    'estética': Scissors,
+    'manicure': Scissors,
+    'cabeleireiro': Scissors,
+    'barbeiro': Scissors,
+    'personal': Dumbbell,
+    'nutrição': Pizza,
+    'psicologia': Heart,
+    'fisioterapia': Stethoscope,
+    'dentista': Stethoscope,
+    'médico': Stethoscope,
+    'veterinário': Heart,
+    'eletricista': Zap,
+    'encanador': Wrench,
+    'pintor': PaintBucket,
+    'pedreiro': Building,
+    'carpinteiro': Hammer,
+    'serralheiro': Wrench,
+    'vidraceiro': Building,
+    'gesso': Building,
+    'mecânico': Car,
+    'motorista': Car,
+    'entrega': Package,
+    'mudança': Package,
+    'professor': GraduationCap,
+    'aula particular': Book,
+    'curso': Book,
+    'idiomas': Globe,
+    'informática': Laptop,
+    'programação': Laptop,
+    'desenvolvimento': Laptop,
+    'suporte técnico': Smartphone,
+    'instalação': Settings,
+    'manutenção de pc': Laptop,
+    'rede': Wifi,
+    'segurança': Shield,
     'default': Briefcase
   }
 
-  const normalizedName = categoryName?.toLowerCase() || ''
-  const IconComponent = categoryIconMap[normalizedName] || categoryIconMap.default
+  const normalizedName = categoryName?.toLowerCase().trim() || ''
   
-  return IconComponent
+  // Busca exata primeiro
+  if (categoryIconMap[normalizedName]) {
+    return categoryIconMap[normalizedName]
+  }
+  
+  // Busca por palavras parciais
+  for (const [key, icon] of Object.entries(categoryIconMap)) {
+    if (normalizedName.includes(key) || key.includes(normalizedName)) {
+      return icon
+    }
+  }
+  
+  return categoryIconMap.default
 }
 
 // Componente para renderizar ícone de categoria com estilo
