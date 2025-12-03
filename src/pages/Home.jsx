@@ -134,6 +134,7 @@ export default function Home(){
                 setLoadingCategorias(false);
                 setLoadingSubcategorias(false);
             } catch (error) {
+                console.error("Erro ao buscar dados:", error);
                 setLoadingCategorias(false);
                 setLoadingSubcategorias(false);
             } finally {
