@@ -7,7 +7,7 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'https://localhost:5269/', // Backend server
+        target: 'https://gemona-api-production.up.railway.app/', // Backend server
         changeOrigin: true,
         secure: false,
         configure: (proxy, _options) => {
