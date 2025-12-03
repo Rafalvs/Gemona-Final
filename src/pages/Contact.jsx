@@ -9,6 +9,7 @@ import { faEnvelope } from '@fortawesome/free-solid-svg-icons'
 import Logo from '../assets/peixe.png'
 import Anemona from '../assets/anemona.png'
 import Gemo from '../assets/gemo.jpg'
+import { apiCache } from '../utils/cache'
 
 export default function Contact(){
     const [githubAvatars, setGithubAvatars] = useState({
@@ -19,6 +20,13 @@ export default function Contact(){
     useEffect(() => {
         const fetchGithubAvatars = async () => {
             try {
+                // Verificar cache primeiro
+                const cachedAvatars = apiCache.get('github_avatars');
+                if (cachedAvatars) {
+                    setGithubAvatars(cachedAvatars);
+                    return;
+                }
+
                 const [rafalvsRes, mr1c10Res] = await Promise.all([
                     fetch('https://api.github.com/users/Rafalvs'),
                     fetch('https://api.github.com/users/MR1C10')
@@ -27,10 +35,14 @@ export default function Contact(){
                 const rafalvsData = await rafalvsRes.json();
                 const mr1c10Data = await mr1c10Res.json();
 
-                setGithubAvatars({
+                const avatars = {
                     Rafalvs: rafalvsData.avatar_url,
                     MR1C10: mr1c10Data.avatar_url
-                });
+                };
+
+                setGithubAvatars(avatars);
+                // Cache por 1 hora (avatares mudam raramente)
+                apiCache.set('github_avatars', avatars, 60 * 60 * 1000);
             } catch (error) {
                 console.error('Erro ao buscar avatares do GitHub:', error);
             }

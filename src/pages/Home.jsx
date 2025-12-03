@@ -8,6 +8,7 @@ import { Card, CardHeader, CardBody, Divider} from '@heroui/react'
 import HorizontalCarousel from '../components/ui/HorizontalCarousel'
 import { getCategoryIcon } from '../components/ui/Icons'
 import { Flame, FolderOpen, Search } from 'lucide-react'
+import { apiCache } from '../utils/cache'
 
 // Componente para seção de subcategorias (substituindo serviços mais procurados)
 function ServicesSection({ subcategorias, loadingSubcategorias }) {
@@ -99,6 +100,21 @@ export default function Home(){
     useEffect(() => {
         const fetchData = async () => {
             try {
+                // Verificar cache primeiro
+                const cachedCategorias = apiCache.get('categorias');
+                const cachedSubcategorias = apiCache.get('subcategorias');
+
+                if (cachedCategorias && cachedSubcategorias) {
+                    // Usar dados do cache - carregamento instantâneo!
+                    setCategorias(cachedCategorias);
+                    setSubcategorias(cachedSubcategorias);
+                    setLoadingCategorias(false);
+                    setLoadingSubcategorias(false);
+                    setIsFadingOut(true);
+                    setTimeout(() => setIsInitialLoading(false), 100);
+                    return;
+                }
+
                 // Buscar categorias e subcategorias em paralelo
                 const [categoriasResult, subcategoriasResult] = await Promise.all([
                     categoriasAPI.getAll(),
@@ -107,10 +123,12 @@ export default function Home(){
 
                 if (categoriasResult.success) {
                     setCategorias(categoriasResult.data);
+                    apiCache.set('categorias', categoriasResult.data); // Salvar no cache
                 }
                 
                 if (subcategoriasResult.success) {
                     setSubcategorias(subcategoriasResult.data);
+                    apiCache.set('subcategorias', subcategoriasResult.data); // Salvar no cache
                 }
                 
                 setLoadingCategorias(false);
@@ -119,15 +137,9 @@ export default function Home(){
                 setLoadingCategorias(false);
                 setLoadingSubcategorias(false);
             } finally {
-                // Aguardar no mínimo 1 segundo para mostrar a animação
-                setTimeout(() => {
-                    // Iniciar fade out
-                    setIsFadingOut(true);
-                    // Remover loading após a animação de fade out (600ms)
-                    setTimeout(() => {
-                        setIsInitialLoading(false);
-                    }, 100);
-                }, 1000);
+                // Remover delay artificial - carrega mais rápido!
+                setIsFadingOut(true);
+                setTimeout(() => setIsInitialLoading(false), 100);
             }
         };
 
@@ -216,7 +228,7 @@ export default function Home(){
                                         onPress={() => navigate('/services')}
                                         className="hover:shadow-2xl transition-all duration-300 hover:scale-99 border-2 border-black-300 min-h-[120px] sm:h-30 rounded-xl overflow-hidden"
                                         style={{ 
-                                            background: 'linear-gradient(135deg, #05315f 40%, #f0bf87ff 100%)'
+                                            background: 'linear-gradient(135deg, #05315f 40%, #000000ff 100%)'
                                         }}
                                     >
                                         <CardBody className="p-3 sm:p-4 flex flex-col justify-between h-full relative">
@@ -244,7 +256,7 @@ export default function Home(){
                                                 onPress={() => handleCategoryClick(categoria.categoriaId || categoria.id)}
                                                 className="hover:shadow-2xl transition-all duration-300 hover:scale-95 backdrop-blur-sm border-2 border-[#05315f] hover:border-[#ffecd1] min-h-[120px] sm:h-30 rounded-xl overflow-hidden"
                                                 style={{ 
-                                                    background: 'linear-gradient(135deg, #05315f 20%, #030b25ff 100%)'
+                                                    background: 'linear-gradient(135deg, #05315f 20%, #000000ff 100%)'
                                                 }}
                                             >
                                                 <CardBody className="p-3 sm:p-4 flex flex-col justify-between h-full relative">
