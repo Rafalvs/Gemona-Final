@@ -244,7 +244,7 @@ export default function Home(){
                                                 onPress={() => handleCategoryClick(categoria.categoriaId || categoria.id)}
                                                 className="hover:shadow-2xl transition-all duration-300 hover:scale-95 backdrop-blur-sm border-2 border-[#05315f] hover:border-[#ffecd1] min-h-[120px] sm:h-30 rounded-xl overflow-hidden"
                                                 style={{ 
-                                                    background: 'linear-gradient(135deg, #05315f 20%, #f0e7ceff 100%)'
+                                                    background: 'linear-gradient(135deg, #05315f 20%, #030b25ff 100%)'
                                                 }}
                                             >
                                                 <CardBody className="p-3 sm:p-4 flex flex-col justify-between h-full relative">
