@@ -3,6 +3,7 @@ import { useState, useEffect } from "react"
 import { useAuth } from "../../contexts/AuthContext"
 import { clientesAPI, profissionaisAPI, imagensAPI, estabelecimentosAPI, enderecosAPI, pedidosAPI, servicosAPI } from '../../services/apiService'
 import { Card, CardHeader, CardBody, Button, Chip, Divider, Avatar, Input, Spinner } from '@heroui/react'
+import { User, Mail, Phone, FileText, Cake, MapPin, Home, Building2, Calendar, Clock, Eye, X, Edit, Save, Trash2, DollarSign, Bell, Store, Search } from 'lucide-react'
 import '../../styles/Profile.css'
 
 export default function Profile(){
@@ -399,8 +400,9 @@ export default function Profile(){
         return (
             <Layout>
                 <main>
-                    <div className="loading-message">
-                        <p className="loading-text">⏳ Carregando...</p>
+                    <div className="loading-message flex flex-col items-center justify-center gap-3">
+                        <Spinner size="lg" />
+                        <p className="loading-text">Carregando...</p>
                     </div>
                 </main>
             </Layout>
@@ -423,7 +425,10 @@ export default function Profile(){
                 <div className="profile-page-container">
                     <Card className="mb-6 shadow-xl">
                         <CardHeader className="pb-3">
-                            <h1 className="text-3xl font-bold text-[#05315e]">👤 Perfil do Usuário</h1>
+                            <h1 className="text-3xl font-bold text-[#05315e] flex items-center gap-2">
+                                <User size={32} />
+                                Perfil do Usuário
+                            </h1>
                         </CardHeader>
                     </Card>
                     
@@ -432,8 +437,8 @@ export default function Profile(){
                         <CardBody>
                         <div className="flex justify-between items-center mb-6">
                             <div className="flex items-center gap-3">
-                                <Chip color="primary" variant="flat" size="lg" className="text-lg font-bold">
-                                    👤 Informações Pessoais
+                                <Chip color="primary" variant="flat" size="lg" className="text-lg font-bold" startContent={<User size={20} />}>
+                                    Informações Pessoais
                                 </Chip>
                             </div>
                             {!isEditing && (
@@ -443,8 +448,9 @@ export default function Profile(){
                                     variant="solid"
                                     size="md"
                                     className="bg-black text-[#ffecd1] border border-[#ffecd1] font-bold px-4 py-2 rounded-lg hover:bg-[#ffecd1] hover:text-black transition-all duration-300 shadow-md hover:shadow-lg"
+                                    startContent={<Edit size={18} />}
                                 >
-                                    ✏️ Editar Perfil
+                                    Editar Perfil
                                 </Button>
                             )}
                         </div>
@@ -458,7 +464,7 @@ export default function Profile(){
                                     isBordered
                                     color="primary"
                                     showFallback
-                                    fallback={<span className="text-4xl">👤</span>}
+                                    fallback={<User size={48} />}
                                 />
                             </div>
                             {isEditing ? (
@@ -478,9 +484,10 @@ export default function Profile(){
                                                     <button
                                                         type="button"
                                                         onClick={handleRemoveImage}
-                                                        className="btn-remove-image"
+                                                        className="btn-remove-image flex items-center justify-center gap-2"
                                                     >
-                                                        🗑️ Remover Nova Foto
+                                                        <Trash2 size={16} />
+                                                        Remover Nova Foto
                                                     </button>
                                                 )}
                                             </div>
@@ -520,7 +527,10 @@ export default function Profile(){
                                     </div>
                                     {user?.tipo_usuario === 'cliente' && (
                                         <>
-                                            <h3 className="address-form-title">📍 Endereço</h3>
+                                            <h3 className="address-form-title flex items-center gap-2">
+                                                <MapPin size={20} />
+                                                Endereço
+                                            </h3>
                                             <div className="form-field">
                                                 <label>
                                                     CEP:
@@ -537,10 +547,10 @@ export default function Profile(){
                                                         type="button"
                                                         onClick={buscarCep}
                                                         disabled={saving || buscandoCep || !editFormData.cep}
-                                                        className="btn-search-cep"
+                                                        className="btn-search-cep flex items-center justify-center"
                                                         title="Buscar endereço pelo CEP"
                                                     >
-                                                        {buscandoCep ? '⏳' : '🔍'}
+                                                        {buscandoCep ? <Spinner size="sm" /> : <Search size={18} />}
                                                     </button>
                                                 </div>
                                             </div>
@@ -616,16 +626,27 @@ export default function Profile(){
                                         <button
                                             onClick={handleSaveProfile}
                                             disabled={saving}
-                                            className="btn-save"
+                                            className="btn-save flex items-center justify-center gap-2"
                                         >
-                                            {saving ? '⏳ Salvando...' : '💾 Salvar'}
+                                            {saving ? (
+                                                <>
+                                                    <Spinner size="sm" color="white" />
+                                                    Salvando...
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <Save size={18} />
+                                                    Salvar
+                                                </>
+                                            )}
                                         </button>
                                         <button
                                             onClick={handleCancelEdit}
                                             disabled={saving}
-                                            className="btn-cancel-edit"
+                                            className="btn-cancel-edit flex items-center justify-center gap-2"
                                         >
-                                            ❌ Cancelar
+                                            <X size={18} />
+                                            Cancelar
                                         </button>
                                     </div>
                                 </div>
@@ -638,11 +659,11 @@ export default function Profile(){
                                     </div>
                                     <Divider />
                                     <div className="flex flex-col gap-1">
-                                        <Chip color="secondary" variant="flat" startContent={<span>📧</span>} className="text-base px-4 py-2">
+                                        <Chip color="secondary" variant="flat" startContent={<Mail size={18} />} className="text-base px-4 py-2">
                                             {userData?.email || user?.email}
                                         </Chip>
                                         {userData?.telefone && (
-                                            <Chip color="success" variant="flat" startContent={<span>📱</span>} className="text-base px-7 py-2">
+                                            <Chip color="success" variant="flat" startContent={<Phone size={18} />} className="text-base px-7 py-2">
                                                 {userData.telefone}
                                             </Chip>
                                         )}
@@ -654,19 +675,19 @@ export default function Profile(){
                                     <Divider className="my-4" />
                                     <div className="flex flex-wrap gap-3 justify-center">
                                         {userData?.cpf && (
-                                            <Chip color="default" variant="bordered" startContent={<span>📄</span>} className="text-sm">
+                                            <Chip color="default" variant="bordered" startContent={<FileText size={16} />} className="text-sm">
                                                 CPF: {userData.cpf}
                                             </Chip>
                                         )}
                                         {userData?.dataNascimento && (
-                                            <Chip color="warning" variant="flat" startContent={<span>🎂</span>} className="text-sm">
+                                            <Chip color="warning" variant="flat" startContent={<Cake size={16} />} className="text-sm">
                                                 {new Date(userData.dataNascimento).toLocaleDateString('pt-BR')}
                                             </Chip>
                                         )}
                                         <Chip 
                                             color={user?.tipo_usuario === 'cliente' ? 'primary' : 'success'} 
                                             variant="solid" 
-                                            startContent={<span>👨‍🚀</span>}
+                                            startContent={<User size={16} />}
                                             className="text-sm font-bold"
                                         >
                                             {user?.tipo_usuario === 'cliente' ? 'Cliente' : 'Profissional'}
@@ -676,7 +697,8 @@ export default function Profile(){
                                         <Card className="mt-4 bg-gradient-to-r from-blue-50 to-indigo-50">
                                             <CardHeader>
                                                 <h3 className="text-lg font-bold text-[#05315e] flex items-center gap-2">
-                                                    📍 Endereço
+                                                    <MapPin size={20} />
+                                                    Endereço
                                                 </h3>
                                             </CardHeader>
                                             <Divider />
@@ -728,8 +750,9 @@ export default function Profile(){
                                                     variant="solid"
                                                     size="lg"
                                                     className="bg-black text-[#ffecd1] border border-[#ffecd1] font-bold px-6 py-3 rounded-lg hover:bg-[#ffecd1] hover:text-black transition-all duration-300 shadow-md hover:shadow-lg"
+                                                    startContent={temEstabelecimento ? <Store size={20} /> : <Building2 size={20} />}
                                                 >
-                                                    {temEstabelecimento ? '🏢 Ver Perfil da Empresa' : '➕ Criar Empresa'}
+                                                    {temEstabelecimento ? 'Ver Perfil da Empresa' : 'Criar Empresa'}
                                                 </Button>
                                             )}
                                         </div>
@@ -744,8 +767,8 @@ export default function Profile(){
                     {user?.tipo_usuario === 'cliente' && (
                         <Card className="mt-6 shadow-xl">
                             <CardHeader className="pb-3">
-                                <Chip color="success" variant="flat" size="lg" className="text-xl font-bold">
-                                    📅 Minha Agenda de Serviços
+                                <Chip color="success" variant="flat" size="lg" className="text-xl font-bold" startContent={<Calendar size={24} />}>
+                                    Minha Agenda de Serviços
                                 </Chip>
                             </CardHeader>
                             <Divider />
@@ -757,7 +780,9 @@ export default function Profile(){
                             ) : agenda.length === 0 ? (
                                 <Card className="bg-gradient-to-r from-yellow-50 to-orange-50">
                                     <CardBody className="text-center py-8">
-                                        <div className="text-6xl mb-4">📝</div>
+                                        <div className="mb-4">
+                                            <FileText size={64} className="mx-auto text-gray-400" />
+                                        </div>
                                         <h3 className="text-xl font-bold text-[#05315e] mb-2">
                                             Você ainda não contratou nenhum serviço
                                         </h3>
@@ -787,7 +812,7 @@ export default function Profile(){
                                                         />
                                                     ) : (
                                                         <div className="w-20 h-20 bg-gradient-to-br from-blue-100 to-blue-200 rounded-lg flex items-center justify-center shadow-md">
-                                                            <span className="text-3xl">🛎️</span>
+                                                            <Bell size={36} className="text-blue-600" />
                                                         </div>
                                                     )}
                                                     <div className="flex-1">
@@ -799,7 +824,7 @@ export default function Profile(){
                                                                 size="sm" 
                                                                 variant="flat" 
                                                                 color="secondary"
-                                                                startContent={<span>🏢</span>}
+                                                                startContent={<Store size={16} />}
                                                             >
                                                                 {item.estabelecimento.nome}
                                                             </Chip>
@@ -824,7 +849,7 @@ export default function Profile(){
                                                                 size="md" 
                                                                 variant="flat" 
                                                                 color="success"
-                                                                startContent={<span>💰</span>}
+                                                                startContent={<DollarSign size={18} />}
                                                                 className="font-bold"
                                                             >
                                                                 R$ {Number(item.servico.preco).toFixed(2).replace('.', ',')}
@@ -833,7 +858,7 @@ export default function Profile(){
                                                                 size="sm" 
                                                                 variant="flat" 
                                                                 color="primary"
-                                                                startContent={<span>📅</span>}
+                                                                startContent={<Calendar size={16} />}
                                                             >
                                                                 {new Date(item.data_contrato).toLocaleDateString('pt-BR')}
                                                             </Chip>
@@ -842,8 +867,9 @@ export default function Profile(){
                                                     
                                                     {item.observacoes && (
                                                         <div className="bg-yellow-50 p-3 rounded-lg border border-yellow-200">
-                                                            <p className="text-sm text-gray-700">
-                                                                <strong className="text-yellow-700">📝 Observações:</strong> {item.observacoes}
+                                                            <p className="text-sm text-gray-700 flex gap-2">
+                                                                <FileText size={16} className="text-yellow-700 flex-shrink-0 mt-0.5" />
+                                                                <span><strong className="text-yellow-700">Observações:</strong> {item.observacoes}</span>
                                                             </p>
                                                         </div>
                                                     )}
@@ -857,7 +883,7 @@ export default function Profile(){
                                                         variant="solid"
                                                         size="md"
                                                         className="bg-[#05315f] text-white font-semibold hover:bg-[#041f3f] transition-all duration-300 shadow-md hover:shadow-lg"
-                                                        startContent={<span>👁️</span>}
+                                                        startContent={<Eye size={18} />}
                                                     >
                                                         Ver Detalhes
                                                     </Button>
@@ -867,7 +893,7 @@ export default function Profile(){
                                                         variant="bordered"
                                                         size="md"
                                                         className="font-semibold hover:bg-red-50 transition-all duration-300"
-                                                        startContent={<span>❌</span>}
+                                                        startContent={<Trash2 size={18} />}
                                                     >
                                                         Cancelar
                                                     </Button>
@@ -908,7 +934,10 @@ export default function Profile(){
 
                             {/* Informações do Serviço */}
                             <div className="service-detail-section">
-                                <h3>🛎️ Informações do Serviço</h3>
+                                <h3 className="flex items-center gap-2">
+                                    <Bell size={20} />
+                                    Informações do Serviço
+                                </h3>
                                 <p><strong>Nome:</strong> {selectedService.servico?.nome}</p>
                                 {selectedService.servico?.descricao && (
                                     <p><strong>Descrição:</strong> {selectedService.servico.descricao}</p>
@@ -937,7 +966,10 @@ export default function Profile(){
                                     )}
 
                                     <div className="service-detail-section">
-                                        <h3>🏢 Estabelecimento</h3>
+                                        <h3 className="flex items-center gap-2">
+                                            <Store size={20} />
+                                            Estabelecimento
+                                        </h3>
                                         <p><strong>Nome:</strong> {selectedService.estabelecimento.nome}</p>
                                         {selectedService.estabelecimento.descricao && (
                                             <p><strong>Descrição:</strong> {selectedService.estabelecimento.descricao}</p>
@@ -947,7 +979,10 @@ export default function Profile(){
                                     {/* Endereço */}
                                     {selectedService.estabelecimento.endereco && (
                                         <div className="service-detail-section">
-                                            <h3>📍 Localização</h3>
+                                            <h3 className="flex items-center gap-2">
+                                                <MapPin size={20} />
+                                                Localização
+                                            </h3>
                                             <div className="location-info">
                                                 <p><strong>CEP:</strong> {selectedService.estabelecimento.endereco.cep}</p>
                                                 <p><strong>Endereço:</strong> {selectedService.estabelecimento.endereco.rua}, {selectedService.estabelecimento.endereco.numero}</p>
@@ -961,7 +996,10 @@ export default function Profile(){
 
                                     {/* Contato */}
                                     <div className="service-detail-section">
-                                        <h3>📞 Contato</h3>
+                                        <h3 className="flex items-center gap-2">
+                                            <Phone size={20} />
+                                            Contato
+                                        </h3>
                                         {selectedService.estabelecimento.telefone && (
                                             <p><strong>Telefone:</strong> {selectedService.estabelecimento.telefone}</p>
                                         )}
@@ -973,7 +1011,10 @@ export default function Profile(){
                                     {/* Horários de Funcionamento */}
                                     {selectedService.estabelecimento.horarios && selectedService.estabelecimento.horarios.length > 0 && (
                                         <div className="service-detail-section">
-                                            <h3>🕒 Horário de Funcionamento</h3>
+                                            <h3 className="flex items-center gap-2">
+                                                <Clock size={20} />
+                                                Horário de Funcionamento
+                                            </h3>
                                             <div className="horarios-info">
                                                 {selectedService.estabelecimento.horarios.map((horario, index) => (
                                                     <p key={index}>

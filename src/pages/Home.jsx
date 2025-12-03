@@ -7,6 +7,7 @@ import Peixe from '../assets/peixe.png';
 import { Card, CardHeader, CardBody, Divider} from '@heroui/react'
 import HorizontalCarousel from '../components/ui/HorizontalCarousel'
 import { getCategoryIcon } from '../components/ui/Icons'
+import { Flame, FolderOpen, Search } from 'lucide-react'
 
 // Componente para seção de subcategorias (substituindo serviços mais procurados)
 function ServicesSection({ subcategorias, loadingSubcategorias }) {
@@ -19,8 +20,9 @@ function ServicesSection({ subcategorias, loadingSubcategorias }) {
     return (
         <Card>
             <CardHeader className="pb-2">
-                <div className="flex items-center gap-1">
-                    <h2 className="text-xl sm:text-2xl font-bold">🔥 Em destaque!</h2>
+                <div className="flex items-center gap-2">
+                    <Flame size={24} className="text-[#f48f42]" />
+                    <h2 className="text-xl sm:text-2xl font-bold">Em destaque!</h2>
                 </div>
             </CardHeader>
             <Divider />
@@ -182,7 +184,8 @@ export default function Home(){
                     <Card>
                         <CardHeader className="pb-2">
                             <div className="flex items-center gap-2">
-                                <h2 className="text-xl sm:text-2xl font-bold mt-4 sm:mt-6">📂 Categorias de Serviços</h2>
+                                <FolderOpen size={24} className="text-[#05315f] mt-4 sm:mt-6" />
+                                <h2 className="text-xl sm:text-2xl font-bold mt-4 sm:mt-6">Categorias de Serviços</h2>
                             </div>
                         </CardHeader>
                         <Divider />
@@ -211,19 +214,19 @@ export default function Home(){
                                     <Card 
                                         isPressable
                                         onPress={() => navigate('/services')}
-                                        className="hover:shadow-2xl transition-all duration-300 hover:scale-99 border-2 border-purple-300 min-h-[120px] sm:h-30 rounded-xl overflow-hidden"
+                                        className="hover:shadow-2xl transition-all duration-300 hover:scale-99 border-2 border-black-300 min-h-[120px] sm:h-30 rounded-xl overflow-hidden"
                                         style={{ 
                                             background: 'linear-gradient(135deg, #05315f 40%, #f0bf87ff 100%)'
                                         }}
                                     >
                                         <CardBody className="p-3 sm:p-4 flex flex-col justify-between h-full relative">
                                             <div>
-                                                <div className="flex items-center gap-2 mb-2">
-                                                    <div className="bg-white/20 p-1.5 rounded-lg backdrop-blur-sm">
-                                                        <span className="text-xl sm:text-2xl">🔍</span>
-                                                    </div>
-                                                    <h3 className="font-bold text-sm sm:text-base text-white drop-shadow-lg">Todos os Serviços</h3>
+                                            <div className="flex items-center gap-2 mb-2">
+                                                <div className="bg-white/20 p-1.5 rounded-lg backdrop-blur-sm">
+                                                    <Search size={24} className="text-white" />
                                                 </div>
+                                                <h3 className="font-bold text-sm sm:text-base text-white drop-shadow-lg">Todos os Serviços</h3>
+                                            </div>
                                                 <Divider className="mb-1.5 bg-white/30" />
                                                 <p className="text-[10px] sm:text-xs text-white/90 leading-snug font-medium">
                                                     Visualize todos os serviços disponíveis na plataforma

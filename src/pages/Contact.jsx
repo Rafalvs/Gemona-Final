@@ -1,6 +1,7 @@
+import { useState, useEffect } from 'react'
 import Header from '../components/layout/Header'
-import { Card, CardHeader, CardBody, Divider } from '@heroui/react'
-import { Fish, Target, Eye } from 'lucide-react'
+import { Card, CardHeader, CardBody, Divider, Avatar } from '@heroui/react'
+import { Fish, Target, Eye, Code2, Server } from 'lucide-react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faInstagram, faWhatsapp, faFacebook, faGithub } from '@fortawesome/free-brands-svg-icons'
 import { faEnvelope } from '@fortawesome/free-solid-svg-icons'
@@ -10,6 +11,34 @@ import Anemona from '../assets/anemona.png'
 import Gemo from '../assets/gemo.jpg'
 
 export default function Contact(){
+    const [githubAvatars, setGithubAvatars] = useState({
+        Rafalvs: null,
+        MR1C10: null
+    });
+
+    useEffect(() => {
+        const fetchGithubAvatars = async () => {
+            try {
+                const [rafalvsRes, mr1c10Res] = await Promise.all([
+                    fetch('https://api.github.com/users/Rafalvs'),
+                    fetch('https://api.github.com/users/MR1C10')
+                ]);
+
+                const rafalvsData = await rafalvsRes.json();
+                const mr1c10Data = await mr1c10Res.json();
+
+                setGithubAvatars({
+                    Rafalvs: rafalvsData.avatar_url,
+                    MR1C10: mr1c10Data.avatar_url
+                });
+            } catch (error) {
+                console.error('Erro ao buscar avatares do GitHub:', error);
+            }
+        };
+
+        fetchGithubAvatars();
+    }, []);
+
     return(
         <>
             <Header />
@@ -313,6 +342,179 @@ export default function Contact(){
                         </CardBody>
                     </Card>
 
+                    {/* Card: Desenvolvedores */}
+                    <Card className="shadow-lg" style={{ 
+                        background: 'linear-gradient(135deg, #f48f42 0%, #db6f15 100%)'
+                    }}>
+                        <CardHeader style={{ paddingBottom: '1rem' }}>
+                            <h2 style={{ 
+                                fontSize: '1.75rem', 
+                                fontWeight: 'bold', 
+                                color: '#fff',
+                                margin: 0,
+                                textAlign: 'center',
+                                width: '100%'
+                            }}>
+                                Desenvolvedores
+                            </h2>
+                        </CardHeader>
+                        <Divider style={{ backgroundColor: 'rgba(255,255,255,0.3)' }} />
+                        <CardBody>
+                            <div style={{ 
+                                display: 'grid',
+                                gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+                                gap: '2rem',
+                                padding: '1rem'
+                            }}>
+                                {/* Frontend Developer */}
+                                <div style={{
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    alignItems: 'center',
+                                    gap: '1rem',
+                                    padding: '1.5rem',
+                                    backgroundColor: 'rgba(255,255,255,0.1)',
+                                    borderRadius: '12px',
+                                    transition: 'all 0.3s'
+                                }}
+                                onMouseEnter={(e) => {
+                                    e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.2)';
+                                    e.currentTarget.style.transform = 'translateY(-5px)';
+                                }}
+                                onMouseLeave={(e) => {
+                                    e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.1)';
+                                    e.currentTarget.style.transform = 'translateY(0)';
+                                }}>
+                                    {githubAvatars.Rafalvs ? (
+                                        <Avatar
+                                            src={githubAvatars.Rafalvs}
+                                            className="w-24 h-24"
+                                            isBordered
+                                            color="default"
+                                        />
+                                    ) : (
+                                        <div style={{
+                                            backgroundColor: 'rgba(255,255,255,0.2)',
+                                            padding: '1rem',
+                                            borderRadius: '50%'
+                                        }}>
+                                            <Code2 size={48} color="#fff" />
+                                        </div>
+                                    )}
+                                    <h3 style={{
+                                        fontSize: '1.25rem',
+                                        fontWeight: 'bold',
+                                        color: '#fff',
+                                        margin: 0
+                                    }}>
+                                        Frontend Developer
+                                    </h3>
+                                    <a 
+                                        href="https://github.com/Rafalvs" 
+                                        target="_blank" 
+                                        rel="noopener noreferrer"
+                                        style={{
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: '0.5rem',
+                                            color: '#fff',
+                                            textDecoration: 'none',
+                                            fontSize: '1rem',
+                                            transition: 'all 0.3s',
+                                            padding: '0.5rem 1rem',
+                                            borderRadius: '8px',
+                                            backgroundColor: 'rgba(0,0,0,0.2)'
+                                        }}
+                                        onMouseEnter={(e) => {
+                                            e.currentTarget.style.backgroundColor = 'rgba(0,0,0,0.4)';
+                                            e.currentTarget.style.transform = 'scale(1.05)';
+                                        }}
+                                        onMouseLeave={(e) => {
+                                            e.currentTarget.style.backgroundColor = 'rgba(0,0,0,0.2)';
+                                            e.currentTarget.style.transform = 'scale(1)';
+                                        }}
+                                    >
+                                        <FontAwesomeIcon icon={faGithub} size="lg" />
+                                        <span>@Rafalvs</span>
+                                    </a>
+                                </div>
+
+                                {/* Backend Developer */}
+                                <div style={{
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    alignItems: 'center',
+                                    gap: '1rem',
+                                    padding: '1.5rem',
+                                    backgroundColor: 'rgba(255,255,255,0.1)',
+                                    borderRadius: '12px',
+                                    transition: 'all 0.3s'
+                                }}
+                                onMouseEnter={(e) => {
+                                    e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.2)';
+                                    e.currentTarget.style.transform = 'translateY(-5px)';
+                                }}
+                                onMouseLeave={(e) => {
+                                    e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.1)';
+                                    e.currentTarget.style.transform = 'translateY(0)';
+                                }}>
+                                    {githubAvatars.MR1C10 ? (
+                                        <Avatar
+                                            src={githubAvatars.MR1C10}
+                                            className="w-24 h-24"
+                                            isBordered
+                                            color="default"
+                                        />
+                                    ) : (
+                                        <div style={{
+                                            backgroundColor: 'rgba(255,255,255,0.2)',
+                                            padding: '1rem',
+                                            borderRadius: '50%'
+                                        }}>
+                                            <Server size={48} color="#fff" />
+                                        </div>
+                                    )}
+                                    <h3 style={{
+                                        fontSize: '1.25rem',
+                                        fontWeight: 'bold',
+                                        color: '#fff',
+                                        margin: 0
+                                    }}>
+                                        Backend Developer
+                                    </h3>
+                                    <a 
+                                        href="https://github.com/MR1C10" 
+                                        target="_blank" 
+                                        rel="noopener noreferrer"
+                                        style={{
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: '0.5rem',
+                                            color: '#fff',
+                                            textDecoration: 'none',
+                                            fontSize: '1rem',
+                                            transition: 'all 0.3s',
+                                            padding: '0.5rem 1rem',
+                                            borderRadius: '8px',
+                                            backgroundColor: 'rgba(0,0,0,0.2)'
+                                        }}
+                                        onMouseEnter={(e) => {
+                                            e.currentTarget.style.backgroundColor = 'rgba(0,0,0,0.4)';
+                                            e.currentTarget.style.transform = 'scale(1.05)';
+                                        }}
+                                        onMouseLeave={(e) => {
+                                            e.currentTarget.style.backgroundColor = 'rgba(0,0,0,0.2)';
+                                            e.currentTarget.style.transform = 'scale(1)';
+                                        }}
+                                    >
+                                        <FontAwesomeIcon icon={faGithub} size="lg" />
+                                        <span>@MR1C10</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </CardBody>
+                    </Card>
+
                     {/* Card: Gemo */}
                     <Card className="shadow-lg" style={{ 
                         backgroundColor: 'transparent',
@@ -325,15 +527,6 @@ export default function Contact(){
                             gap: '1rem',
                             padding: '2rem'
                         }}>
-                            <h3 style={{ 
-                                fontSize: '1.5rem', 
-                                fontWeight: 'bold', 
-                                color: '#fff',
-                                margin: 0,
-                                textShadow: '2px 2px 4px rgba(0,0,0,0.5)'
-                            }}>
-
-                            </h3>
                             <img 
                                 src={Gemo} 
                                 alt="Gemo - Mascote do Gêmona" 
@@ -341,10 +534,10 @@ export default function Contact(){
                                     maxWidth: '400px',
                                     width: '100%',
                                     height: 'auto',
+                                    borderRadius: '12px',
                                     boxShadow: '0 8px 32px rgba(0,0,0,0.3)'
                                 }}                                
                             />
-                            <p>by rafael</p>
                         </CardBody>
                     </Card>
                 </div>
