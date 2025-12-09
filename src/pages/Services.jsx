@@ -5,6 +5,7 @@ import { servicosAPI, avaliacoesAPI, imagensAPI, estabelecimentosAPI, subcategor
 import RatingForm from '../components/RatingForm';
 import { useAuth } from '../contexts/AuthContext';
 import { Button, Spinner } from '@heroui/react';
+import { apiCache } from '../utils/cache';
 
 export default function Services(){
     const [searchParams] = useSearchParams();
@@ -117,54 +118,65 @@ export default function Services(){
         const loadData = async () => {
             setIsLoading(true);
             try {
-                // Buscar serviços da API
-                const servicosRes = await servicosAPI.getAll();
+                // Buscar serviços da API com cache
+                let servicosRes = apiCache.get('servicos_all');
+                if (!servicosRes) {
+                    servicosRes = await servicosAPI.getAll();
+                    if (servicosRes.success) {
+                        apiCache.set('servicos_all', servicosRes);
+                    }
+                }
                 
                 if (!servicosRes.success || !servicosRes.data) {
                     setFilteredServices([]);
                     return;
                 }
 
-                // Mapear serviços com endereço (avaliações serão implementadas futuramente)
-                const servicosPromises = servicosRes.data.map(async (service) => {
-                    // A API já retorna os dados com nomes corretos (ServicoResponse)
+                // Buscar todos os estabelecimentos, subcategorias e categorias em PARALELO (1 única vez)
+                const estabelecimentosIds = [...new Set(servicosRes.data.map(s => s.estabelecimentoId).filter(Boolean))];
+                const subcategoriasIds = [...new Set(servicosRes.data.map(s => s.subCategoriaId).filter(Boolean))];
+                
+                // Buscar com cache
+                const [estabelecimentosData, subcategoriasData] = await Promise.all([
+                    Promise.all(estabelecimentosIds.map(async (id) => {
+                        const cached = apiCache.get(`estabelecimento_${id}`);
+                        if (cached) return cached;
+                        const res = await estabelecimentosAPI.getById(id);
+                        if (res.success) apiCache.set(`estabelecimento_${id}`, res.data);
+                        return res.data;
+                    })),
+                    Promise.all(subcategoriasIds.map(async (id) => {
+                        const cached = apiCache.get(`subcategoria_${id}`);
+                        if (cached) return cached;
+                        const res = await subcategoriasAPI.getById(id);
+                        if (res.success) apiCache.set(`subcategoria_${id}`, res.data);
+                        return res.data;
+                    }))
+                ]);
+
+                // Criar mapas para lookup rápido
+                const estabelecimentosMap = new Map(estabelecimentosData.filter(Boolean).map(e => [e.estabelecimentoId || e.id, e]));
+                const subcategoriasMap = new Map(subcategoriasData.filter(Boolean).map(s => [s.subCategoriaId || s.id, s]));
+                
+                // Buscar categorias únicas necessárias
+                const categoriasIds = [...new Set(subcategoriasData.filter(Boolean).map(s => s.categoriaId).filter(Boolean))];
+                const categoriasDataArray = await Promise.all(categoriasIds.map(async (id) => {
+                    const cached = apiCache.get(`categoria_${id}`);
+                    if (cached) return cached;
+                    const res = await categoriasAPI.getById(id);
+                    if (res.success) apiCache.set(`categoria_${id}`, res.data);
+                    return res.data;
+                }));
+                const categoriasMap = new Map(categoriasDataArray.filter(Boolean).map(c => [c.categoriaId || c.id, c]));
+
+                // Mapear serviços usando os dados já carregados (SEM novas requisições!)
+                const servicos = servicosRes.data.map((service) => {
                     const servicoId = service.servicoId || service.id;
-
-                    // Buscar dados do estabelecimento (nome e endereço)
-                    let estabelecimentoNome = 'Estabelecimento não informado';
-                    let endereco = null;
-                    if (service.estabelecimentoId) {
-                        try {
-                            const estabRes = await estabelecimentosAPI.getById(service.estabelecimentoId);
-                            if (estabRes.success && estabRes.data) {
-                                estabelecimentoNome = estabRes.data.nome || estabelecimentoNome;
-                                endereco = estabRes.data.endereco || null;
-                            }
-                        } catch (error) {
-                        }
-                    }
-
-                    // Buscar dados da subcategoria e categoria
-                    let subCategoriaNome = 'Subcategoria não informada';
-                    let categoriaNome = 'Categoria não informada';
-                    if (service.subCategoriaId) {
-                        try {
-                            const subCatRes = await subcategoriasAPI.getById(service.subCategoriaId);
-                            if (subCatRes.success && subCatRes.data) {
-                                subCategoriaNome = subCatRes.data.nome || subCategoriaNome;
-                                
-                                // Buscar categoria da subcategoria
-                                if (subCatRes.data.categoriaId) {
-                                    const catRes = await categoriasAPI.getById(subCatRes.data.categoriaId);
-                                    if (catRes.success && catRes.data) {
-                                        categoriaNome = catRes.data.nome || categoriaNome;
-                                    }
-                                }
-                            }
-                        } catch (error) {
-                            // Ignorar erro ao carregar subcategoria
-                        }
-                    }
+                    
+                    // Lookup direto nos maps (O(1) - instantâneo!)
+                    const estabelecimento = estabelecimentosMap.get(service.estabelecimentoId);
+                    const subcategoria = subcategoriasMap.get(service.subCategoriaId);
+                    const categoria = subcategoria ? categoriasMap.get(subcategoria.categoriaId) : null;
 
                     return {
                         id: servicoId,
@@ -172,23 +184,25 @@ export default function Services(){
                         descricao: service.descricao,
                         preco: service.preco,
                         imagemServicoUrl: service.imagemServicoUrl,
-                        estabelecimento: {
+                        estabelecimento: estabelecimento ? {
                             id: service.estabelecimentoId,
-                            nome: estabelecimentoNome,
-                            endereco: endereco
+                            nome: estabelecimento.nome || 'Estabelecimento não informado',
+                            endereco: estabelecimento.endereco || null
+                        } : {
+                            id: service.estabelecimentoId,
+                            nome: 'Estabelecimento não informado',
+                            endereco: null
                         },
                         categoria: {
-                            nome: categoriaNome
+                            nome: categoria?.nome || 'Categoria não informada'
                         },
                         subCategoria: {
-                            nome: subCategoriaNome
+                            nome: subcategoria?.nome || 'Subcategoria não informada'
                         },
-                        mediaAvaliacao: 0, // Placeholder - será implementado futuramente
-                        totalAvaliacoes: 0 // Placeholder - será implementado futuramente
+                        mediaAvaliacao: 0,
+                        totalAvaliacoes: 0
                     };
                 });
-
-                const servicos = await Promise.all(servicosPromises);
 
                 let filtered = servicos;
 
@@ -495,11 +509,14 @@ export default function Services(){
                 }
             }
 
-            // Criar pedido
+            // Criar pedido com data futura (1 hora a partir de agora)
+            const dataFutura = new Date();
+            dataFutura.setHours(dataFutura.getHours() + 1);
+            
             const pedidoData = {
                 clienteId: user.id,
                 servicoId: serviceId,
-                dataAgendamento: new Date().toISOString(),
+                dataAgendamento: dataFutura.toISOString(),
                 observacoes: 'Pedido criado pelo sistema'
             };
 
@@ -781,11 +798,6 @@ export default function Services(){
                                 return (
                                     <div key={service.id || index} className="service-box">
                                         <div className="service-content-wrapper">
-                                            {service.categoria && (
-                                                <span className="service-category-badge">
-                                                    {service.categoria.nome}
-                                                </span>
-                                            )}
                                             <h4>{service.nome}</h4>                                            
                                             
                                             <div className="service-price">
