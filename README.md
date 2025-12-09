@@ -1,12 +1,12 @@
-# React + Vite
+***FrontEnd***
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Tecnologias:
+Código: React 19.1.1 (Javascript) / React Router DOM 7.9.1 / Vite 7.1.9
+Design: HeroUI 2.8.5 (componentes) / Tailwind 3.4.18 (framework) / Framer Motion 12.23.25 (animações) / Lucide React 0.555.0 (ícones)  / Font Awesome 7.1.0 (ícones)
 
-Currently, two official plugins are available:
+Ferramentas:
+ESLint 9.33.0 (limpeza do código)
+JSON Server (Serviu para todos testes e protótipos feitos com dados mockados antes da API estar completa)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+Arquitetura:
+Páginas conectadas por um sistema de roteamento de react (router), utilizamos contextos para gerenciar os estados dos usuários nas páginas (se está logado ou não e como isso afeta a usabilidade), sistema de cache para otimizar performance e carregamentos das páginas, consumo da Gemona-API para comunicação com o banco e alterações diretas nele.
